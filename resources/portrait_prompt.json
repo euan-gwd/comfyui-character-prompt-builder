@@ -2223,7 +2223,27 @@
     "Santa Hat",
     "Chef Hat",
     "Hard Hat",
-    "Helmet"
+    "Helmet",
+    "Wide Brim Hat",
+    "Pillbox Hat",
+    "Picture Hat",
+    "Cartwheel Hat",
+    "Bucket Cloche",
+    "Floppy Hat",
+    "Kentucky Derby Hat",
+    "Veiled Hat",
+    "Flower Hat",
+    "Wedding Hat",
+    "Bridal Fascinator",
+    "Mini Top Hat",
+    "Turban Headband",
+    "Bow Headband",
+    "Feathered Headpiece",
+    "Nurse Hat",
+    "Flight Attendant Pillbox Hat",
+    "Flight Attendant Cap",
+    "Air Hostess Hat",
+    "Stewardess Hat"
   ],
   "hats_color_list": [
     "Black",
@@ -2494,7 +2514,13 @@
     "Fashion glasses",
     "Gradient lens glasses",
     "Mirrored lens glasses",
-    "Sunglasses"
+    "Sunglasses",
+    "Superhero Eye Mask",
+    "Superhero Face Mask",
+    "Domino Mask",
+    "Catwoman Mask",
+    "Batgirl Mask",
+    "Wonder Woman Tiara Mask"
   ],
   "mens_glasses_list": [
     "Rectangle glasses",

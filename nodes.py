@@ -873,9 +873,12 @@ class PromptMasterScene:
             jewelry.append(f"a {get('necklace').lower()}")
         if get("earrings") != "-" and getf("earrings_weight") > 0:
             jewelry.append(get("earrings").lower())
-        if get("bracelet") != "-" and getf("bracelet_weight") > 0:
+        bracelet_selected = get("bracelet") != "-" and getf("bracelet_weight") > 0
+        ring_selected = get("ring") != "-" and getf("ring_weight") > 0
+        if bracelet_selected:
             jewelry.append(f"a {get('bracelet').lower()}")
-        if get("ring") != "-" and getf("ring_weight") > 0:
+        # Add ring only if bracelet is not selected, or if both are selected add both (handled above)
+        if ring_selected and (not bracelet_selected or (bracelet_selected and ring_selected)):
             jewelry.append(f"a {get('ring').lower()}")
         # --- Add glasses for men ---
         if s.get("mens_glasses", "-") != "-" and float(s.get("mens_glasses_weight", 0)) > 0 and s.get("gender", "-") == "Man":
