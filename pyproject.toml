@@ -1,13 +1,14 @@
 [project]
 name = "comfyui-character-prompt-builder"
 version = "1.0.0"
-description = "A modular portrait prompt generator for ComfyUI"
+description = "A modular character prompt generator for ComfyUI"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
+    {name = "Euan Greenwood"},
     {name = "Forked from AI Wiz Art (Stefano Flore)"}
 ]
-keywords = ["comfyui", "prompt", "portrait", "stable-diffusion", "ai", "image-generation"]
+keywords = ["comfyui", "prompt", "character", "stable-diffusion", "ai", "image-generation"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -16,14 +17,15 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 requires-python = ">=3.10"
 dependencies = []
 
 [project.urls]
-Homepage = "https://github.com/yourusername/comfyui-character-prompt-builder"
-Repository = "https://github.com/yourusername/comfyui-character-prompt-builder"
-Issues = "https://github.com/yourusername/comfyui-character-prompt-builder/issues"
+Homepage = "https://github.com/euan-gwd/comfyui-character-prompt-builder"
+Repository = "https://github.com/euan-gwd/comfyui-character-prompt-builder"
+Issues = "https://github.com/euan-gwd/comfyui-character-prompt-builder/issues"
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
