@@ -255,19 +255,24 @@ class PromptMasterFashion:
                 "hats": combo("hats_list"),
                 "hats_color": combo("hats_color_list"),
                 "hats_weight": weight(),
+                # === SUITS (Grouped by gender) ===
+                "womens_suits": combo("womens_suits_list"),
+                "womens_suits_helmet": combo("womens_suits_helmet_list"),
+                "mens_suits": combo("mens_suits_list"),
+                "mens_suits_helmet": combo("mens_suits_helmet_list"),
             },
             "optional": {
-                # === SHOES ===
-                "womens_shoes": combo("womens_shoes_list"),
-                "womens_shoe_color": combo("womens_shoe_color_list"),
-                "womens_shoes_weight": weight(),
-                "mens_shoes": combo("mens_shoes_list"),
-                "mens_shoe_color": combo("mens_shoe_color_list"),
-                "mens_shoes_weight": weight(),
-                # === GLOVES ===
-                "womens_gloves": combo("womens_gloves_list"),
-                "womens_gloves_color": combo("womens_gloves_color_list"),
-                "womens_gloves_weight": weight(),
+                # === WOMEN'S GROUP ===
+                "womens_shoes": combo("womens_shoes_list") + ({"group": "Women's Fashion"},),
+                "womens_shoe_color": combo("womens_shoe_color_list") + ({"group": "Women's Fashion"},),
+                "womens_shoes_weight": weight() + ({"group": "Women's Fashion"},),
+                "womens_gloves": combo("womens_gloves_list") + ({"group": "Women's Fashion"},),
+                "womens_gloves_color": combo("womens_gloves_color_list") + ({"group": "Women's Fashion"},),
+                "womens_gloves_weight": weight() + ({"group": "Women's Fashion"},),
+                # === MEN'S GROUP ===
+                "mens_shoes": combo("mens_shoes_list") + ({"group": "Men's Fashion"},),
+                "mens_shoe_color": combo("mens_shoe_color_list") + ({"group": "Men's Fashion"},),
+                "mens_shoes_weight": weight() + ({"group": "Men's Fashion"},),
                 # === ACCESSORIES ===
                 "necklace": combo("necklace_list"),
                 "necklace_weight": weight(),
@@ -308,6 +313,8 @@ class PromptMasterFashion:
             underwear="-", underwear_color="-", underwear_weight=0,
             capes="-", capes_color="-", capes_weight=0,
             hats="-", hats_color="-", hats_weight=0,
+            womens_suits="-", womens_suits_helmet="-",
+            mens_suits="-", mens_suits_helmet="-",
             womens_shoes="-", womens_shoe_color="-", womens_shoes_weight=0,
             mens_shoes="-", mens_shoe_color="-", mens_shoes_weight=0,
             womens_gloves="-", womens_gloves_color="-", womens_gloves_weight=0,
@@ -318,6 +325,7 @@ class PromptMasterFashion:
             custom_clothing="",
     ):
         settings = settings_in.copy() if settings_in else {}
+        # Store both suit/helmet combos, gender will determine which is used in prompt generation
         settings.update({
             "fashion_aesthetic": fashion_aesthetic, "fashion_aesthetic_weight": fashion_aesthetic_weight,
             "tops": tops, "tops_color": tops_color, "tops_weight": tops_weight,
@@ -327,6 +335,8 @@ class PromptMasterFashion:
             "underwear": underwear, "underwear_color": underwear_color, "underwear_weight": underwear_weight,
             "capes": capes, "capes_color": capes_color, "capes_weight": capes_weight,
             "hats": hats, "hats_color": hats_color, "hats_weight": hats_weight,
+            "womens_suits": womens_suits, "womens_suits_helmet": womens_suits_helmet,
+            "mens_suits": mens_suits, "mens_suits_helmet": mens_suits_helmet,
             "womens_shoes": womens_shoes, "womens_shoe_color": womens_shoe_color,
             "womens_shoes_weight": womens_shoes_weight,
             "mens_shoes": mens_shoes, "mens_shoe_color": mens_shoe_color,
@@ -729,6 +739,27 @@ class PromptMasterScene:
                 if gloves_color != "-" and gloves_color != "":
                     gloves = f"{gloves_color} {gloves}"
                 clothing.append(gloves)
+            # --- Add suits ---
+            # Use gender to select correct suit/helmet
+            suit = None
+            helmet = None
+            gender = s.get("gender", "-")
+            if gender == "Woman":
+                if s.get("womens_suits", "-") != "-":
+                    suit = s.get("womens_suits").lower()
+                    helmet = s.get("womens_suits_helmet", "-")
+            elif gender == "Man":
+                if s.get("mens_suits", "-") != "-":
+                    suit = s.get("mens_suits").lower()
+                    helmet = s.get("mens_suits_helmet", "-")
+            # fallback for non-binary/other
+            if not suit and s.get("suits", "-") != "-":
+                suit = s.get("suits").lower()
+                helmet = s.get("suits_helmet", "-")
+            if suit:
+                if helmet and helmet != "-":
+                    suit = f"{suit} ({helmet.lower()})"
+                clothing.append(suit)
             # --- Add custom clothing if provided ---
             custom_clothing = s.get("custom_clothing", "")
             if custom_clothing and custom_clothing.strip():
