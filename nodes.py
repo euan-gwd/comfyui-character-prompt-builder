@@ -760,43 +760,6 @@ class PromptMasterScene:
 
         shoe_sentence = ""
 
-        # Gloves logic
-        gloves_present = (
-            s.get("womens_gloves", "-") != "-" and
-            float(s.get("womens_gloves_weight", 0)) > 0 and
-            s.get("gender", "-") == "Woman"
-        )
-        if gloves_present:
-            gloves = s.get("womens_gloves").lower()
-            gloves_color = s.get("womens_gloves_color", "-").lower()
-            if gloves_color != "-" and gloves_color != "":
-                gloves = f"{gloves_color} {gloves}"
-            clothing.append(gloves)
-        # --- Add custom clothing if provided ---
-        custom_clothing = s.get("custom_clothing", "")
-        if custom_clothing and custom_clothing.strip():
-            clothing.append(custom_clothing.strip())
-        if clothing:
-            sentences.append(f"{subj} wears " + " and ".join(clothing) + ".")
-
-        # Accessories
-        jewelry = []
-        if get("necklace") != "-" and getf("necklace_weight") > 0:
-            jewelry.append(f"a {get('necklace').lower()}")
-        if get("earrings") != "-" and getf("earrings_weight") > 0:
-            jewelry.append(get("earrings").lower())
-        if get("bracelet") != "-" and getf("bracelet_weight") > 0:
-            jewelry.append(f"a {get('bracelet').lower()}")
-        if get("ring") != "-" and getf("ring_weight") > 0:
-            jewelry.append(f"a {get('ring').lower()}")
-        if jewelry:
-            if len(jewelry) == 1:
-                sentences.append(f"{subj} accessorizes with {jewelry[0]}.")
-            else:
-                sentences.append(f"{subj} accessorizes with {', '.join(jewelry[:-1])} and {jewelry[-1]}.")
-
-        shoe_sentence = ""
-
         # Fingernails (only for women by default)
         fingernails_present = (
             get("fingernail_style") != "-" and
@@ -839,11 +802,18 @@ class PromptMasterScene:
             shoe_sentence = f"{subj} is wearing {shoe_desc}."
             sentences.append(shoe_sentence)
 
-        # Pose
-        # Only add pose if present and weight > 0
-        if s.get("model_pose", "-") != "-" and float(s.get("model_pose_weight", 0)) > 0:
-            pose = s.get("model_pose")
-            pose_desc = pose[0].lower() + pose[1:] if pose else ""
+        # --- NEW: Use only one pose from Actions node ---
+        pose_fields = [
+            ("standing_pose", s.get("standing_pose", "-")),
+            ("kneeling_pose", s.get("kneeling_pose", "-")),
+            ("sitting_pose", s.get("sitting_pose", "-")),
+            ("laying_down_pose", s.get("laying_down_pose", "-")),
+            ("nsfw_pose", s.get("nsfw_pose", "-")),
+        ]
+        # Only use the first non-"-" pose, ignore the rest
+        selected_pose = next((val for key, val in pose_fields if val and val != "-"), None)
+        if selected_pose:
+            pose_desc = selected_pose[0].lower() + selected_pose[1:] if selected_pose else ""
             sentences.append(f"{subj} is {pose_desc}.")
 
         # Expression
