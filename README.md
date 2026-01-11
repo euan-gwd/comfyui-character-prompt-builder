@@ -8,11 +8,12 @@ A standalone, modular portrait prompt generator for ComfyUI. Generate detailed, 
 
 ## Features
 
-- 🎨 **Modular Design** - Three chainable nodes for maximum flexibility
+- 🎨 **Modular Design** - Four chainable nodes for maximum flexibility
 - 📝 **Dual Output Modes** - Natural language or SD-weighted prompts
 - 👤 **Comprehensive Person Options** - Age, gender, nationality, body type, face, hair, skin
-- 👗 **Fashion & Accessories** - Outfits, shoes, jewelry, nails
-- 📸 **Scene Control** - Camera shots, poses, lighting, location, weather
+- 👗 **Fashion & Accessories** - Female and male outfits, shoes, jewelry, nails
+- 🏃 **Action & Pose Control** - Dedicated node for actions, poses, gestures
+- 📸 **Scene Control** - Camera shots, lighting, location, weather
 - 🔗 **Chainable Architecture** - Use only the nodes you need
 - 📦 **Zero Dependencies** - Uses only Python standard library
 
@@ -48,23 +49,42 @@ Controls physical appearance including:
 | **Skin** | Details, pores, freckles, dimples, moles, tan, acne |
 | **Eyes** | Detail level, iris patterns, pupil shape |
 
-### 👗 Character Prompt Builder - Fashion
-Controls clothing and accessories:
+### 👗 Character Prompt Builder - Female Fashion
+Controls clothing and accessories for female subjects:
 
 | Category | Options |
 |----------|---------|
 | **Style** | Fashion aesthetic (Gothic, Bohemian, Y2K, etc.) |
-| **Outfit** | Regular outfits, revealing outfits |
-| **Shoes** | Women's shoes, men's shoes, colors |
+| **Outfit** | Dresses, skirts, tops, revealing outfits |
+| **Shoes** | Women's shoes, colors |
 | **Jewelry** | Necklaces, earrings, bracelets, rings |
 | **Nails** | Style, color |
+
+### 🧥 Character Prompt Builder - Male Fashion
+Controls clothing and accessories for male subjects:
+
+| Category | Options |
+|----------|---------|
+| **Style** | Fashion aesthetic (Casual, Formal, Streetwear, etc.) |
+| **Outfit** | Suits, shirts, jackets, pants, revealing outfits |
+| **Shoes** | Men's shoes, colors |
+| **Accessories** | Watches, ties, hats, belts |
+
+### 🏃 Character Prompt Builder - Action
+Controls pose, action, and gesture:
+
+| Category | Options |
+|----------|---------|
+| **Pose** | Standing, sitting, walking, dynamic poses, etc. |
+| **Action** | Gestures, activities, interactions |
+| **Expression** | Additional facial/body expressions |
 
 ### 📸 Character Prompt Builder - Scene & Generate
 Controls the shot setup and generates the final prompt:
 
 | Category | Options |
 |----------|---------|
-| **Camera** | Shot type, model pose |
+| **Camera** | Shot type, angle |
 | **Lighting** | Light type, direction, intensity |
 | **Location** | Free-text location description |
 | **Environment** | Time of day, weather, season |
@@ -76,23 +96,46 @@ Controls the shot setup and generates the final prompt:
 ### Basic Workflow
 
 ```
-[Character Prompt Builder - Person] → [Character Prompt Builder - Fashion] → [Character Prompt Builder - Scene & Generate]
-        ↓                           ↓                              ↓
-   (settings out)          (settings in/out)              (positive, negative)
+[Character Prompt Builder - Person]
+      ↓
+[Character Prompt Builder - Female Fashion] or [Character Prompt Builder - Male Fashion]
+      ↓
+[Character Prompt Builder - Action]
+      ↓
+[Character Prompt Builder - Scene & Generate]
+      ↓
+(positive, negative)
 ```
 
+- Choose either the **Female Fashion** or **Male Fashion** node after the Person node, depending on subject gender.
+- The **Action** node is now a separate step for poses and actions.
+
 ### Minimal Workflow
+
 You can skip nodes you don't need:
 
 ```
-[Character Prompt Builder - Person] → [Character Prompt Builder - Scene & Generate]
+[Person] → [Scene & Generate]
+```
+
+or
+
+```
+[Person] → [Female/Male Fashion] → [Scene & Generate]
+```
+
+or
+
+```
+[Person] → [Action] → [Scene & Generate]
 ```
 
 ### Connection Guide
 1. Add **Character Prompt Builder - Person** node
-2. Connect `settings` output to **Character Prompt Builder - Fashion** `settings_in`
-3. Connect Fashion's `settings` output to **Character Prompt Builder - Scene & Generate** `settings` input
-4. Connect `positive` and `negative` outputs to your sampler/CLIP nodes
+2. Connect `settings` output to **Character Prompt Builder - Female Fashion** or **Male Fashion** `settings_in`
+3. Connect Fashion node's `settings` output to **Character Prompt Builder - Action** `settings_in`
+4. Connect Action node's `settings` output to **Character Prompt Builder - Scene & Generate** `settings` input
+5. Connect `positive` and `negative` outputs to your sampler/CLIP nodes
 
 ## Output Modes
 
@@ -117,18 +160,16 @@ Generates SD-style weighted tags:
 ### Portrait Photography
 ```
 Person: Woman, 28, Japanese, Slim
-Face: Oval, Brown eyes, Serene expression
-Hair: Long, Black, Straight
 Fashion: Minimalist aesthetic, White blouse
+Action: Sitting, looking away, serene
 Scene: Close-up portrait, Natural sunlight, Golden hour
 ```
 
 ### Editorial Fashion
 ```
-Person: Woman, 22, Brazilian, Athletic
-Face: Heart-shaped, Green eyes, Confident
-Hair: Medium, Auburn, Wavy
-Fashion: High Fashion aesthetic, Designer gown, Statement jewelry
+Person: Man, 22, Brazilian, Athletic
+Fashion: High Fashion aesthetic, Designer suit, Statement watch
+Action: Walking, confident stride
 Scene: Full body, Studio lighting, Fashion editorial pose
 ```
 
@@ -167,6 +208,12 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 5. Open a Pull Request
 
 ## Changelog
+
+### v1.1.0
+- Split Fashion node into separate Female and Male nodes
+- Added Action node for poses and actions
+- Updated workflow: Person → Female/Male Fashion → Action → Scene & Generate
+- Improved modularity and customization
 
 ### v1.0.0
 - Initial release
