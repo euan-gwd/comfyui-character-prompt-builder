@@ -272,6 +272,9 @@ class PromptMasterFemaleFashion:
                 "nail_color": combo("nail_color_list"),
                 "fingernail_weight": weight(),
                 "settings_in": ("PM_SETTINGS",),
+                "womens_glasses": combo("womens_glasses_list"),
+                "womens_glasses_color": combo("womens_glasses_color_list"),
+                "womens_glasses_weight": weight(),
                 "custom_clothing": (
                     "STRING",
                     {
@@ -303,6 +306,7 @@ class PromptMasterFemaleFashion:
             bracelet="-", bracelet_weight=0, ring="-", ring_weight=0,
             fingernail_style="-", nail_color="-", fingernail_weight=0,
             settings_in=None,
+            womens_glasses="-", womens_glasses_color="-", womens_glasses_weight=0,
             custom_clothing="",
     ):
         settings = settings_in.copy() if settings_in else {}
@@ -326,6 +330,9 @@ class PromptMasterFemaleFashion:
             "ring": ring, "ring_weight": ring_weight,
             "fingernail_style": fingernail_style, "nail_color": nail_color,
             "fingernail_weight": fingernail_weight,
+            "womens_glasses": womens_glasses,
+            "womens_glasses_color": womens_glasses_color,
+            "womens_glasses_weight": womens_glasses_weight,
             "custom_clothing": custom_clothing,
         })
         return (settings,)
@@ -388,6 +395,9 @@ class PromptMasterMaleFashion:
                 "nail_color": combo("nail_color_list"),
                 "fingernail_weight": weight(),
                 "settings_in": ("PM_SETTINGS",),
+                "mens_glasses": combo("mens_glasses_list"),
+                "mens_glasses_color": combo("mens_glasses_color_list"),
+                "mens_glasses_weight": weight(),
                 "custom_clothing": (
                     "STRING",
                     {
@@ -417,6 +427,7 @@ class PromptMasterMaleFashion:
             bracelet="-", bracelet_weight=0, ring="-", ring_weight=0,
             fingernail_style="-", nail_color="-", fingernail_weight=0,
             settings_in=None,
+            mens_glasses="-", mens_glasses_color="-", mens_glasses_weight=0,
             custom_clothing="",
     ):
         settings = settings_in.copy() if settings_in else {}
@@ -437,6 +448,9 @@ class PromptMasterMaleFashion:
             "ring": ring, "ring_weight": ring_weight,
             "fingernail_style": fingernail_style, "nail_color": nail_color,
             "fingernail_weight": fingernail_weight,
+            "mens_glasses": mens_glasses,
+            "mens_glasses_color": mens_glasses_color,
+            "mens_glasses_weight": mens_glasses_weight,
             "custom_clothing": custom_clothing,
         })
         return (settings,)
@@ -863,6 +877,20 @@ class PromptMasterScene:
             jewelry.append(f"a {get('bracelet').lower()}")
         if get("ring") != "-" and getf("ring_weight") > 0:
             jewelry.append(f"a {get('ring').lower()}")
+        # --- Add glasses for men ---
+        if s.get("mens_glasses", "-") != "-" and float(s.get("mens_glasses_weight", 0)) > 0 and s.get("gender", "-") == "Man":
+            glasses = s.get("mens_glasses").lower()
+            glasses_color = s.get("mens_glasses_color", "-").lower()
+            if glasses_color != "-" and glasses_color != "":
+                glasses = f"{glasses_color} {glasses}"
+            jewelry.append(glasses)
+        # --- Add glasses for women (if present, for completeness) ---
+        if s.get("womens_glasses", "-") != "-" and float(s.get("womens_glasses_weight", 0)) > 0 and s.get("gender", "-") == "Woman":
+            glasses = s.get("womens_glasses").lower()
+            glasses_color = s.get("womens_glasses_color", "-").lower()
+            if glasses_color != "-" and glasses_color != "":
+                glasses = f"{glasses_color} {glasses}"
+            jewelry.append(glasses)
         if jewelry:
             if len(jewelry) == 1:
                 sentences.append(f"{subj} accessorizes with {jewelry[0]}.")
