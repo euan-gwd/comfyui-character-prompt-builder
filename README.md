@@ -1,6 +1,6 @@
 # CharacterPromptBuilder
 
-A standalone, modular character prompt generator for ComfyUI. Generate detailed, natural language prompts for portrait photography with extensive customization options.
+A standalone, modular character prompt generator for ComfyUI. Generate detailed, natural language prompts for human character creation with extensive customization options.
 
 ![ComfyUI](https://img.shields.io/badge/ComfyUI-Custom%20Node-blue)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-green)
