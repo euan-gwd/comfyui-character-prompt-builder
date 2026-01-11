@@ -349,21 +349,20 @@ class PromptMasterActions:
     @classmethod
     def INPUT_TYPES(s):
         data = _load_portrait_data()
-        max_float_value = 1.95
 
-        def combo(key, default=None):
-            _list = data.get(key, ["-"]).copy()
+        def combo(list_key):
+            _list = data.get(list_key, ["-"]).copy()
             if '-' not in _list:
                 _list.insert(0, '-')
-            return (_list, {"default": default} if default else {})
-
-        def weight(default=1):
-            return ("FLOAT", {"default": default, "step": 0.05, "min": 0, "max": max_float_value, "display": "slider"})
+            return (_list,)
 
         return {
             "required": {
-                "model_pose": combo("model_pose_list"),
-                "model_pose_weight": weight(1),
+                "standing_pose": combo("standing_pose_list"),
+                "kneeling_pose": combo("kneeling_pose_list"),
+                "sitting_pose": combo("sitting_pose_list"),
+                "laying_down_pose": combo("laying_down_pose_list"),
+                "nsfw_pose": combo("nsfw_pose_list"),
                 "settings_in": ("PM_SETTINGS",),
             }
         }
@@ -373,11 +372,42 @@ class PromptMasterActions:
     FUNCTION = "run"
     CATEGORY = "PromptMaster"
 
-    def run(self, model_pose="-", model_pose_weight=1, settings_in=None):
+    def run(self,
+            standing_pose="-",
+            kneeling_pose="-",
+            sitting_pose="-",
+            laying_down_pose="-",
+            nsfw_pose="-",
+            settings_in=None):
         settings = settings_in.copy() if settings_in else {}
+
+        # Only one pose can be active at a time: pick the first non-"-"
+        pose_fields = [
+            ("standing_pose", standing_pose),
+            ("kneeling_pose", kneeling_pose),
+            ("sitting_pose", sitting_pose),
+            ("laying_down_pose", laying_down_pose),
+            ("nsfw_pose", nsfw_pose),
+        ]
+        selected_pose = "-"
+        selected_index = -1
+        for idx, (key, val) in enumerate(pose_fields):
+            if val != "-":
+                selected_pose = val
+                selected_index = idx
+                break
+
+        # Reset all other poses to "-" except the selected one
+        pose_out = {}
+        for idx, (key, val) in enumerate(pose_fields):
+            if idx == selected_index:
+                pose_out[key] = val
+            else:
+                pose_out[key] = "-"
+
         settings.update({
-            "model_pose": model_pose,
-            "model_pose_weight": model_pose_weight,
+            "model_pose": selected_pose,
+            **pose_out
         })
         return (settings,)
 
