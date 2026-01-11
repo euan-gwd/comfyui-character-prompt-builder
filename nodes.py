@@ -209,8 +209,8 @@ class PromptMasterPerson:
         return (settings,)
 
 
-# Portrait Master - Fashion Node (Style + Outfit + Accessories)
-class PromptMasterFashion:
+# Portrait Master - Female Fashion Node (Style + Outfit + Accessories)
+class PromptMasterFemaleFashion:
     @classmethod
     def INPUT_TYPES(s):
         data = _load_portrait_data()
@@ -227,14 +227,11 @@ class PromptMasterFashion:
 
         return {
             "required": {
-                # === STYLE ===
                 "fashion_aesthetic": combo("fashion_aesthetic_list"),
                 "fashion_aesthetic_weight": weight(),
-                # --- New clothing fields ---
                 "tops": combo("tops_list"),
                 "tops_color": combo("tops_color_list"),
                 "tops_weight": weight(),
-                # --- Dresses ---
                 "dresses": combo("dresses_list"),
                 "dresses_color": combo("dresses_color_list"),
                 "dresses_weight": weight(),
@@ -247,33 +244,22 @@ class PromptMasterFashion:
                 "underwear": combo("underwear_list"),
                 "underwear_color": combo("underwear_color_list"),
                 "underwear_weight": weight(),
-                # === CAPES ===
                 "capes": combo("capes_list"),
                 "capes_color": combo("capes_color_list"),
                 "capes_weight": weight(),
-                # === HATS ===
                 "hats": combo("hats_list"),
                 "hats_color": combo("hats_color_list"),
                 "hats_weight": weight(),
-                # === SUITS (Grouped by gender) ===
                 "womens_suits": combo("womens_suits_list"),
                 "womens_suits_helmet": combo("womens_suits_helmet_list"),
-                "mens_suits": combo("mens_suits_list"),
-                "mens_suits_helmet": combo("mens_suits_helmet_list"),
             },
             "optional": {
-                # === WOMEN'S GROUP ===
-                "womens_shoes": combo("womens_shoes_list") + ({"group": "Women's Fashion"},),
-                "womens_shoe_color": combo("womens_shoe_color_list") + ({"group": "Women's Fashion"},),
-                "womens_shoes_weight": weight() + ({"group": "Women's Fashion"},),
-                "womens_gloves": combo("womens_gloves_list") + ({"group": "Women's Fashion"},),
-                "womens_gloves_color": combo("womens_gloves_color_list") + ({"group": "Women's Fashion"},),
-                "womens_gloves_weight": weight() + ({"group": "Women's Fashion"},),
-                # === MEN'S GROUP ===
-                "mens_shoes": combo("mens_shoes_list") + ({"group": "Men's Fashion"},),
-                "mens_shoe_color": combo("mens_shoe_color_list") + ({"group": "Men's Fashion"},),
-                "mens_shoes_weight": weight() + ({"group": "Men's Fashion"},),
-                # === ACCESSORIES ===
+                "womens_shoes": combo("womens_shoes_list"),
+                "womens_shoe_color": combo("womens_shoe_color_list"),
+                "womens_shoes_weight": weight(),
+                "womens_gloves": combo("womens_gloves_list"),
+                "womens_gloves_color": combo("womens_gloves_color_list"),
+                "womens_gloves_weight": weight(),
                 "necklace": combo("necklace_list"),
                 "necklace_weight": weight(),
                 "earrings": combo("earrings_list"),
@@ -282,13 +268,10 @@ class PromptMasterFashion:
                 "bracelet_weight": weight(),
                 "ring": combo("ring_list"),
                 "ring_weight": weight(),
-                # === FINGERNAILS ===
                 "fingernail_style": combo("fingernail_style_list"),
                 "nail_color": combo("nail_color_list"),
                 "fingernail_weight": weight(),
-                # === CHAIN ===
                 "settings_in": ("PM_SETTINGS",),
-                # --- Custom clothing textbox ---
                 "custom_clothing": (
                     "STRING",
                     {
@@ -314,9 +297,7 @@ class PromptMasterFashion:
             capes="-", capes_color="-", capes_weight=0,
             hats="-", hats_color="-", hats_weight=0,
             womens_suits="-", womens_suits_helmet="-",
-            mens_suits="-", mens_suits_helmet="-",
             womens_shoes="-", womens_shoe_color="-", womens_shoes_weight=0,
-            mens_shoes="-", mens_shoe_color="-", mens_shoes_weight=0,
             womens_gloves="-", womens_gloves_color="-", womens_gloves_weight=0,
             necklace="-", necklace_weight=0, earrings="-", earrings_weight=0,
             bracelet="-", bracelet_weight=0, ring="-", ring_weight=0,
@@ -325,7 +306,6 @@ class PromptMasterFashion:
             custom_clothing="",
     ):
         settings = settings_in.copy() if settings_in else {}
-        # Store both suit/helmet combos, gender will determine which is used in prompt generation
         settings.update({
             "fashion_aesthetic": fashion_aesthetic, "fashion_aesthetic_weight": fashion_aesthetic_weight,
             "tops": tops, "tops_color": tops_color, "tops_weight": tops_weight,
@@ -336,13 +316,121 @@ class PromptMasterFashion:
             "capes": capes, "capes_color": capes_color, "capes_weight": capes_weight,
             "hats": hats, "hats_color": hats_color, "hats_weight": hats_weight,
             "womens_suits": womens_suits, "womens_suits_helmet": womens_suits_helmet,
-            "mens_suits": mens_suits, "mens_suits_helmet": mens_suits_helmet,
             "womens_shoes": womens_shoes, "womens_shoe_color": womens_shoe_color,
             "womens_shoes_weight": womens_shoes_weight,
-            "mens_shoes": mens_shoes, "mens_shoe_color": mens_shoe_color,
-            "mens_shoes_weight": mens_shoes_weight,
             "womens_gloves": womens_gloves, "womens_gloves_color": womens_gloves_color,
             "womens_gloves_weight": womens_gloves_weight,
+            "necklace": necklace, "necklace_weight": necklace_weight,
+            "earrings": earrings, "earrings_weight": earrings_weight,
+            "bracelet": bracelet, "bracelet_weight": bracelet_weight,
+            "ring": ring, "ring_weight": ring_weight,
+            "fingernail_style": fingernail_style, "nail_color": nail_color,
+            "fingernail_weight": fingernail_weight,
+            "custom_clothing": custom_clothing,
+        })
+        return (settings,)
+
+
+# Portrait Master - Male Fashion Node (Style + Outfit + Accessories)
+class PromptMasterMaleFashion:
+    @classmethod
+    def INPUT_TYPES(s):
+        data = _load_portrait_data()
+        max_float_value = 1.95
+
+        def combo(key, default=None):
+            _list = data.get(key, ["-"]).copy()
+            if '-' not in _list:
+                _list.insert(0, '-')
+            return (_list, {"default": default} if default else {})
+
+        def weight(default=0):
+            return ("FLOAT", {"default": default, "step": 0.05, "min": 0, "max": max_float_value, "display": "slider"})
+
+        return {
+            "required": {
+                "fashion_aesthetic": combo("fashion_aesthetic_list"),
+                "fashion_aesthetic_weight": weight(),
+                "tops": combo("tops_list"),
+                "tops_color": combo("tops_color_list"),
+                "tops_weight": weight(),
+                "pants": combo("pants_list"),
+                "pants_color": combo("pants_color_list"),
+                "pants_weight": weight(),
+                "legs": combo("legs_list"),
+                "legs_color": combo("legs_color_list"),
+                "legs_weight": weight(),
+                "underwear": combo("underwear_list"),
+                "underwear_color": combo("underwear_color_list"),
+                "underwear_weight": weight(),
+                "capes": combo("capes_list"),
+                "capes_color": combo("capes_color_list"),
+                "capes_weight": weight(),
+                "hats": combo("hats_list"),
+                "hats_color": combo("hats_color_list"),
+                "hats_weight": weight(),
+                "mens_suits": combo("mens_suits_list"),
+                "mens_suits_helmet": combo("mens_suits_helmet_list"),
+            },
+            "optional": {
+                "mens_shoes": combo("mens_shoes_list"),
+                "mens_shoe_color": combo("mens_shoe_color_list"),
+                "mens_shoes_weight": weight(),
+                "necklace": combo("necklace_list"),
+                "necklace_weight": weight(),
+                "earrings": combo("earrings_list"),
+                "earrings_weight": weight(),
+                "bracelet": combo("bracelet_list"),
+                "bracelet_weight": weight(),
+                "ring": combo("ring_list"),
+                "ring_weight": weight(),
+                "fingernail_style": combo("fingernail_style_list"),
+                "nail_color": combo("nail_color_list"),
+                "fingernail_weight": weight(),
+                "settings_in": ("PM_SETTINGS",),
+                "custom_clothing": (
+                    "STRING",
+                    {
+                        "multiline": True,
+                        "default": "",
+                        "placeholder": "Enter custom outfit"
+                    }
+                ),
+            }
+        }
+
+    RETURN_TYPES = ("PM_SETTINGS",)
+    RETURN_NAMES = ("settings",)
+    FUNCTION = "run"
+    CATEGORY = "PromptMaster"
+
+    def run(self, fashion_aesthetic="-", fashion_aesthetic_weight=0,
+            tops="-", tops_color="-", tops_weight=0,
+            pants="-", pants_color="-", pants_weight=0,
+            legs="-", legs_color="-", legs_weight=0,
+            underwear="-", underwear_color="-", underwear_weight=0,
+            capes="-", capes_color="-", capes_weight=0,
+            hats="-", hats_color="-", hats_weight=0,
+            mens_suits="-", mens_suits_helmet="-",
+            mens_shoes="-", mens_shoe_color="-", mens_shoes_weight=0,
+            necklace="-", necklace_weight=0, earrings="-", earrings_weight=0,
+            bracelet="-", bracelet_weight=0, ring="-", ring_weight=0,
+            fingernail_style="-", nail_color="-", fingernail_weight=0,
+            settings_in=None,
+            custom_clothing="",
+    ):
+        settings = settings_in.copy() if settings_in else {}
+        settings.update({
+            "fashion_aesthetic": fashion_aesthetic, "fashion_aesthetic_weight": fashion_aesthetic_weight,
+            "tops": tops, "tops_color": tops_color, "tops_weight": tops_weight,
+            "pants": pants, "pants_color": pants_color, "pants_weight": pants_weight,
+            "legs": legs, "legs_color": legs_color, "legs_weight": legs_weight,
+            "underwear": underwear, "underwear_color": underwear_color, "underwear_weight": underwear_weight,
+            "capes": capes, "capes_color": capes_color, "capes_weight": capes_weight,
+            "hats": hats, "hats_color": hats_color, "hats_weight": hats_weight,
+            "mens_suits": mens_suits, "mens_suits_helmet": mens_suits_helmet,
+            "mens_shoes": mens_shoes, "mens_shoe_color": mens_shoe_color,
+            "mens_shoes_weight": mens_shoes_weight,
             "necklace": necklace, "necklace_weight": necklace_weight,
             "earrings": earrings, "earrings_weight": earrings_weight,
             "bracelet": bracelet, "bracelet_weight": bracelet_weight,
@@ -740,7 +828,6 @@ class PromptMasterScene:
                     gloves = f"{gloves_color} {gloves}"
                 clothing.append(gloves)
             # --- Add suits ---
-            # Use gender to select correct suit/helmet
             suit = None
             helmet = None
             gender = s.get("gender", "-")
@@ -752,10 +839,6 @@ class PromptMasterScene:
                 if s.get("mens_suits", "-") != "-":
                     suit = s.get("mens_suits").lower()
                     helmet = s.get("mens_suits_helmet", "-")
-            # fallback for non-binary/other
-            if not suit and s.get("suits", "-") != "-":
-                suit = s.get("suits").lower()
-                helmet = s.get("suits_helmet", "-")
             if suit:
                 if helmet and helmet != "-":
                     suit = f"{suit} ({helmet.lower()})"
@@ -912,14 +995,16 @@ class PromptMasterScene:
 # Node mappings
 NODE_CLASS_MAPPINGS = {
     "Prompt Master Person": PromptMasterPerson,
-    "Prompt Master Fashion": PromptMasterFashion,
+    "Prompt Master Female Fashion": PromptMasterFemaleFashion,
+    "Prompt Master Male Fashion": PromptMasterMaleFashion,
     "Prompt Master Actions": PromptMasterActions,
     "Prompt Master Scene": PromptMasterScene,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "Prompt Master Person": "Prompt Master - Person",
-    "Prompt Master Fashion": "Prompt Master - Fashion",
+    "Prompt Master Female Fashion": "Prompt Master - Female Fashion",
+    "Prompt Master Male Fashion": "Prompt Master - Male Fashion",
     "Prompt Master Actions": "Prompt Master - Actions",
     "Prompt Master Scene": "Prompt Master - Scene & Generate",
 }
