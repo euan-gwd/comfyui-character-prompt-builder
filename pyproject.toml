@@ -1,0 +1,36 @@
+[project]
+name = "comfyui-prompt-master"
+version = "1.0.0"
+description = "A modular portrait prompt generator for ComfyUI"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Forked from AI Wiz Art (Stefano Flore)"}
+]
+keywords = ["comfyui", "prompt", "portrait", "stable-diffusion", "ai", "image-generation"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+requires-python = ">=3.10"
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/yourusername/comfyui-prompt-master"
+Repository = "https://github.com/yourusername/comfyui-prompt-master"
+Issues = "https://github.com/yourusername/comfyui-prompt-master/issues"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.package-data]
+"*" = ["*.json", "*.md", "*.txt"]
