@@ -251,6 +251,7 @@ class PromptMasterFemaleFashion:
                 "hats_color": combo("hats_color_list"),
                 "hats_weight": weight(),
                 "womens_suits": combo("womens_suits_list"),
+                "womens_suits_weight": weight(),
                 "womens_suits_helmet": combo("womens_suits_helmet_list"),
             },
             "optional": {
@@ -299,7 +300,7 @@ class PromptMasterFemaleFashion:
             underwear="-", underwear_color="-", underwear_weight=0,
             capes="-", capes_color="-", capes_weight=0,
             hats="-", hats_color="-", hats_weight=0,
-            womens_suits="-", womens_suits_helmet="-",
+            womens_suits="-", womens_suits_weight=0, womens_suits_helmet="-",
             womens_shoes="-", womens_shoe_color="-", womens_shoes_weight=0,
             womens_gloves="-", womens_gloves_color="-", womens_gloves_weight=0,
             necklace="-", necklace_weight=0, earrings="-", earrings_weight=0,
@@ -319,7 +320,8 @@ class PromptMasterFemaleFashion:
             "underwear": underwear, "underwear_color": underwear_color, "underwear_weight": underwear_weight,
             "capes": capes, "capes_color": capes_color, "capes_weight": capes_weight,
             "hats": hats, "hats_color": hats_color, "hats_weight": hats_weight,
-            "womens_suits": womens_suits, "womens_suits_helmet": womens_suits_helmet,
+            "womens_suits": womens_suits, "womens_suits_weight": womens_suits_weight,
+            "womens_suits_helmet": womens_suits_helmet,
             "womens_shoes": womens_shoes, "womens_shoe_color": womens_shoe_color,
             "womens_shoes_weight": womens_shoes_weight,
             "womens_gloves": womens_gloves, "womens_gloves_color": womens_gloves_color,
@@ -477,6 +479,16 @@ class PromptMasterActions:
                 "nsfw_pose": combo("nsfw_pose_list"),
                 "props": combo("props_list"),  # Add props list to Actions node
                 "settings_in": ("PM_SETTINGS",),
+            },
+            "optional": {
+                "custom_action": (
+                    "STRING",
+                    {
+                        "multiline": True,
+                        "default": "",
+                        "placeholder": "Enter custom action or pose description"
+                    }
+                ),
             }
         }
 
@@ -492,7 +504,8 @@ class PromptMasterActions:
             laying_down_pose="-",
             nsfw_pose="-",
             props="-",
-            settings_in=None):
+            settings_in=None,
+            custom_action=""):
         settings = settings_in.copy() if settings_in else {}
 
         # Only one pose can be active at a time: pick the first non-"-"
@@ -522,7 +535,8 @@ class PromptMasterActions:
         settings.update({
             "model_pose": selected_pose,
             **pose_out,
-            "props": props,  # Store selected prop/action
+            "props": props,
+            "custom_action": custom_action.strip() if custom_action else "",
         })
         return (settings,)
 
@@ -687,54 +701,62 @@ class PromptMasterScene:
             return float(default)
 
         def get_article(word):
-            """Return 'an' if word starts with a vowel sound, otherwise 'a'."""
             if not word:
                 return "a"
             return "an" if word[0].lower() in 'aeiou' else "a"
 
-        sentences = []
+        # --- Begin natural language prose generation ---
+        prose = []
 
-        # Artistic Style - add at the beginning for style context (skip photorealistic/hyperrealistic)
-        if get("artistic_style") != "-" and getf("artistic_style_weight") > 0:
-            style = get("artistic_style")
-            style_lower = style.lower().strip()
-            if style_lower not in ["photorealistic", "hyperrealistic", "photo realistic", "hyper realistic"]:
-                sentences.append(f"A {style.lower()} of")
+        # Artistic style phrase
+        style = s.get("artistic_style", "")
+        style_weight = getf("artistic_style_weight")
+        if style and style != "-" and style_weight > 0:
+            style_clean = style.strip().lower()
+            if not style_clean.endswith("style"):
+                style_clean += " style"
+            prose.append(f"In {style_clean},")
 
+        # Subject
         gender = get("gender")
         age = int(s.get("age", 30))
-
-        # Pronoun and subject logic
         if gender == "Man":
             subj = "He"
-            poss = "His"
+            poss = "his"
             obj = "him"
             gender_word = "man"
             if age <= 25:
                 gender_word = "boy"
         elif gender == "Woman":
             subj = "She"
-            poss = "Her"
+            poss = "her"
             obj = "her"
             gender_word = "woman"
             if age <= 25:
                 gender_word = "girl"
         else:
             subj = "They"
-            poss = "Their"
+            poss = "their"
             obj = "them"
             gender_word = "person"
 
-        nationality_str = get("nationality_1", "").lower() if get("nationality_1") != "-" else ""
-        if gender != "-":
-            sentences.append(f"A {age}-year-old {nationality_str} {gender_word}".strip().replace("  ", " ") + ".")
+        nationality_str = get("nationality_1", "").strip()
+        subject_parts = []
+        if nationality_str and nationality_str != "-":
+            subject_parts.append(nationality_str)
+        if gender_word:
+            subject_parts.append(gender_word)
+        subject_phrase = " ".join(subject_parts)
+        if age and int(age) > 0:
+            subject_phrase += f", {age} years old"
+        prose.append(f"a {subject_phrase},")
 
-        if get("body_type") != "-" and getf("body_type_weight") > 0:
-            sentences.append(f"{subj} has a {get('body_type').lower()} build.")
+        # Body type
+        body_type = get("body_type")
+        if body_type != "-" and getf("body_type_weight") > 0:
+            prose.append(f"with a {body_type.lower()} build,")
 
-        eye_adj, eye_quality, eye_gleam = get_eye_mood(get("facial_expression"))
-
-        # Body features
+        # Breasts and bum (for women)
         body_features = []
         if get("breast_size") != "-" and getf("breast_size_weight") > 0 and gender == "Woman":
             breast = get('breast_size').lower()
@@ -743,12 +765,13 @@ class PromptMasterScene:
             else:
                 body_features.append(f"{breast} breasts")
         if get("bum_size") != "-" and getf("bum_size_weight") > 0:
-            body_features.append(f"a {get('bum_size').lower()} bum")
+            body_features.append(f"{get('bum_size').lower()} bum")
         if body_features:
-            sentences.append(f"{subj} has " + " and ".join(body_features) + ".")
+            prose.append("with " + " and ".join(body_features) + ",")
 
         # Face features
         face_features = []
+        eye_adj, eye_quality, eye_gleam = get_eye_mood(get("facial_expression"))
         if get("eyes_color") != "-":
             face_features.append(f"{eye_adj} {get('eyes_color').lower()} eyes")
         if get("face_shape") != "-" and getf("face_shape_weight") > 0:
@@ -756,21 +779,21 @@ class PromptMasterScene:
             article = get_article(face_shape)
             face_features.append(f"{article} {face_shape}-shaped face")
         if face_features:
-            sentences.append(f"{poss} face features " + " and ".join(face_features) + ".")
+            prose.append(f"{' and '.join(face_features)},")
 
         # Lips
         if get("lip_shape") != "-" and getf("lip_shape_weight") > 0:
             lip_desc = get("lip_shape").lower()
             if get("lip_color") != "-" and getf("lip_color_weight") > 0:
-                sentences.append(f"{poss} {lip_desc} are painted {get('lip_color').lower()}.")
+                prose.append(f"{poss} {lip_desc} are painted {get('lip_color').lower()},")
             else:
-                sentences.append(f"{subj} has {lip_desc}.")
+                prose.append(f"{poss} {lip_desc},")
         elif get("lip_color") != "-" and getf("lip_color_weight") > 0:
-            sentences.append(f"{poss} lips are painted {get('lip_color').lower()}.")
+            prose.append(f"{poss} lips are painted {get('lip_color').lower()},")
 
-        # Makeup (only for women by default)
+        # Makeup
         if get("makeup") != "-" and getf("makeup_weight") > 0 and gender == "Woman":
-            sentences.append(f"{subj} wears {get('makeup').lower().replace(' makeup', '')} makeup.")
+            prose.append(f"wearing {get('makeup').lower().replace(' makeup', '')} makeup,")
 
         # Hair
         hair_parts = [get(k).lower() for k in ["hair_color", "hair_length", "hair_style"] if get(k) != "-"]
@@ -778,18 +801,18 @@ class PromptMasterScene:
             hair_desc = ", ".join(hair_parts)
             if getf("disheveled") > 0:
                 hair_desc += ", slightly disheveled"
-            sentences.append(f"{poss} hair is {hair_desc}.")
+            prose.append(f"{poss} hair is {hair_desc},")
 
         if get("beard") != "-" and gender == "Man":
-            sentences.append(f"{subj} has a {get('beard').lower()}.")
+            prose.append(f"with a {get('beard').lower()} beard,")
 
-        # Fashion
+        # Fashion aesthetic
         if get("fashion_aesthetic") != "-" and getf("fashion_aesthetic_weight") > 0:
-            sentences.append(f"{poss} style is {get('fashion_aesthetic').lower()}.")
+            prose.append(f"her style is {get('fashion_aesthetic').lower()},")
 
         # NSFW
         if get("nsfw_appearance") != "-" and getf("nsfw_appearance_weight") > 0:
-            sentences.append(f"{subj} is {get('nsfw_appearance').lower()}.")
+            prose.append(f"{subj.lower()} is {get('nsfw_appearance').lower()},")
         else:
             clothing = []
             if get("underwear") != "-" and getf("underwear_weight") > 0:
@@ -804,7 +827,6 @@ class PromptMasterScene:
                 if legs_color != "-" and legs_color != "":
                     legs = f"{legs_color} {legs}"
                 clothing.append(legs)
-            # --- Dresses ---
             if get("dresses") != "-" and getf("dresses_weight") > 0:
                 dress = get("dresses").lower()
                 dress_color = get("dresses_color").lower()
@@ -823,28 +845,24 @@ class PromptMasterScene:
                 if pants_color != "-" and pants_color != "":
                     pants = f"{pants_color} {pants}"
                 clothing.append(pants)
-            # --- Add capes ---
             if get("capes") != "-" and getf("capes_weight") > 0:
                 cape = get("capes").lower()
                 cape_color = get("capes_color").lower()
                 if cape_color != "-" and cape_color != "":
                     cape = f"{cape_color} {cape}"
                 clothing.append(cape)
-            # --- Add hats ---
             if get("hats") != "-" and getf("hats_weight") > 0:
                 hat = get("hats").lower()
                 hat_color = get("hats_color").lower()
                 if hat_color != "-" and hat_color != "":
                     hat = f"{hat_color} {hat}"
                 clothing.append(hat)
-            # --- Add gloves for women ---
             if s.get("womens_gloves", "-") != "-" and float(s.get("womens_gloves_weight", 0)) > 0 and s.get("gender", "-") == "Woman":
                 gloves = s.get("womens_gloves").lower()
                 gloves_color = s.get("womens_gloves_color", "-").lower()
                 if gloves_color != "-" and gloves_color != "":
                     gloves = f"{gloves_color} {gloves}"
                 clothing.append(gloves)
-            # --- Add suits ---
             suit = None
             helmet = None
             gender = s.get("gender", "-")
@@ -860,12 +878,11 @@ class PromptMasterScene:
                 if helmet and helmet != "-":
                     suit = f"{suit} ({helmet.lower()})"
                 clothing.append(suit)
-            # --- Add custom clothing if provided ---
             custom_clothing = s.get("custom_clothing", "")
             if custom_clothing and custom_clothing.strip():
                 clothing.append(custom_clothing.strip())
             if clothing:
-                sentences.append(f"{subj} wears " + " and ".join(clothing) + ".")
+                prose.append("wearing " + " and ".join(clothing) + ",")
 
         # Accessories
         jewelry = []
@@ -877,17 +894,14 @@ class PromptMasterScene:
         ring_selected = get("ring") != "-" and getf("ring_weight") > 0
         if bracelet_selected:
             jewelry.append(f"a {get('bracelet').lower()}")
-        # Add ring only if bracelet is not selected, or if both are selected add both (handled above)
         if ring_selected and (not bracelet_selected or (bracelet_selected and ring_selected)):
             jewelry.append(f"a {get('ring').lower()}")
-        # --- Add glasses for men ---
         if s.get("mens_glasses", "-") != "-" and float(s.get("mens_glasses_weight", 0)) > 0 and s.get("gender", "-") == "Man":
             glasses = s.get("mens_glasses").lower()
             glasses_color = s.get("mens_glasses_color", "-").lower()
             if glasses_color != "-" and glasses_color != "":
                 glasses = f"{glasses_color} {glasses}"
             jewelry.append(glasses)
-        # --- Add glasses for women (if present, for completeness) ---
         if s.get("womens_glasses", "-") != "-" and float(s.get("womens_glasses_weight", 0)) > 0 and s.get("gender", "-") == "Woman":
             glasses = s.get("womens_glasses").lower()
             glasses_color = s.get("womens_glasses_color", "-").lower()
@@ -895,20 +909,15 @@ class PromptMasterScene:
                 glasses = f"{glasses_color} {glasses}"
             jewelry.append(glasses)
         if jewelry:
-            if len(jewelry) == 1:
-                sentences.append(f"{subj} accessorizes with {jewelry[0]}.")
-            else:
-                sentences.append(f"{subj} accessorizes with {', '.join(jewelry[:-1])} and {jewelry[-1]}.")
+            prose.append("accessorized with " + ", ".join(jewelry) + ",")
 
-        # Tattoo description (re-added)
+        # Tattoo
         if get("tattoo") != "-" and getf("tattoo_weight") > 0:
             tattoo_desc = get("tattoo").lower()
             if tattoo_desc not in ["-", "no tattoos"]:
-                sentences.append(f"{subj} has {tattoo_desc}.")
+                prose.append(f"with {tattoo_desc},")
 
-        shoe_sentence = ""
-
-        # Fingernails (only for women by default)
+        # Fingernails (for women, if not wearing gloves)
         fingernails_present = (
             get("fingernail_style") != "-" and
             getf("fingernail_weight") > 0 and
@@ -920,7 +929,6 @@ class PromptMasterScene:
             float(s.get("womens_gloves_weight", 0)) > 0 and
             s.get("gender", "-") == "Woman"
         )
-        # Only show fingernails if not wearing gloves or gloves are fingerless
         show_fingernails = fingernails_present and (
             not gloves_present or "fingerless" in gloves_type
         )
@@ -928,29 +936,25 @@ class PromptMasterScene:
             fingernail_style = get("fingernail_style").lower().replace(" nails", "")
             nail_color = get("nail_color").lower() if get("nail_color") != "-" else ""
             if nail_color:
-                sentences.append(f"{poss} fingernails are {fingernail_style}, painted {nail_color}.")
+                prose.append(f"{poss} fingernails are {fingernail_style}, painted {nail_color},")
             else:
-                sentences.append(f"{poss} fingernails are {fingernail_style}.")
+                prose.append(f"{poss} fingernails are {fingernail_style},")
         elif not gloves_present and gender == "Woman":
-            # If no fingernail style, still show hands/fingers
-            sentences.append(f"{poss} hands and fingers are visible.")
+            prose.append(f"{poss} hands and fingers are visible,")
 
         # Shoes
-        # Only add shoe description if present and weight > 0
         if get("womens_shoes") != "-" and getf("womens_shoes_weight") > 0 and gender == "Woman":
             shoe_desc = get("womens_shoes").lower()
             if get("womens_shoe_color") != "-":
                 shoe_desc = f"{get('womens_shoe_color').lower()} {shoe_desc}"
-            shoe_sentence = f"{subj} is wearing {shoe_desc}."
-            sentences.append(shoe_sentence)
+            prose.append(f"wearing {shoe_desc},")
         elif get("mens_shoes") != "-" and getf("mens_shoes_weight") > 0 and gender == "Man":
             shoe_desc = get("mens_shoes").lower()
             if get("mens_shoe_color") != "-":
                 shoe_desc = f"{get('mens_shoe_color').lower()} {shoe_desc}"
-            shoe_sentence = f"{subj} is wearing {shoe_desc}."
-            sentences.append(shoe_sentence)
+            prose.append(f"wearing {shoe_desc},")
 
-        # --- Use only one pose from Actions node ---
+        # Pose
         pose_fields = [
             ("standing_pose", s.get("standing_pose", "-")),
             ("kneeling_pose", s.get("kneeling_pose", "-")),
@@ -960,26 +964,30 @@ class PromptMasterScene:
         ]
         selected_pose = next((val for key, val in pose_fields if val and val != "-"), None)
         if selected_pose:
-            pose_desc = selected_pose[0].lower() + selected_pose[1:] if selected_pose else ""
-            sentences.append(f"{subj} is {pose_desc}.")
+            prose.append(f"{subj.lower()} is {selected_pose.lower()},")
 
-        # Add prop/action if selected
+        # Props
         props = s.get("props", "-")
         if props and props != "-":
-            sentences.append(f"{subj} is {props}.")
+            prose.append(f"{subj.lower()} is {props.lower()},")
+
+        # Custom action
+        custom_action = s.get("custom_action", "")
+        if custom_action and custom_action.strip():
+            prose.append(custom_action.strip())
 
         # Expression
         if get("facial_expression") != "-" and getf("facial_expression_weight") > 0:
-            sentences.append(f"{subj} looks {get('facial_expression').lower()}.")
+            prose.append(f"looking {get('facial_expression').lower()},")
 
         # Shot
         if get("shot") != "-" and getf("shot_weight") > 0:
-            sentences.append(f"Captured as a {get('shot').lower()}.")
+            prose.append(f"captured as a {get('shot').lower()},")
 
         # Location
         location = get("location", "")
         if location and location.strip() and location.strip() != "-":
-            sentences.append(f"{location.strip()}")
+            prose.append(f"in {location.strip()},")
 
         # Environment
         env_parts = []
@@ -990,7 +998,7 @@ class PromptMasterScene:
         if get("season") != "-":
             env_parts.append(f"in {get('season').lower()}")
         if env_parts:
-            sentences.append("The scene is set " + ", ".join(env_parts) + ".")
+            prose.append(", ".join(env_parts) + ",")
 
         # Skin
         skin_features = []
@@ -1003,7 +1011,7 @@ class PromptMasterScene:
         if getf("skin_acne") > 0: skin_features.append("some acne")
         if getf("skin_imperfections") > 0: skin_features.append("natural imperfections")
         if skin_features:
-            sentences.append(f"{poss} skin shows " + ", ".join(skin_features) + ".")
+            prose.append(f"{poss} skin shows " + ", ".join(skin_features) + ",")
 
         # Eye details
         eye_features = []
@@ -1012,16 +1020,19 @@ class PromptMasterScene:
         if getf("circular_iris") > 0: eye_features.append("perfectly round irises")
         if getf("circular_pupil") > 0: eye_features.append("realistic pupils")
         if eye_features:
-            sentences.append(f"{poss} eyes are " + ", ".join(eye_features) + f", with {eye_gleam} and natural catchlights.")
+            prose.append(f"{poss} eyes are " + ", ".join(eye_features) + f", with {eye_gleam} and natural catchlights,")
 
         # Lighting
         if get("light_type") != '-' and getf("light_weight") > 0:
             light_desc = get("light_type").lower()
             if get("light_direction") != '-':
                 light_desc += f" from the {get('light_direction').lower()}"
-            sentences.append(f"The scene is lit by {light_desc}.")
+            prose.append(f"the scene is lit by {light_desc},")
 
-        prompt = " ".join(sentences)
+        # Compose into a single natural language paragraph
+        prompt = " ".join([p.strip().rstrip(",") for p in prose if p.strip()]).strip()
+        if prompt and not prompt.endswith("."):
+            prompt += "."
 
         if photorealism_improvement == "enable":
             prompt += " Professional photography with balanced exposure and subtle film grain."
