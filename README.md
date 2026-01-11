@@ -1,4 +1,4 @@
-# ComfyUI Prompt Master
+# CharacterPromptBuilder
 
 A standalone, modular portrait prompt generator for ComfyUI. Generate detailed, natural language or weighted prompts for portrait photography with extensive customization options.
 
@@ -20,23 +20,23 @@ A standalone, modular portrait prompt generator for ComfyUI. Generate detailed, 
 
 ### Method 1: ComfyUI Manager (Recommended)
 1. Open ComfyUI Manager
-2. Search for "Prompt Master"
+2. Search for "Character Prompt Builder"
 3. Click Install
 
 ### Method 2: Git Clone
 ```bash
 cd ComfyUI/custom_nodes
-git clone https://github.com/yourusername/comfyui-prompt-master.git
+git clone https://github.com/yourusername/comfyui-character-prompt-builder.git
 ```
 
 ### Method 3: Manual Download
 1. Download the latest release
-2. Extract to `ComfyUI/custom_nodes/comfyui-prompt-master`
+2. Extract to `ComfyUI/custom_nodes/comfyui-character-prompt-builder`
 3. Restart ComfyUI
 
 ## Nodes
 
-### 🧑 Prompt Master - Person
+### 🧑 Character Prompt Builder - Person
 Controls physical appearance including:
 
 | Category | Options |
@@ -48,7 +48,7 @@ Controls physical appearance including:
 | **Skin** | Details, pores, freckles, dimples, moles, tan, acne |
 | **Eyes** | Detail level, iris patterns, pupil shape |
 
-### 👗 Prompt Master - Fashion
+### 👗 Character Prompt Builder - Fashion
 Controls clothing and accessories:
 
 | Category | Options |
@@ -59,7 +59,7 @@ Controls clothing and accessories:
 | **Jewelry** | Necklaces, earrings, bracelets, rings |
 | **Nails** | Style, color |
 
-### 📸 Prompt Master - Scene & Generate
+### 📸 Character Prompt Builder - Scene & Generate
 Controls the shot setup and generates the final prompt:
 
 | Category | Options |
@@ -76,7 +76,7 @@ Controls the shot setup and generates the final prompt:
 ### Basic Workflow
 
 ```
-[Prompt Master - Person] → [Prompt Master - Fashion] → [Prompt Master - Scene & Generate]
+[Character Prompt Builder - Person] → [Character Prompt Builder - Fashion] → [Character Prompt Builder - Scene & Generate]
         ↓                           ↓                              ↓
    (settings out)          (settings in/out)              (positive, negative)
 ```
@@ -85,13 +85,13 @@ Controls the shot setup and generates the final prompt:
 You can skip nodes you don't need:
 
 ```
-[Prompt Master - Person] → [Prompt Master - Scene & Generate]
+[Character Prompt Builder - Person] → [Character Prompt Builder - Scene & Generate]
 ```
 
 ### Connection Guide
-1. Add **Prompt Master - Person** node
-2. Connect `settings` output to **Prompt Master - Fashion** `settings_in`
-3. Connect Fashion's `settings` output to **Prompt Master - Scene & Generate** `settings` input
+1. Add **Character Prompt Builder - Person** node
+2. Connect `settings` output to **Character Prompt Builder - Fashion** `settings_in`
+3. Connect Fashion's `settings` output to **Character Prompt Builder - Scene & Generate** `settings` input
 4. Connect `positive` and `negative` outputs to your sampler/CLIP nodes
 
 ## Output Modes

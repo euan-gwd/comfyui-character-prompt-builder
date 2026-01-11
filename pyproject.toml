@@ -1,5 +1,5 @@
 [project]
-name = "comfyui-prompt-master"
+name = "comfyui-character-prompt-builder"
 version = "1.0.0"
 description = "A modular portrait prompt generator for ComfyUI"
 readme = "README.md"
@@ -21,9 +21,9 @@ requires-python = ">=3.10"
 dependencies = []
 
 [project.urls]
-Homepage = "https://github.com/yourusername/comfyui-prompt-master"
-Repository = "https://github.com/yourusername/comfyui-prompt-master"
-Issues = "https://github.com/yourusername/comfyui-prompt-master/issues"
+Homepage = "https://github.com/yourusername/comfyui-character-prompt-builder"
+Repository = "https://github.com/yourusername/comfyui-character-prompt-builder"
+Issues = "https://github.com/yourusername/comfyui-character-prompt-builder/issues"
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]

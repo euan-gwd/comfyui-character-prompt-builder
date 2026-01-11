@@ -1,5 +1,5 @@
 """
-Portrait Master Nodes
+Character Prompt Builder Nodes
 Forked from comfyui-easy-use by AI Wiz Art (Stefano Flore)
 """
 
@@ -77,8 +77,8 @@ def _get_default_portrait_data():
     }
 
 
-# Portrait Master - Person Node (Subject + Face + Hair + Skin)
-class PromptMasterPerson:
+# Character Prompt Builder - Person Node (Subject + Face + Hair + Skin)
+class CharacterPromptBuilderPerson:
     @classmethod
     def INPUT_TYPES(s):
         data = _load_portrait_data()
@@ -159,7 +159,7 @@ class PromptMasterPerson:
     RETURN_TYPES = ("PM_SETTINGS",)
     RETURN_NAMES = ("settings",)
     FUNCTION = "run"
-    CATEGORY = "PromptMaster"
+    CATEGORY = "CharacterPromptBuilder"
 
     def run(self, gender="-", age=30, nationality_1="-", nationality_2="-", nationality_mix=0.5,
             body_type="-", body_type_weight=0, breast_size="-", breast_size_weight=0,
@@ -209,8 +209,8 @@ class PromptMasterPerson:
         return (settings,)
 
 
-# Portrait Master - Female Fashion Node (Style + Outfit + Accessories)
-class PromptMasterFemaleFashion:
+# Character Prompt Builder - Female Fashion Node (Style + Outfit + Accessories)
+class CharacterPromptBuilderFemaleFashion:
     @classmethod
     def INPUT_TYPES(s):
         data = _load_portrait_data()
@@ -290,7 +290,7 @@ class PromptMasterFemaleFashion:
     RETURN_TYPES = ("PM_SETTINGS",)
     RETURN_NAMES = ("settings",)
     FUNCTION = "run"
-    CATEGORY = "PromptMaster"
+    CATEGORY = "CharacterPromptBuilder"
 
     def run(self, fashion_aesthetic="-", fashion_aesthetic_weight=0,
             tops="-", tops_color="-", tops_weight=0,
@@ -340,8 +340,8 @@ class PromptMasterFemaleFashion:
         return (settings,)
 
 
-# Portrait Master - Male Fashion Node (Style + Outfit + Accessories)
-class PromptMasterMaleFashion:
+# Character Prompt Builder - Male Fashion Node (Style + Outfit + Accessories)
+class CharacterPromptBuilderMaleFashion:
     @classmethod
     def INPUT_TYPES(s):
         data = _load_portrait_data()
@@ -414,7 +414,7 @@ class PromptMasterMaleFashion:
     RETURN_TYPES = ("PM_SETTINGS",)
     RETURN_NAMES = ("settings",)
     FUNCTION = "run"
-    CATEGORY = "PromptMaster"
+    CATEGORY = "CharacterPromptBuilder"
 
     def run(self, fashion_aesthetic="-", fashion_aesthetic_weight=0,
             tops="-", tops_color="-", tops_weight=0,
@@ -458,8 +458,8 @@ class PromptMasterMaleFashion:
         return (settings,)
 
 
-# Portrait Master - Actions Node (Pose/Action)
-class PromptMasterActions:
+# Character Prompt Builder - Actions Node (Pose/Action)
+class CharacterPromptBuilderActions:
     @classmethod
     def INPUT_TYPES(s):
         data = _load_portrait_data()
@@ -495,7 +495,7 @@ class PromptMasterActions:
     RETURN_TYPES = ("PM_SETTINGS",)
     RETURN_NAMES = ("settings",)
     FUNCTION = "run"
-    CATEGORY = "PromptMaster"
+    CATEGORY = "CharacterPromptBuilder"
 
     def run(self,
             standing_pose="-",
@@ -541,8 +541,8 @@ class PromptMasterActions:
         return (settings,)
 
 
-# Portrait Master - Scene Node (Camera + Location + Generate)
-class PromptMasterScene:
+# Character Prompt Builder - Scene Node (Camera + Location + Generate)
+class CharacterPromptBuilderScene:
     @classmethod
     def INPUT_TYPES(s):
         data = _load_portrait_data()
@@ -590,7 +590,7 @@ class PromptMasterScene:
     RETURN_TYPES = ("STRING", "STRING",)
     RETURN_NAMES = ("positive", "negative",)
     FUNCTION = "generate"
-    CATEGORY = "PromptMaster"
+    CATEGORY = "CharacterPromptBuilder"
 
     def generate(self, num_people, settings1, artistic_style="-", artistic_style_weight=1,
                  shot="-", shot_weight=1,
@@ -1043,17 +1043,17 @@ class PromptMasterScene:
 
 # Node mappings
 NODE_CLASS_MAPPINGS = {
-    "Prompt Master Person": PromptMasterPerson,
-    "Prompt Master Female Fashion": PromptMasterFemaleFashion,
-    "Prompt Master Male Fashion": PromptMasterMaleFashion,
-    "Prompt Master Actions": PromptMasterActions,
-    "Prompt Master Scene": PromptMasterScene,
+    "Character Prompt Builder Person": CharacterPromptBuilderPerson,
+    "Character Prompt Builder Female Fashion": CharacterPromptBuilderFemaleFashion,
+    "Character Prompt Builder Male Fashion": CharacterPromptBuilderMaleFashion,
+    "Character Prompt Builder Actions": CharacterPromptBuilderActions,
+    "Character Prompt Builder Scene": CharacterPromptBuilderScene,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "Prompt Master Person": "Prompt Master - Person",
-    "Prompt Master Female Fashion": "Prompt Master - Female Fashion",
-    "Prompt Master Male Fashion": "Prompt Master - Male Fashion",
-    "Prompt Master Actions": "Prompt Master - Actions",
-    "Prompt Master Scene": "Prompt Master - Scene & Generate",
+    "Character Prompt Builder Person": "Character Prompt Builder - Person",
+    "Character Prompt Builder Female Fashion": "Character Prompt Builder - Female Fashion",
+    "Character Prompt Builder Male Fashion": "Character Prompt Builder - Male Fashion",
+    "Character Prompt Builder Actions": "Character Prompt Builder - Actions",
+    "Character Prompt Builder Scene": "Character Prompt Builder - Scene & Generate",
 }
