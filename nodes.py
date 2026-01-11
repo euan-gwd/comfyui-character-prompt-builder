@@ -441,7 +441,8 @@ class CharacterPromptBuilderMaleFashion:
             "underwear": underwear, "underwear_color": underwear_color, "underwear_weight": underwear_weight,
             "capes": capes, "capes_color": capes_color, "capes_weight": capes_weight,
             "hats": hats, "hats_color": hats_color, "hats_weight": hats_weight,
-            "mens_suits": mens_suits, "mens_suits_helmet": mens_suits_helmet,
+            "mens_suits": mens_suits, "mens_suits_weight": mens_suits_weight,
+            "mens_suits_helmet": mens_suits_helmet,
             "mens_shoes": mens_shoes, "mens_shoe_color": mens_shoe_color,
             "mens_shoes_weight": mens_shoes_weight,
             "necklace": necklace, "necklace_weight": necklace_weight,
@@ -711,11 +712,12 @@ class CharacterPromptBuilderScene:
         # Artistic style phrase
         style = s.get("artistic_style", "")
         style_weight = getf("artistic_style_weight")
+        style_prefix = ""
         if style and style != "-" and style_weight > 0:
             style_clean = style.strip().lower()
             if not style_clean.endswith("style"):
                 style_clean += " style"
-            prose.append(f"In {style_clean},")
+            style_prefix = f"In {style_clean}"
 
         # Subject
         gender = get("gender")
@@ -749,12 +751,13 @@ class CharacterPromptBuilderScene:
         subject_phrase = " ".join(subject_parts)
         if age and int(age) > 0:
             subject_phrase += f", {age} years old"
-        prose.append(f"a {subject_phrase},")
+        subject_sentence = f"{get_article(subject_phrase)} {subject_phrase}"
 
         # Body type
         body_type = get("body_type")
+        body_type_phrase = ""
         if body_type != "-" and getf("body_type_weight") > 0:
-            prose.append(f"with a {body_type.lower()} build,")
+            body_type_phrase = f"with a {body_type.lower()} build"
 
         # Breasts and bum (for women)
         body_features = []
@@ -766,8 +769,9 @@ class CharacterPromptBuilderScene:
                 body_features.append(f"{breast} breasts")
         if get("bum_size") != "-" and getf("bum_size_weight") > 0:
             body_features.append(f"{get('bum_size').lower()} bum")
+        body_features_phrase = ""
         if body_features:
-            prose.append("with " + " and ".join(body_features) + ",")
+            body_features_phrase = "with " + " and ".join(body_features)
 
         # Face features
         face_features = []
@@ -778,41 +782,48 @@ class CharacterPromptBuilderScene:
             face_shape = get('face_shape').lower().replace(' ', '-')
             article = get_article(face_shape)
             face_features.append(f"{article} {face_shape}-shaped face")
+        face_features_phrase = ""
         if face_features:
-            prose.append(f"{' and '.join(face_features)},")
+            face_features_phrase = " and ".join(face_features)
 
         # Lips
+        lips_phrase = ""
         if get("lip_shape") != "-" and getf("lip_shape_weight") > 0:
             lip_desc = get("lip_shape").lower()
             if get("lip_color") != "-" and getf("lip_color_weight") > 0:
-                prose.append(f"{poss} {lip_desc} are painted {get('lip_color').lower()},")
+                lips_phrase = f"{poss} {lip_desc} are painted {get('lip_color').lower()}"
             else:
-                prose.append(f"{poss} {lip_desc},")
+                lips_phrase = f"{poss} {lip_desc}"
         elif get("lip_color") != "-" and getf("lip_color_weight") > 0:
-            prose.append(f"{poss} lips are painted {get('lip_color').lower()},")
+            lips_phrase = f"{poss} lips are painted {get('lip_color').lower()}"
 
         # Makeup
+        makeup_phrase = ""
         if get("makeup") != "-" and getf("makeup_weight") > 0 and gender == "Woman":
-            prose.append(f"wearing {get('makeup').lower().replace(' makeup', '')} makeup,")
+            makeup_phrase = f"wearing {get('makeup').lower().replace(' makeup', '')} makeup"
 
         # Hair
         hair_parts = [get(k).lower() for k in ["hair_color", "hair_length", "hair_style"] if get(k) != "-"]
+        hair_phrase = ""
         if hair_parts:
             hair_desc = ", ".join(hair_parts)
             if getf("disheveled") > 0:
                 hair_desc += ", slightly disheveled"
-            prose.append(f"{poss} hair is {hair_desc},")
+            hair_phrase = f"{poss} hair is {hair_desc}"
 
+        beard_phrase = ""
         if get("beard") != "-" and gender == "Man":
-            prose.append(f"with a {get('beard').lower()} beard,")
+            beard_phrase = f"with a {get('beard').lower()} beard"
 
         # Fashion aesthetic
+        fashion_phrase = ""
         if get("fashion_aesthetic") != "-" and getf("fashion_aesthetic_weight") > 0:
-            prose.append(f"her style is {get('fashion_aesthetic').lower()},")
+            fashion_phrase = f"{poss} style is {get('fashion_aesthetic').lower()}"
 
-        # NSFW
+        # NSFW or Clothing
+        clothing_phrase = ""
         if get("nsfw_appearance") != "-" and getf("nsfw_appearance_weight") > 0:
-            prose.append(f"{subj.lower()} is {get('nsfw_appearance').lower()},")
+            clothing_phrase = f"{subj.lower()} is {get('nsfw_appearance').lower()}"
         else:
             clothing = []
             if get("underwear") != "-" and getf("underwear_weight") > 0:
@@ -882,7 +893,7 @@ class CharacterPromptBuilderScene:
             if custom_clothing and custom_clothing.strip():
                 clothing.append(custom_clothing.strip())
             if clothing:
-                prose.append("wearing " + " and ".join(clothing) + ",")
+                clothing_phrase = "wearing " + " and ".join(clothing)
 
         # Accessories
         jewelry = []
@@ -908,14 +919,16 @@ class CharacterPromptBuilderScene:
             if glasses_color != "-" and glasses_color != "":
                 glasses = f"{glasses_color} {glasses}"
             jewelry.append(glasses)
+        jewelry_phrase = ""
         if jewelry:
-            prose.append("accessorized with " + ", ".join(jewelry) + ",")
+            jewelry_phrase = "accessorized with " + ", ".join(jewelry)
 
         # Tattoo
+        tattoo_phrase = ""
         if get("tattoo") != "-" and getf("tattoo_weight") > 0:
             tattoo_desc = get("tattoo").lower()
             if tattoo_desc not in ["-", "no tattoos"]:
-                prose.append(f"with {tattoo_desc},")
+                tattoo_phrase = f"with {tattoo_desc}"
 
         # Fingernails (for women, if not wearing gloves)
         fingernails_present = (
@@ -932,27 +945,29 @@ class CharacterPromptBuilderScene:
         show_fingernails = fingernails_present and (
             not gloves_present or "fingerless" in gloves_type
         )
+        fingernail_phrase = ""
         if show_fingernails:
             fingernail_style = get("fingernail_style").lower().replace(" nails", "")
             nail_color = get("nail_color").lower() if get("nail_color") != "-" else ""
             if nail_color:
-                prose.append(f"{poss} fingernails are {fingernail_style}, painted {nail_color},")
+                fingernail_phrase = f"{poss} fingernails are {fingernail_style}, painted {nail_color}"
             else:
-                prose.append(f"{poss} fingernails are {fingernail_style},")
+                fingernail_phrase = f"{poss} fingernails are {fingernail_style}"
         elif not gloves_present and gender == "Woman":
-            prose.append(f"{poss} hands and fingers are visible,")
+            fingernail_phrase = f"{poss} hands and fingers are visible"
 
         # Shoes
+        shoes_phrase = ""
         if get("womens_shoes") != "-" and getf("womens_shoes_weight") > 0 and gender == "Woman":
             shoe_desc = get("womens_shoes").lower()
             if get("womens_shoe_color") != "-":
                 shoe_desc = f"{get('womens_shoe_color').lower()} {shoe_desc}"
-            prose.append(f"wearing {shoe_desc},")
+            shoes_phrase = f"wearing {shoe_desc}"
         elif get("mens_shoes") != "-" and getf("mens_shoes_weight") > 0 and gender == "Man":
             shoe_desc = get("mens_shoes").lower()
             if get("mens_shoe_color") != "-":
                 shoe_desc = f"{get('mens_shoe_color').lower()} {shoe_desc}"
-            prose.append(f"wearing {shoe_desc},")
+            shoes_phrase = f"wearing {shoe_desc}"
 
         # Pose
         pose_fields = [
@@ -963,31 +978,37 @@ class CharacterPromptBuilderScene:
             ("nsfw_pose", s.get("nsfw_pose", "-")),
         ]
         selected_pose = next((val for key, val in pose_fields if val and val != "-"), None)
+        pose_phrase = ""
         if selected_pose:
-            prose.append(f"{subj.lower()} is {selected_pose.lower()},")
+            pose_phrase = f"{subj.lower()} is {selected_pose.lower()}"
 
         # Props
         props = s.get("props", "-")
+        props_phrase = ""
         if props and props != "-":
-            prose.append(f"{subj.lower()} is {props.lower()},")
+            props_phrase = f"{subj.lower()} is {props.lower()}"
 
         # Custom action
         custom_action = s.get("custom_action", "")
+        custom_action_phrase = ""
         if custom_action and custom_action.strip():
-            prose.append(custom_action.strip())
+            custom_action_phrase = custom_action.strip()
 
         # Expression
+        expression_phrase = ""
         if get("facial_expression") != "-" and getf("facial_expression_weight") > 0:
-            prose.append(f"looking {get('facial_expression').lower()},")
+            expression_phrase = f"looking {get('facial_expression').lower()}"
 
         # Shot
+        shot_phrase = ""
         if get("shot") != "-" and getf("shot_weight") > 0:
-            prose.append(f"captured as a {get('shot').lower()},")
+            shot_phrase = f"captured as a {get('shot').lower()}"
 
         # Location
         location = get("location", "")
+        location_phrase = ""
         if location and location.strip() and location.strip() != "-":
-            prose.append(f"in {location.strip()},")
+            location_phrase = f"in {location.strip()}"
 
         # Environment
         env_parts = []
@@ -997,8 +1018,9 @@ class CharacterPromptBuilderScene:
             env_parts.append(f"{get('weather').lower()} weather")
         if get("season") != "-":
             env_parts.append(f"in {get('season').lower()}")
+        environment_phrase = ""
         if env_parts:
-            prose.append(", ".join(env_parts) + ",")
+            environment_phrase = ", ".join(env_parts)
 
         # Skin
         skin_features = []
@@ -1010,8 +1032,9 @@ class CharacterPromptBuilderScene:
         if getf("tanned_skin") > 0: skin_features.append("a sun-kissed tan")
         if getf("skin_acne") > 0: skin_features.append("some acne")
         if getf("skin_imperfections") > 0: skin_features.append("natural imperfections")
+        skin_phrase = ""
         if skin_features:
-            prose.append(f"{poss} skin shows " + ", ".join(skin_features) + ",")
+            skin_phrase = f"{poss} skin shows " + ", ".join(skin_features)
 
         # Eye details
         eye_features = []
@@ -1019,18 +1042,72 @@ class CharacterPromptBuilderScene:
         if getf("iris_details") > 0: eye_features.append("intricate iris patterns")
         if getf("circular_iris") > 0: eye_features.append("perfectly round irises")
         if getf("circular_pupil") > 0: eye_features.append("realistic pupils")
+        eye_detail_phrase = ""
         if eye_features:
-            prose.append(f"{poss} eyes are " + ", ".join(eye_features) + f", with {eye_gleam} and natural catchlights,")
+            eye_detail_phrase = f"{poss} eyes are " + ", ".join(eye_features) + f", with {eye_gleam} and natural catchlights"
 
         # Lighting
+        lighting_phrase = ""
         if get("light_type") != '-' and getf("light_weight") > 0:
             light_desc = get("light_type").lower()
             if get("light_direction") != '-':
                 light_desc += f" from the {get('light_direction').lower()}"
-            prose.append(f"the scene is lit by {light_desc},")
+            lighting_phrase = f"the scene is lit by {light_desc}"
 
         # Compose into a single natural language paragraph
-        prompt = " ".join([p.strip().rstrip(",") for p in prose if p.strip()]).strip()
+        # Insert style_prefix first if present
+        phrases = [
+            style_prefix if style_prefix else None,
+            subject_sentence,
+            body_type_phrase,
+            body_features_phrase,
+            face_features_phrase,
+            lips_phrase,
+            makeup_phrase,
+            hair_phrase,
+            beard_phrase,
+            fashion_phrase,
+            clothing_phrase,
+            jewelry_phrase,
+            tattoo_phrase,
+            fingernail_phrase,
+            shoes_phrase,
+        ]
+        # Action/pose/location/etc. are better as separate sentences
+        tail_phrases = [
+            pose_phrase,
+            props_phrase,
+            custom_action_phrase,
+            expression_phrase,
+            shot_phrase,
+            location_phrase,
+            environment_phrase,
+            skin_phrase,
+            eye_detail_phrase,
+            lighting_phrase,
+        ]
+
+        # Remove empty phrases and strip
+        phrases = [p.strip() for p in phrases if p and p.strip()]
+        tail_phrases = [p.strip() for p in tail_phrases if p and p.strip()]
+
+        # Join main description with commas, but avoid double commas after style_prefix
+        if phrases:
+            if style_prefix and len(phrases) > 1:
+                main_desc = phrases[0].rstrip(",") + ", " + ", ".join(phrases[1:])
+            else:
+                main_desc = ", ".join(phrases)
+        else:
+            main_desc = ""
+
+        # Join tail phrases with ". "
+        tail = ". ".join(tail_phrases)
+        if tail:
+            prompt = main_desc + ". " + tail
+        else:
+            prompt = main_desc
+
+        prompt = prompt.strip()
         if prompt and not prompt.endswith("."):
             prompt += "."
 
