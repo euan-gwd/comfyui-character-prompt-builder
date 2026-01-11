@@ -461,6 +461,7 @@ class PromptMasterActions:
                 "sitting_pose": combo("sitting_pose_list"),
                 "laying_down_pose": combo("laying_down_pose_list"),
                 "nsfw_pose": combo("nsfw_pose_list"),
+                "props": combo("props_list"),  # Add props list to Actions node
                 "settings_in": ("PM_SETTINGS",),
             }
         }
@@ -476,6 +477,7 @@ class PromptMasterActions:
             sitting_pose="-",
             laying_down_pose="-",
             nsfw_pose="-",
+            props="-",
             settings_in=None):
         settings = settings_in.copy() if settings_in else {}
 
@@ -505,7 +507,8 @@ class PromptMasterActions:
 
         settings.update({
             "model_pose": selected_pose,
-            **pose_out
+            **pose_out,
+            "props": props,  # Store selected prop/action
         })
         return (settings,)
 
@@ -916,7 +919,7 @@ class PromptMasterScene:
             shoe_sentence = f"{subj} is wearing {shoe_desc}."
             sentences.append(shoe_sentence)
 
-        # --- NEW: Use only one pose from Actions node ---
+        # --- Use only one pose from Actions node ---
         pose_fields = [
             ("standing_pose", s.get("standing_pose", "-")),
             ("kneeling_pose", s.get("kneeling_pose", "-")),
@@ -924,11 +927,15 @@ class PromptMasterScene:
             ("laying_down_pose", s.get("laying_down_pose", "-")),
             ("nsfw_pose", s.get("nsfw_pose", "-")),
         ]
-        # Only use the first non-"-" pose, ignore the rest
         selected_pose = next((val for key, val in pose_fields if val and val != "-"), None)
         if selected_pose:
             pose_desc = selected_pose[0].lower() + selected_pose[1:] if selected_pose else ""
             sentences.append(f"{subj} is {pose_desc}.")
+
+        # Add prop/action if selected
+        props = s.get("props", "-")
+        if props and props != "-":
+            sentences.append(f"{subj} is {props}.")
 
         # Expression
         if get("facial_expression") != "-" and getf("facial_expression_weight") > 0:
