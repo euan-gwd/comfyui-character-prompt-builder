@@ -19,14 +19,14 @@ def _load_portrait_data():
     prompt_path = os.path.join(RESOURCES_DIR, 'portrait_prompt.json')
     if not os.path.exists(prompt_path):
         try:
-            response = urlopen('https://raw.githubusercontent.com/yolain/ComfyUI-Easy-Use/main/resources/portrait_prompt.json')
+            response = urlopen('https://raw.githubusercontent.com/euan-gwd/comfyui-character-prompt-builder/main/resources/portrait_prompt.json')
             temp_prompt = json.loads(response.read())
             prompt_serialized = json.dumps(temp_prompt, indent=4)
             with open(prompt_path, "w") as f:
                 f.write(prompt_serialized)
             del response, temp_prompt
         except Exception as e:
-            print(f"[Prompt Master] Warning: Could not download portrait data: {e}")
+            print(f"[CharacterPromptBuilder] Warning: Could not download portrait data: {e}")
             # Return minimal default data
             return _get_default_portrait_data()
 
