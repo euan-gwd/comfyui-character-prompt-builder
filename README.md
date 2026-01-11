@@ -1,6 +1,6 @@
 # CharacterPromptBuilder
 
-A standalone, modular portrait prompt generator for ComfyUI. Generate detailed, natural language or weighted prompts for portrait photography with extensive customization options.
+A standalone, modular portrait prompt generator for ComfyUI. Generate detailed, natural language prompts for portrait photography with extensive customization options.
 
 ![ComfyUI](https://img.shields.io/badge/ComfyUI-Custom%20Node-blue)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-green)
@@ -9,7 +9,7 @@ A standalone, modular portrait prompt generator for ComfyUI. Generate detailed, 
 ## Features
 
 - 🎨 **Modular Design** - Four chainable nodes for maximum flexibility
-- 📝 **Dual Output Modes** - Natural language or SD-weighted prompts
+- 📝 **Natural Language Output** - Generates flowing, descriptive prompts
 - 👤 **Comprehensive Person Options** - Age, gender, nationality, body type, face, hair, skin
 - 👗 **Fashion & Accessories** - Female and male outfits, shoes, jewelry, nails
 - 🏃 **Action & Pose Control** - Dedicated node for actions, poses, gestures
@@ -147,14 +147,6 @@ and an oval-shaped face. Her hair is blonde, long, wavy. She wears a red silk sl
 Captured as a portrait. The scene is lit by golden hour light from the left.
 ```
 
-### Weighted Prompt
-Generates SD-style weighted tags:
-```
-(portrait:1.0), (British girl 25-years-old:1.5), (slim, slim body:0.8), (blue eyes:1.25),
-(oval face:0.7), (blonde hair:1.25), (long hair:1.25), (wavy hair:1.25),
-(wearing red silk slip dress:1.0), (golden hour light left:0.9)
-```
-
 ## Examples
 
 ### Portrait Photography
@@ -214,10 +206,11 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 - Added Action node for poses and actions
 - Updated workflow: Person → Female/Male Fashion → Action → Scene & Generate
 - Improved modularity and customization
+- **Removed weighted prompt output; only natural language prompts are now generated**
 
 ### v1.0.0
 - Initial release
 - Three modular nodes: Person, Fashion, Scene
-- Natural language and weighted prompt output modes
+- Natural language prompt output mode
 - Comprehensive portrait customization options
 - Location and environment settings
