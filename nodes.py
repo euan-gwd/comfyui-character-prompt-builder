@@ -124,6 +124,7 @@ class CharacterPromptBuilderPerson:
                 # === HAIR ===
                 "hair_style": combo("hair_style_list"),
                 "hair_length": combo("hair_length_list"),
+                "hair_length_weight": weight(),
                 "hair_color": combo("hair_color_list"),
                 "disheveled": weight(),
                 "beard": combo("beard_list"),
@@ -168,7 +169,7 @@ class CharacterPromptBuilderPerson:
             facial_expression="-", facial_expression_weight=0,
             lip_shape="-", lip_shape_weight=0, lip_color="-", lip_color_weight=0,
             makeup="-", makeup_weight=0,
-            hair_style="-", hair_length="-", hair_color="-", disheveled=0, beard="-",
+            hair_style="-", hair_length="-", hair_length_weight=0, hair_color="-", disheveled=0, beard="-",
             skin_details=0, skin_pores=0, dimples=0, freckles=0, moles=0,
             skin_imperfections=0, skin_acne=0, tanned_skin=0,
             eyes_details=1, iris_details=1, circular_iris=1, circular_pupil=1,
@@ -190,7 +191,9 @@ class CharacterPromptBuilderPerson:
             "lip_shape": lip_shape, "lip_shape_weight": lip_shape_weight,
             "lip_color": lip_color, "lip_color_weight": lip_color_weight,
             "makeup": makeup, "makeup_weight": makeup_weight,
-            "hair_style": hair_style, "hair_length": hair_length,
+            "hair_style": hair_style,
+            "hair_length": hair_length,
+            "hair_length_weight": hair_length_weight,  # <-- Add this line
             "hair_color": hair_color, "disheveled": disheveled, "beard": beard,
             "skin_details": skin_details, "skin_pores": skin_pores, "dimples": dimples,
             "freckles": freckles, "moles": moles, "skin_imperfections": skin_imperfections,
@@ -802,7 +805,14 @@ class CharacterPromptBuilderScene:
             makeup_phrase = f"wearing {get('makeup').lower().replace(' makeup', '')} makeup"
 
         # Hair
-        hair_parts = [get(k).lower() for k in ["hair_color", "hair_length", "hair_style"] if get(k) != "-"]
+        hair_parts = []
+        if get("hair_color") != "-":
+            hair_parts.append(get("hair_color").lower())
+        # Only include hair_length if weight > 0
+        if get("hair_length") != "-" and getf("hair_length_weight") > 0:
+            hair_parts.append(get("hair_length").lower())
+        if get("hair_style") != "-":
+            hair_parts.append(get("hair_style").lower())
         hair_phrase = ""
         if hair_parts:
             hair_desc = ", ".join(hair_parts)
