@@ -717,8 +717,8 @@ class CharacterPromptBuilderScene:
         style_prefix = ""
         if style and style != "-" and style_weight > 0:
             style_clean = style.strip().lower()
-            if not style_clean.endswith("style"):
-                style_clean += ""
+            if not any(style_clean.endswith(suffix) for suffix in ["illustration", "portrait", "painting", "drawing"]):
+                style_clean += " style"
             style_prefix = f"In {style_clean}"
 
         # Subject
