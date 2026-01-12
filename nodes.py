@@ -570,7 +570,6 @@ class CharacterPromptBuilderScene:
                 "light_type": combo("light_type_list"),
                 "light_direction": combo("light_direction_list"),
                 "light_weight": weight(),
-                # Add preset_location combo box
                 "preset_location": combo("location_list"),
                 "location": ("STRING", {"multiline": True, "default": "", "placeholder": "Add a custom location description in here"}),
                 "time_of_day": (["-", "Dawn", "Morning", "Midday", "Afternoon", "Golden Hour", "Sunset", "Dusk", "Evening", "Night", "Midnight", "Blue Hour"],),
@@ -1008,7 +1007,7 @@ class CharacterPromptBuilderScene:
         location = get("location", "")
         location_phrase = ""
         if location and location.strip() and location.strip() != "-":
-            location_phrase = f"in {location.strip()}"
+            location_phrase = f"{location.strip()}"
 
         # Environment
         env_parts = []
