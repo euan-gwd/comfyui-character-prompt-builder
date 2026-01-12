@@ -1139,7 +1139,19 @@
     "Lace leggings",
     "Cut-out leggings",
     "Micro mini skirt",
-    "Slit skirt"
+    "Slit skirt",
+    "Sleek, form-fitting white and silver armored pants with reinforced panels, illuminated accents",
+    "Mystical, flowing green and gold pants with ornate patterns and magical accessories",
+    "Sleek, white tactical pants with silver accents, utility pockets, and fitted armor panels",
+    "Metallic blue, red, and gold armored pants with angular thigh-high red boots and shield emblem details",
+    "Sleek, black and red futuristic armored pants with sharp angular lines and glowing red accents",
+    "Sleek, black tactical pants with reinforced panels, utility belt, and red hourglass emblem",
+    "Sleek, blue and black armored pants with biotic amplifiers and reinforced plating",
+    "Sleek, form-fitting white and gray tactical pants with glowing blue accents and high-tech armor plating",
+    "Form-fitting black pants with glowing neon blue circuit patterns",
+    "Sleek, form-fitted, black and red armored pants with N7 insignia",
+    "Sleek, white and black armored pants with blue accents, advanced tech panels, and streamlined plating",
+    "Futuristic, form-fitting red and silver exosuit pants with mechanical wing details and glowing accents"
   ],
   "pants_color_list": [
     "Black",
@@ -2376,7 +2388,7 @@
   "womens_suits_list": [
     "Superhero Suit",
     "Armoured Suit",
-    "Sleek, form-fitting white and silver armored suit with reinforced panels, illuminated accents",
+    "Sleek, form-fitting white and silver armored bodysuit with reinforced panels, illuminated accents",
     "Mystical, flowing green and gold outfit with ornate patterns, magical accessories, and an ethereal aura",
     "Sleek, white tactical bodysuit with silver accents, utility belt, and fitted armor panels",
     "Metallic blue, red, and gold armored bodysuit with a high collar, angular thigh-high red boots, and the '⌘' shield emblem on the chest",
