@@ -1077,23 +1077,23 @@ class CharacterPromptBuilderScene:
             beard_phrase,
             fashion_phrase,
             clothing_phrase,
-            jewelry_phrase,
-            tattoo_phrase,
-            fingernail_phrase,
             shoes_phrase,
+            jewelry_phrase,
+            fingernail_phrase,
+            skin_phrase,
+            tattoo_phrase,
         ]
         # Action/pose/location/etc. are better as separate sentences
         tail_phrases = [
             pose_phrase,
             props_phrase,
-            custom_action_phrase,
             expression_phrase,
-            shot_phrase,
-            location_phrase,
-            environment_phrase,
-            skin_phrase,
             eye_detail_phrase,
+            custom_action_phrase,
+            location_phrase,
             lighting_phrase,
+            environment_phrase,
+            shot_phrase,
         ]
 
         # Remove empty phrases and strip
