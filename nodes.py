@@ -815,7 +815,12 @@ class CharacterPromptBuilderScene:
             hair_parts.append(get("hair_style").lower())
         hair_phrase = ""
         if hair_parts:
-            hair_desc = ", ".join(hair_parts)
+            if len(hair_parts) == 1:
+                hair_desc = hair_parts[0]
+            elif len(hair_parts) == 2:
+                hair_desc = " and ".join(hair_parts)
+            else:
+                hair_desc = ", ".join(hair_parts[:-1]) + f", and {hair_parts[-1]}"
             if getf("disheveled") > 0:
                 hair_desc += ", slightly disheveled"
             hair_phrase = f"{poss} hair is {hair_desc}"
