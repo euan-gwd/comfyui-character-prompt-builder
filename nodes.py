@@ -240,12 +240,12 @@ class CharacterPromptBuilderFemaleFashion:
                 "tops": combo("tops_list"),
                 "tops_color": combo("tops_color_list"),
                 "tops_weight": weight(),
-                "dresses": combo("dresses_list"),
-                "dresses_color": combo("dresses_color_list"),
-                "dresses_weight": weight(),
                 "pants": combo("pants_list"),
                 "pants_color": combo("pants_color_list"),
                 "pants_weight": weight(),
+                "dresses": combo("dresses_list"),
+                "dresses_color": combo("dresses_color_list"),
+                "dresses_weight": weight(),
                 "legs": combo("legs_list"),
                 "legs_color": combo("legs_color_list"),
                 "legs_weight": weight(),
@@ -265,6 +265,7 @@ class CharacterPromptBuilderFemaleFashion:
             "optional": {
                 "womens_shoes": combo("womens_shoes_list"),
                 "womens_shoe_color": combo("womens_shoe_color_list"),
+                "womens_shoe_material": combo("womens_shoe_material_list"),
                 "womens_shoes_weight": weight(),
                 "womens_gloves": combo("womens_gloves_list"),
                 "womens_gloves_color": combo("womens_gloves_color_list"),
@@ -305,14 +306,15 @@ class CharacterPromptBuilderFemaleFashion:
 
     def run(self, fashion_aesthetic="-", fashion_aesthetic_weight=0,
             tops="-", tops_color="-", tops_weight=0,
-            dresses="-", dresses_color="-", dresses_weight=0,
             pants="-", pants_color="-", pants_weight=0,
+            dresses="-", dresses_color="-", dresses_weight=0,
             legs="-", legs_color="-", legs_weight=0,
             underwear="-", underwear_color="-", underwear_weight=0,
             capes="-", capes_color="-", capes_weight=0,
             hats="-", hats_color="-", hats_weight=0,
             womens_suits="-", womens_suits_weight=0, womens_suits_helmet="-",
             womens_shoes="-", womens_shoe_color="-", womens_shoes_weight=0,
+            womens_shoe_material="-",
             womens_gloves="-", womens_gloves_color="-", womens_gloves_weight=0,
             necklace="-", necklace_weight=0, earrings="-", earrings_weight=0,
             bracelet="-", bracelet_weight=0, ring="-", ring_weight=0,
@@ -326,8 +328,8 @@ class CharacterPromptBuilderFemaleFashion:
         settings.update({
             "fashion_aesthetic": fashion_aesthetic, "fashion_aesthetic_weight": fashion_aesthetic_weight,
             "tops": tops, "tops_color": tops_color, "tops_weight": tops_weight,
-            "dresses": dresses, "dresses_color": dresses_color, "dresses_weight": dresses_weight,
             "pants": pants, "pants_color": pants_color, "pants_weight": pants_weight,
+            "dresses": dresses, "dresses_color": dresses_color, "dresses_weight": dresses_weight,
             "legs": legs, "legs_color": legs_color, "legs_weight": legs_weight,
             "underwear": underwear, "underwear_color": underwear_color, "underwear_weight": underwear_weight,
             "capes": capes, "capes_color": capes_color, "capes_weight": capes_weight,
@@ -336,6 +338,7 @@ class CharacterPromptBuilderFemaleFashion:
             "womens_suits_helmet": womens_suits_helmet,
             "womens_shoes": womens_shoes, "womens_shoe_color": womens_shoe_color,
             "womens_shoes_weight": womens_shoes_weight,
+            "womens_shoe_material": womens_shoe_material,
             "womens_gloves": womens_gloves, "womens_gloves_color": womens_gloves_color,
             "womens_gloves_weight": womens_gloves_weight,
             "necklace": necklace, "necklace_weight": necklace_weight,
@@ -1010,6 +1013,9 @@ class CharacterPromptBuilderScene:
             shoe_desc = get("womens_shoes").lower()
             if get("womens_shoe_color") != "-":
                 shoe_desc = f"{get('womens_shoe_color').lower()} {shoe_desc}"
+            shoe_material = s.get("womens_shoe_material", "-")
+            if shoe_material and shoe_material != "-":
+                shoe_desc = f"{shoe_desc} made of {shoe_material.lower()}"
             shoes_phrase = f"wearing {shoe_desc}"
         elif get("mens_shoes") != "-" and getf("mens_shoes_weight") > 0 and gender == "Man":
             shoe_desc = get("mens_shoes").lower()
