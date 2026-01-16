@@ -144,11 +144,13 @@ class CharacterPromptBuilderPerson:
                 # === NSFW ===
                 "nsfw_appearance": combo("nsfw_appearance_list"),
                 "nsfw_appearance_weight": weight(),
-                # === NIPPLES & AREOLA ===
+                # === NIPPLES & AREOLA & VULVA ===
                 "nipple_appearance": combo("nipple_appearance_list"),
                 "nipple_appearance_weight": weight(),
                 "areola_appearance": combo("areola_appearance_list"),
                 "areola_appearance_weight": weight(),
+                "vulva_appearance": combo("vulva_appearance_list"),
+                "vulva_appearance_weight": weight(),
                 # === TATTOOS ===
                 "tattoo": combo("tattoo_list"),
                 "tattoo_weight": weight(),
@@ -162,7 +164,7 @@ class CharacterPromptBuilderPerson:
     FUNCTION = "run"
     CATEGORY = "CharacterPromptBuilder"
 
-    def run(self, gender="-", age=30, nationality_1="-", nationality_2="-", nationality_mix=0.5,
+    def run(self, gender="-", age=20, nationality_1="-", nationality_2="-", nationality_mix=0.5,
             body_type="-", body_type_weight=0, breast_size="-", breast_size_weight=0,
             bum_size="-", bum_size_weight=0,
             face_shape="-", face_shape_weight=0, eyes_color="-",
@@ -175,6 +177,7 @@ class CharacterPromptBuilderPerson:
             eyes_details=1, iris_details=1, circular_iris=1, circular_pupil=1,
             nipple_appearance="-", nipple_appearance_weight=0,
             areola_appearance="-", areola_appearance_weight=0,
+            vulva_appearance="-", vulva_appearance_weight=0,
             nsfw_appearance="-", nsfw_appearance_weight=0,
             tattoo="-", tattoo_weight=0,
             settings_in=None):
@@ -204,6 +207,8 @@ class CharacterPromptBuilderPerson:
             "nipple_appearance_weight": nipple_appearance_weight,
             "areola_appearance": areola_appearance,
             "areola_appearance_weight": areola_appearance_weight,
+            "vulva_appearance": vulva_appearance,
+            "vulva_appearance_weight": vulva_appearance_weight,
             "nsfw_appearance": nsfw_appearance,
             "nsfw_appearance_weight": nsfw_appearance_weight,
             "tattoo": tattoo,
