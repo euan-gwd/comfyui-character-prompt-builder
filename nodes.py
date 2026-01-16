@@ -275,6 +275,9 @@ class CharacterPromptBuilderFemaleFashion:
                 "earrings_weight": weight(),
                 "bracelet": combo("bracelet_list"),
                 "bracelet_weight": weight(),
+                "watches": combo("watches_list"),
+                "watches_color": combo("watches_color_list"),
+                "watches_weight": weight(),
                 "ring": combo("ring_list"),
                 "ring_weight": weight(),
                 "fingernail_style": combo("fingernail_style_list"),
@@ -313,6 +316,7 @@ class CharacterPromptBuilderFemaleFashion:
             womens_gloves="-", womens_gloves_color="-", womens_gloves_weight=0,
             necklace="-", necklace_weight=0, earrings="-", earrings_weight=0,
             bracelet="-", bracelet_weight=0, ring="-", ring_weight=0,
+            watches="-", watches_color="-", watches_weight=0,
             fingernail_style="-", nail_color="-", fingernail_weight=0,
             settings_in=None,
             womens_glasses="-", womens_glasses_color="-", womens_glasses_weight=0,
@@ -337,6 +341,9 @@ class CharacterPromptBuilderFemaleFashion:
             "necklace": necklace, "necklace_weight": necklace_weight,
             "earrings": earrings, "earrings_weight": earrings_weight,
             "bracelet": bracelet, "bracelet_weight": bracelet_weight,
+            "watches": watches,
+            "watches_color": watches_color,
+            "watches_weight": watches_weight,
             "ring": ring, "ring_weight": ring_weight,
             "fingernail_style": fingernail_style, "nail_color": nail_color,
             "fingernail_weight": fingernail_weight,
@@ -399,6 +406,9 @@ class CharacterPromptBuilderMaleFashion:
                 "earrings_weight": weight(),
                 "bracelet": combo("bracelet_list"),
                 "bracelet_weight": weight(),
+                "watches": combo("watches_list"),
+                "watches_color": combo("watches_color_list"),
+                "watches_weight": weight(),
                 "ring": combo("ring_list"),
                 "ring_weight": weight(),
                 "fingernail_style": combo("fingernail_style_list"),
@@ -435,6 +445,7 @@ class CharacterPromptBuilderMaleFashion:
             mens_shoes="-", mens_shoe_color="-", mens_shoes_weight=0,
             necklace="-", necklace_weight=0, earrings="-", earrings_weight=0,
             bracelet="-", bracelet_weight=0, ring="-", ring_weight=0,
+            watches="-", watches_color="-", watches_weight=0,
             fingernail_style="-", nail_color="-", fingernail_weight=0,
             settings_in=None,
             mens_glasses="-", mens_glasses_color="-", mens_glasses_weight=0,
@@ -456,6 +467,9 @@ class CharacterPromptBuilderMaleFashion:
             "necklace": necklace, "necklace_weight": necklace_weight,
             "earrings": earrings, "earrings_weight": earrings_weight,
             "bracelet": bracelet, "bracelet_weight": bracelet_weight,
+            "watches": watches,
+            "watches_color": watches_color,
+            "watches_weight": watches_weight,
             "ring": ring, "ring_weight": ring_weight,
             "fingernail_style": fingernail_style, "nail_color": nail_color,
             "fingernail_weight": fingernail_weight,
@@ -935,6 +949,12 @@ class CharacterPromptBuilderScene:
             jewelry.append(f"a {get('bracelet').lower()}")
         if ring_selected and (not bracelet_selected or (bracelet_selected and ring_selected)):
             jewelry.append(f"a {get('ring').lower()}")
+        if get("watches") != "-" and getf("watches_weight") > 0:
+            watch = get("watches").lower()
+            watch_color = get("watches_color").lower()
+            if watch_color != "-" and watch_color != "":
+                watch = f"{watch_color} {watch}"
+            jewelry.append(watch)
         if s.get("mens_glasses", "-") != "-" and float(s.get("mens_glasses_weight", 0)) > 0 and s.get("gender", "-") == "Man":
             glasses = s.get("mens_glasses").lower()
             glasses_color = s.get("mens_glasses_color", "-").lower()
