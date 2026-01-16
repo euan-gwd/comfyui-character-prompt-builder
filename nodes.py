@@ -841,8 +841,17 @@ class CharacterPromptBuilderScene:
 
         # NSFW or Clothing
         clothing_phrase = ""
+        nsfw_appearance = get("nsfw_appearance")
+        nsfw_appearance_weight = getf("nsfw_appearance_weight")
         if get("nsfw_appearance") != "-" and getf("nsfw_appearance_weight") > 0:
             clothing_phrase = f"{subj.lower()} is {get('nsfw_appearance').lower()}"
+                # Only show these if NSFW is active
+            if get("nipple_appearance") != "-" and getf("nipple_appearance_weight") > 0:
+                    clothing_phrase += f", her nipples are {get('nipple_appearance').lower()}"
+            if get("areola_appearance") != "-" and getf("areola_appearance_weight") > 0:
+                    clothing_phrase += f", her areolae are {get('areola_appearance').lower()}"
+            if get("vulva_appearance") != "-" and getf("vulva_appearance_weight") > 0:
+                    clothing_phrase += f", her vulva appears {get('vulva_appearance').lower()}"
         else:
             clothing = []
             if get("underwear") != "-" and getf("underwear_weight") > 0:
