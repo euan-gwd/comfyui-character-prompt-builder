@@ -105,14 +105,22 @@
     "Low"
   ],
   "eyes_color_list": [
-    "Brown",
-    "Blue",
-    "Green",
-    "Hazel",
-    "Gray",
-    "Amber",
-    "Red",
-    "Violet"
+    "Dark Brown (very common, almost black)",
+    "Medium Brown (common, warm brown)",
+    "Light Brown (amber or honey, golden brown)",
+    "Hazel (brown with green or gold flecks, often multicolored)",
+    "Gray (rare, often appears blue or greenish in some lights)",
+    "Blue (light to deep blue, sometimes with gray or green flecks)",
+    "Green (very rare, usually muted or mixed with hazel/gold)",
+    "Amber (golden or coppery brown, rare)",
+    "Violet (extremely rare, usually due to lighting or contacts)",
+    "Red (albino or fantasy, only with contacts)",
+    "Black (very dark brown, appears black, or fantasy contacts)",
+    "Silver (fantasy or contact lenses, metallic gray)",
+    "Gold (fantasy or contact lenses, metallic yellow/gold)",
+    "Aqua (bright blue-green, only with contacts)",
+    "Turquoise (vivid blue-green, only with contacts)",
+    "Pink (fantasy or contact lenses, not natural)"
   ],
   "face_expression_list": [
     "Happy",
