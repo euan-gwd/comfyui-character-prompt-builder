@@ -130,6 +130,7 @@ class CharacterPromptBuilderPerson:
                 "beard": combo("beard_list"),
                 # === SKIN ===
                 "skin_details": weight(),
+                "skin_tone": combo("skin_tone_list"),
                 "skin_pores": weight(),
                 "dimples": weight(),
                 "freckles": weight(),
@@ -172,7 +173,7 @@ class CharacterPromptBuilderPerson:
             lip_shape="-", lip_shape_weight=0, lip_color="-", lip_color_weight=0,
             makeup="-", makeup_weight=0,
             hair_style="-", hair_length="-", hair_length_weight=0, hair_color="-", disheveled=0, beard="-",
-            skin_details=0, skin_pores=0, dimples=0, freckles=0, moles=0,
+            skin_details=0, skin_tone="-", skin_pores=0, dimples=0, freckles=0, moles=0,
             skin_imperfections=0, skin_acne=0, tanned_skin=0,
             eyes_details=1, iris_details=1, circular_iris=1, circular_pupil=1,
             nipple_appearance="-", nipple_appearance_weight=0,
@@ -196,9 +197,9 @@ class CharacterPromptBuilderPerson:
             "makeup": makeup, "makeup_weight": makeup_weight,
             "hair_style": hair_style,
             "hair_length": hair_length,
-            "hair_length_weight": hair_length_weight,  # <-- Add this line
+            "hair_length_weight": hair_length_weight,
             "hair_color": hair_color, "disheveled": disheveled, "beard": beard,
-            "skin_details": skin_details, "skin_pores": skin_pores, "dimples": dimples,
+            "skin_details": skin_details, "skin_tone": skin_tone, "skin_pores": skin_pores, "dimples": dimples,
             "freckles": freckles, "moles": moles, "skin_imperfections": skin_imperfections,
             "skin_acne": skin_acne, "tanned_skin": tanned_skin,
             "eyes_details": eyes_details, "iris_details": iris_details,
@@ -767,14 +768,26 @@ class CharacterPromptBuilderScene:
             gender_word = "person"
 
         nationality_str = get("nationality_1", "").strip()
+        # --- skin tone addition ---
+        skin_tone = get("skin_tone", "-")
+        skin_tone_phrase = ""
+        if skin_tone and skin_tone != "-":
+            skin_tone_phrase = skin_tone.lower()
+        # --- end skin tone addition ---
+
+        # Compose subject phrase in a more natural way
         subject_parts = []
         if nationality_str and nationality_str != "-":
             subject_parts.append(nationality_str)
         if gender_word:
             subject_parts.append(gender_word)
         subject_phrase = " ".join(subject_parts)
+        # Add age if present
         if age and int(age) > 0:
             subject_phrase += f", {age} years old"
+        # Add skin tone as "with {skin_tone} skin" if present
+        if skin_tone_phrase:
+            subject_phrase += f", with {skin_tone_phrase} skin"
         subject_sentence = f"{get_article(subject_phrase)} {subject_phrase}"
 
         # Body type
