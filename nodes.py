@@ -877,12 +877,8 @@ class CharacterPromptBuilderScene:
         # Only include hair_length if weight > 0
         if hair_length != "-" and hair_length_weight > 0:
             hair_parts.append(hair_length.lower())
-            # Add vivid phrase for very long hair
-            if hair_length.lower() in [
-                "floor-length hair", "ankle-length hair", "dragging on the ground", "extraordinarily long hair", "rapunzel-length hair"
-            ]:
-                vivid_hair_length = "that cascades all the way down to the floor, flowing in dramatic waves"
-            elif hair_length.lower() in ["waist length", "hip length", "tailbone length"]:
+            # Remove vivid phrase for extra long hair (no longer supported)
+            if hair_length.lower() in ["waist length", "hip length", "tailbone length"]:
                 vivid_hair_length = f"that reaches down to {hair_length.lower().replace(' length', '')}"
         if get("hair_style") != "-":
             hair_parts.append(get("hair_style").lower())
