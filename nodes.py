@@ -593,14 +593,14 @@ class CharacterPromptBuilderScene:
                 "artistic_style_weight": weight(1),
                 "shot": combo("shot_list"),
                 "shot_weight": weight(1),
-                "light_type": combo("light_type_list"),
-                "light_direction": combo("light_direction_list"),
-                "light_weight": weight(),
                 "preset_location": combo("location_list"),
                 "location": ("STRING", {"multiline": True, "default": "", "placeholder": "Add a custom location description in here"}),
                 "time_of_day": (["-", "Dawn", "Morning", "Midday", "Afternoon", "Golden Hour", "Sunset", "Dusk", "Evening", "Night", "Midnight", "Blue Hour"],),
                 "weather": (["-", "Sunny", "Cloudy", "Overcast", "Rainy", "Stormy", "Snowy", "Foggy", "Misty", "Windy", "Clear"],),
                 "season": (["-", "Spring", "Summer", "Autumn", "Winter"],),
+                "light_type": combo("light_type_list"),
+                "light_direction": combo("light_direction_list"),
+                "light_weight": weight(),
                 "prompt_prefix": ("STRING", {"multiline": True, "default": "", "placeholder": "Added before the generated prompt"}),
                 "prompt_suffix": ("STRING", {"multiline": True, "default": "", "placeholder": "Added after the generated prompt"}),
                 "negative_prompt": ("STRING", {"multiline": True, "default": ""}),
@@ -655,8 +655,8 @@ class CharacterPromptBuilderScene:
         scene_settings = {
             "artistic_style": artistic_style, "artistic_style_weight": artistic_style_weight,
             "shot": shot, "shot_weight": shot_weight,
-            "light_type": light_type, "light_direction": light_direction, "light_weight": light_weight,
             "location": scene_location, "time_of_day": time_of_day, "weather": weather, "season": season,
+            "light_type": light_type, "light_direction": light_direction, "light_weight": light_weight,
         }
 
         # Generate prose for each person
@@ -869,11 +869,21 @@ class CharacterPromptBuilderScene:
 
         # Hair
         hair_parts = []
+        vivid_hair_length = ""
+        hair_length = get("hair_length")
+        hair_length_weight = getf("hair_length_weight")
         if get("hair_color") != "-":
             hair_parts.append(get("hair_color").lower())
         # Only include hair_length if weight > 0
-        if get("hair_length") != "-" and getf("hair_length_weight") > 0:
-            hair_parts.append(get("hair_length").lower())
+        if hair_length != "-" and hair_length_weight > 0:
+            hair_parts.append(hair_length.lower())
+            # Add vivid phrase for very long hair
+            if hair_length.lower() in [
+                "floor-length hair", "ankle-length hair", "dragging on the ground", "extraordinarily long hair", "rapunzel-length hair"
+            ]:
+                vivid_hair_length = "that cascades all the way down to the floor, flowing in dramatic waves"
+            elif hair_length.lower() in ["waist length", "hip length", "tailbone length"]:
+                vivid_hair_length = f"that reaches down to {hair_length.lower().replace(' length', '')}"
         if get("hair_style") != "-":
             hair_parts.append(get("hair_style").lower())
         hair_phrase = ""
@@ -881,7 +891,10 @@ class CharacterPromptBuilderScene:
             hair_desc = ", ".join(hair_parts)
             if getf("disheveled") > 0:
                 hair_desc += ", slightly disheveled"
-            hair_phrase = f"{poss} hair is {hair_desc}"
+            if vivid_hair_length:
+                hair_phrase = f"{poss} hair is {hair_desc} {vivid_hair_length}"
+            else:
+                hair_phrase = f"{poss} hair is {hair_desc}"
 
         beard_phrase = ""
         if get("beard") != "-" and gender == "Man" and shot_level in ("full", "medium", "bust", "close"):
@@ -1181,8 +1194,8 @@ class CharacterPromptBuilderScene:
             eye_detail_phrase,
             custom_action_phrase,
             location_phrase,
-            lighting_phrase,
             environment_phrase,
+            lighting_phrase,
             shot_phrase,
         ]
 
