@@ -693,6 +693,34 @@ class CharacterPromptBuilderScene:
         return (final_prompt.strip(), neg)
 
     def _generate_natural_language(self, s, negative_prompt, photorealism_improvement):
+        # --- Helper for shot type filtering using shot_list keywords ---
+        def get_shot_level(shot):
+            """Classify shot type for filtering details using shot_list keywords."""
+            if not shot or shot == "-":
+                return "full"  # Show everything
+            shot = shot.lower()
+            # Use keywords from shot_list for mapping
+            if any(x in shot for x in [
+                "full body", "full-length", "head-to-toe", "entire body", "full figure", "full-body", "runway", "feet fully visible"
+            ]):
+                return "full"
+            if any(x in shot for x in [
+                "medium shot", "waist up", "half-length", "cowboy shot", "three-quarter", "profile view", "over-the-shoulder", "medium"
+            ]):
+                return "medium"
+            if any(x in shot for x in [
+                "head and shoulders", "bust", "shoulders", "portrait", "close-up", "face", "head portrait", "headshot"
+            ]):
+                return "bust"
+            if any(x in shot for x in [
+                "close-up", "face", "eye-level", "pov close-up", "pov intimate", "pov kissing"
+            ]):
+                return "close"
+            return "full"
+
+        shot_type = s.get("shot", "-")
+        shot_level = get_shot_level(shot_type)
+
         def get_eye_mood(expression):
             expression_lower = expression.lower() if expression and expression != "-" else ""
             if expression_lower in ["happy", "excited", "amused", "in love", "surprised and amused", "smiling", "silly"]:
@@ -785,30 +813,30 @@ class CharacterPromptBuilderScene:
         # Add age if present
         if age and int(age) > 0:
             subject_phrase += f", {age} years old"
-        # Add skin tone as "with {skin_tone} skin" if present
+        # Add skin tone as "(skin tone)" if present
         if skin_tone_phrase:
-            subject_phrase += f", with {skin_tone_phrase} skin"
+            subject_phrase += f", {skin_tone_phrase} skin"
         subject_sentence = f"{get_article(subject_phrase)} {subject_phrase}"
 
         # Body type
         body_type = get("body_type")
         body_type_phrase = ""
-        if body_type != "-" and getf("body_type_weight") > 0:
-            body_type_phrase = f"with a {body_type.lower()} build"
+        if body_type != "-" and getf("body_type_weight") > 0 and shot_level in ("full", "medium"):
+            body_type_phrase = f"{poss} build is {body_type.lower()}"
 
         # Breasts and bum (for women)
         body_features = []
-        if get("breast_size") != "-" and getf("breast_size_weight") > 0 and gender == "Woman":
+        if get("breast_size") != "-" and getf("breast_size_weight") > 0 and gender == "Woman" and shot_level in ("full", "medium", "bust"):
             breast = get('breast_size').lower()
             if "breast" in breast or "bust" in breast:
                 body_features.append(breast)
             else:
                 body_features.append(f"{breast} breasts")
-        if get("bum_size") != "-" and getf("bum_size_weight") > 0:
+        if get("bum_size") != "-" and getf("bum_size_weight") > 0 and shot_level == "full":
             body_features.append(f"{get('bum_size').lower()} bum")
         body_features_phrase = ""
         if body_features:
-            body_features_phrase = "with " + " and ".join(body_features)
+            body_features_phrase = f"{poss} " + " and ".join(body_features)
 
         # Face features
         face_features = []
@@ -816,28 +844,28 @@ class CharacterPromptBuilderScene:
         if get("eyes_color") != "-":
             face_features.append(f"{eye_adj} {get('eyes_color').lower()} eyes")
         if get("face_shape") != "-" and getf("face_shape_weight") > 0:
-            face_shape = get('face_shape').lower().replace(' ', '-')
+            face_shape = get('face_shape').lower().replace('-shaped', '').replace(' ', '-')
             article = get_article(face_shape)
             face_features.append(f"{article} {face_shape}-shaped face")
         face_features_phrase = ""
         if face_features:
-            face_features_phrase = " and ".join(face_features)
+            face_features_phrase = f"{poss} " + " and ".join(face_features)
 
         # Lips
         lips_phrase = ""
         if get("lip_shape") != "-" and getf("lip_shape_weight") > 0:
             lip_desc = get("lip_shape").lower()
             if get("lip_color") != "-" and getf("lip_color_weight") > 0:
-                lips_phrase = f"{poss} {lip_desc} are painted {get('lip_color').lower()}"
+                lips_phrase = f"{poss} {lip_desc} lips are painted {get('lip_color').lower()}"
             else:
-                lips_phrase = f"{poss} {lip_desc}"
+                lips_phrase = f"{poss} {lip_desc} lips"
         elif get("lip_color") != "-" and getf("lip_color_weight") > 0:
             lips_phrase = f"{poss} lips are painted {get('lip_color').lower()}"
 
         # Makeup
         makeup_phrase = ""
         if get("makeup") != "-" and getf("makeup_weight") > 0 and gender == "Woman":
-            makeup_phrase = f"wearing {get('makeup').lower().replace(' makeup', '')} makeup"
+            makeup_phrase = f"{subj} is wearing {get('makeup').lower().replace(' makeup', '')} makeup"
 
         # Hair
         hair_parts = []
@@ -850,83 +878,78 @@ class CharacterPromptBuilderScene:
             hair_parts.append(get("hair_style").lower())
         hair_phrase = ""
         if hair_parts:
-            if len(hair_parts) == 1:
-                hair_desc = hair_parts[0]
-            elif len(hair_parts) == 2:
-                hair_desc = " and ".join(hair_parts)
-            else:
-                hair_desc = ", ".join(hair_parts[:-1]) + f", and {hair_parts[-1]}"
+            hair_desc = ", ".join(hair_parts)
             if getf("disheveled") > 0:
                 hair_desc += ", slightly disheveled"
             hair_phrase = f"{poss} hair is {hair_desc}"
 
         beard_phrase = ""
-        if get("beard") != "-" and gender == "Man":
-            beard_phrase = f"with a {get('beard').lower()} beard"
+        if get("beard") != "-" and gender == "Man" and shot_level in ("full", "medium", "bust", "close"):
+            beard_phrase = f"{poss} beard is {get('beard').lower()}"
 
         # Fashion aesthetic
         fashion_phrase = ""
-        if get("fashion_aesthetic") != "-" and getf("fashion_aesthetic_weight") > 0:
+        if get("fashion_aesthetic") != "-" and getf("fashion_aesthetic_weight") > 0 and shot_level in ("full", "medium"):
             fashion_phrase = f"{poss} style is {get('fashion_aesthetic').lower()}"
 
         # NSFW or Clothing
         clothing_phrase = ""
         nsfw_appearance = get("nsfw_appearance")
         nsfw_appearance_weight = getf("nsfw_appearance_weight")
-        if get("nsfw_appearance") != "-" and getf("nsfw_appearance_weight") > 0:
-            clothing_phrase = f"{subj.lower()} is {get('nsfw_appearance').lower()}"
-                # Only show these if NSFW is active
-            if get("nipple_appearance") != "-" and getf("nipple_appearance_weight") > 0:
-                    clothing_phrase += f", her nipples are {get('nipple_appearance').lower()}"
-            if get("areola_appearance") != "-" and getf("areola_appearance_weight") > 0:
-                    clothing_phrase += f", her areolae are {get('areola_appearance').lower()}"
-            if get("vulva_appearance") != "-" and getf("vulva_appearance_weight") > 0:
-                    clothing_phrase += f", her vulva appears {get('vulva_appearance').lower()}"
+        if get("nsfw_appearance") != "-" and getf("nsfw_appearance_weight") > 0 and shot_level in ("full", "medium", "bust"):
+            clothing_phrase = f"{subj} is {get('nsfw_appearance').lower()}"
+            # Only show these if NSFW is active
+            if get("nipple_appearance") != "-" and getf("nipple_appearance_weight") > 0 and shot_level in ("full", "medium", "bust"):
+                clothing_phrase += f", {poss} nipples are {get('nipple_appearance').lower()}"
+            if get("areola_appearance") != "-" and getf("areola_appearance_weight") > 0 and shot_level in ("full", "medium", "bust"):
+                clothing_phrase += f", {poss} areolae are {get('areola_appearance').lower()}"
+            if get("vulva_appearance") != "-" and getf("vulva_appearance_weight") > 0 and shot_level == "full":
+                clothing_phrase += f", {poss} vulva appears {get('vulva_appearance').lower()}"
         else:
             clothing = []
-            if get("underwear") != "-" and getf("underwear_weight") > 0:
+            if get("underwear") != "-" and getf("underwear_weight") > 0 and shot_level in ("full", "medium", "bust"):
                 uw = get('underwear').lower()
                 uw_color = get("underwear_color").lower()
                 if uw_color != "-" and uw_color != "":
                     uw = f"{uw_color} {uw}"
                 clothing.append(uw)
-            if get("legs") != "-" and getf("legs_weight") > 0:
+            if get("legs") != "-" and getf("legs_weight") > 0 and shot_level == "full":
                 legs = get("legs").lower()
                 legs_color = get("legs_color").lower()
                 if legs_color != "-" and legs_color != "":
                     legs = f"{legs_color} {legs}"
                 clothing.append(legs)
-            if get("dresses") != "-" and getf("dresses_weight") > 0:
+            if get("dresses") != "-" and getf("dresses_weight") > 0 and shot_level in ("full", "medium", "bust"):
                 dress = get("dresses").lower()
                 dress_color = get("dresses_color").lower()
                 if dress_color != "-" and dress_color != "":
                     dress = f"{dress_color} {dress}"
                 clothing.append(dress)
-            if get("tops") != "-" and getf("tops_weight") > 0:
+            if get("tops") != "-" and getf("tops_weight") > 0 and shot_level in ("full", "medium", "bust"):
                 top = get("tops").lower()
                 top_color = get("tops_color").lower()
                 if top_color != "-" and top_color != "":
                     top = f"{top_color} {top}"
                 clothing.append(top)
-            if get("pants") != "-" and getf("pants_weight") > 0:
+            if get("pants") != "-" and getf("pants_weight") > 0 and shot_level in ("full", "medium"):
                 pants = get("pants").lower()
                 pants_color = get("pants_color").lower()
                 if pants_color != "-" and pants_color != "":
                     pants = f"{pants_color} {pants}"
                 clothing.append(pants)
-            if get("capes") != "-" and getf("capes_weight") > 0:
+            if get("capes") != "-" and getf("capes_weight") > 0 and shot_level in ("full", "medium"):
                 cape = get("capes").lower()
                 cape_color = get("capes_color").lower()
                 if cape_color != "-" and cape_color != "":
                     cape = f"{cape_color} {cape}"
                 clothing.append(cape)
-            if get("hats") != "-" and getf("hats_weight") > 0:
+            if get("hats") != "-" and getf("hats_weight") > 0 and shot_level in ("full", "medium", "bust", "close"):
                 hat = get("hats").lower()
                 hat_color = get("hats_color").lower()
                 if hat_color != "-" and hat_color != "":
                     hat = f"{hat_color} {hat}"
                 clothing.append(hat)
-            if s.get("womens_gloves", "-") != "-" and float(s.get("womens_gloves_weight", 0)) > 0 and s.get("gender", "-") == "Woman":
+            if s.get("womens_gloves", "-") != "-" and float(s.get("womens_gloves_weight", 0)) > 0 and s.get("gender", "-") == "Woman" and shot_level in ("full", "medium", "bust"):
                 gloves = s.get("womens_gloves").lower()
                 gloves_color = s.get("womens_gloves_color", "-").lower()
                 if gloves_color != "-" and gloves_color != "":
@@ -936,11 +959,11 @@ class CharacterPromptBuilderScene:
             helmet = None
             gender = s.get("gender", "-")
             if gender == "Woman":
-                if s.get("womens_suits", "-") != "-":
+                if s.get("womens_suits", "-") != "-" and shot_level in ("full", "medium"):
                     suit = s.get("womens_suits").lower()
                     helmet = s.get("womens_suits_helmet", "-")
             elif gender == "Man":
-                if s.get("mens_suits", "-") != "-":
+                if s.get("mens_suits", "-") != "-" and shot_level in ("full", "medium"):
                     suit = s.get("mens_suits").lower()
                     helmet = s.get("mens_suits_helmet", "-")
             if suit:
@@ -948,48 +971,57 @@ class CharacterPromptBuilderScene:
                     suit = f"{suit} ({helmet.lower()})"
                 clothing.append(suit)
             custom_clothing = s.get("custom_clothing", "")
-            if custom_clothing and custom_clothing.strip():
+            if custom_clothing and custom_clothing.strip() and shot_level in ("full", "medium", "bust"):
                 clothing.append(custom_clothing.strip())
             if clothing:
-                clothing_phrase = "wearing " + " and ".join(clothing)
+                clothing_phrase = f"{subj} is wearing " + " and ".join(clothing)
 
         # Accessories
         jewelry = []
-        if get("necklace") != "-" and getf("necklace_weight") > 0:
-            jewelry.append(f"a {get('necklace').lower()}")
-        if get("earrings") != "-" and getf("earrings_weight") > 0:
-            jewelry.append(get("earrings").lower())
-        bracelet_selected = get("bracelet") != "-" and getf("bracelet_weight") > 0
-        ring_selected = get("ring") != "-" and getf("ring_weight") > 0
-        if bracelet_selected:
-            jewelry.append(f"a {get('bracelet').lower()}")
-        if ring_selected and (not bracelet_selected or (bracelet_selected and ring_selected)):
-            jewelry.append(f"a {get('ring').lower()}")
-        if get("watches") != "-" and getf("watches_weight") > 0:
-            watch = get("watches").lower()
-            watch_color = get("watches_color").lower()
-            if watch_color != "-" and watch_color != "":
-                watch = f"{watch_color} {watch}"
-            jewelry.append(watch)
-        if s.get("mens_glasses", "-") != "-" and float(s.get("mens_glasses_weight", 0)) > 0 and s.get("gender", "-") == "Man":
+        necklace = get("necklace")
+        earrings = get("earrings")
+        bracelet = get("bracelet")
+        ring = get("ring")
+        watches = get("watches")
+        watches_color = get("watches_color")
+        glasses = ""
+        glasses_color = ""
+        if s.get("mens_glasses", "-") != "-" and float(s.get("mens_glasses_weight", 0)) > 0 and s.get("gender", "-") == "Man" and shot_level in ("full", "medium", "bust", "close"):
             glasses = s.get("mens_glasses").lower()
             glasses_color = s.get("mens_glasses_color", "-").lower()
-            if glasses_color != "-" and glasses_color != "":
-                glasses = f"{glasses_color} {glasses}"
-            jewelry.append(glasses)
-        if s.get("womens_glasses", "-") != "-" and float(s.get("womens_glasses_weight", 0)) > 0 and s.get("gender", "-") == "Woman":
+        if s.get("womens_glasses", "-") != "-" and float(s.get("womens_glasses_weight", 0)) > 0 and s.get("gender", "-") == "Woman" and shot_level in ("full", "medium", "bust", "close"):
             glasses = s.get("womens_glasses").lower()
             glasses_color = s.get("womens_glasses_color", "-").lower()
+        # Build jewelry/accessory phrase more naturally
+        accessory_parts = []
+        if necklace != "-" and getf("necklace_weight") > 0 and shot_level in ("full", "medium", "bust"):
+            accessory_parts.append(f"{get('necklace').lower()} necklace")
+        if earrings != "-" and getf("earrings_weight") > 0 and shot_level in ("full", "medium", "bust", "close"):
+            accessory_parts.append(f"{get('earrings').lower()} earrings")
+        if bracelet != "-" and getf("bracelet_weight") > 0 and shot_level in ("full", "medium"):
+            accessory_parts.append(f"{get('bracelet').lower()} bracelet")
+        if ring != "-" and getf("ring_weight") > 0 and shot_level in ("full", "medium"):
+            accessory_parts.append(f"{get('ring').lower()} ring")
+        if watches != "-" and getf("watches_weight") > 0 and shot_level in ("full", "medium"):
+            watch = watches.lower()
+            if watches_color != "-" and watches_color != "":
+                watch = f"{watches_color.lower()} {watch}"
+            accessory_parts.append(f"{watch} watch")
+        if glasses and glasses != "-":
             if glasses_color != "-" and glasses_color != "":
                 glasses = f"{glasses_color} {glasses}"
-            jewelry.append(glasses)
+            accessory_parts.append(f"{glasses} glasses")
         jewelry_phrase = ""
-        if jewelry:
-            jewelry_phrase = "accessorized with " + ", ".join(jewelry)
+        if accessory_parts:
+            # Use Oxford comma for last item
+            if len(accessory_parts) == 1:
+                jewelry_phrase = f"accessorized with {accessory_parts[0]}"
+            else:
+                jewelry_phrase = f"accessorized with " + ", ".join(accessory_parts[:-1]) + f", and {accessory_parts[-1]}"
 
         # Tattoo
         tattoo_phrase = ""
-        if get("tattoo") != "-" and getf("tattoo_weight") > 0:
+        if get("tattoo") != "-" and getf("tattoo_weight") > 0 and shot_level in ("full", "medium", "bust"):
             tattoo_desc = get("tattoo").lower()
             if tattoo_desc not in ["-", "no tattoos"]:
                 tattoo_phrase = f"with {tattoo_desc}"
@@ -1010,19 +1042,19 @@ class CharacterPromptBuilderScene:
             not gloves_present or "fingerless" in gloves_type
         )
         fingernail_phrase = ""
-        if show_fingernails:
+        if show_fingernails and shot_level in ("full", "medium"):
             fingernail_style = get("fingernail_style").lower().replace(" nails", "")
             nail_color = get("nail_color").lower() if get("nail_color") != "-" else ""
             if nail_color:
                 fingernail_phrase = f"{poss} fingernails are {fingernail_style}, painted {nail_color}"
             else:
                 fingernail_phrase = f"{poss} fingernails are {fingernail_style}"
-        elif not gloves_present and gender == "Woman":
+        elif not gloves_present and gender == "Woman" and shot_level in ("full", "medium"):
             fingernail_phrase = f"{poss} hands and fingers are visible"
 
         # Shoes
         shoes_phrase = ""
-        if get("womens_shoes") != "-" and getf("womens_shoes_weight") > 0 and gender == "Woman":
+        if get("womens_shoes") != "-" and getf("womens_shoes_weight") > 0 and gender == "Woman" and shot_level == "full":
             shoe_desc = get("womens_shoes").lower()
             if get("womens_shoe_color") != "-":
                 shoe_desc = f"{get('womens_shoe_color').lower()} {shoe_desc}"
@@ -1030,7 +1062,7 @@ class CharacterPromptBuilderScene:
             if shoe_material and shoe_material != "-":
                 shoe_desc = f"{shoe_desc} made of {shoe_material.lower()}"
             shoes_phrase = f"wearing {shoe_desc}"
-        elif get("mens_shoes") != "-" and getf("mens_shoes_weight") > 0 and gender == "Man":
+        elif get("mens_shoes") != "-" and getf("mens_shoes_weight") > 0 and gender == "Man" and shot_level == "full":
             shoe_desc = get("mens_shoes").lower()
             if get("mens_shoe_color") != "-":
                 shoe_desc = f"{get('mens_shoe_color').lower()} {shoe_desc}"
@@ -1170,13 +1202,14 @@ class CharacterPromptBuilderScene:
         # Join tail phrases with ". "
         tail = ". ".join(tail_phrases)
         if tail:
-            prompt = main_desc + ". " + tail
+            prompt = main_desc
+            if not prompt.endswith("."):
+                prompt += "."
+            prompt += " " + tail
         else:
             prompt = main_desc
-
-        prompt = prompt.strip()
-        if prompt and not prompt.endswith("."):
-            prompt += "."
+            if prompt and not prompt.endswith("."):
+                prompt += "."
 
         if photorealism_improvement == "enable":
             prompt += " Professional photography with balanced exposure and subtle film grain."
