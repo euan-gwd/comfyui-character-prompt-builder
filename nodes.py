@@ -74,6 +74,8 @@ def _get_default_portrait_data():
         "visual_style_list": ["Cinematic", "Editorial", "Fashion Photography", "Fine Art", "Glamour", "High Fashion", "Vintage Film", "Noir", "Neon Noir", "Cyberpunk", "Vaporwave", "Lo-fi", "Polaroid", "35mm Film", "Medium Format", "Analog", "HDR", "Matte", "Glossy", "Soft Focus", "Bokeh", "Tilt-shift", "Double Exposure", "Light Leaks", "Grain", "Desaturated", "High Contrast", "Low Key", "High Key", "Golden Hour", "Blue Hour", "Moody", "Ethereal", "Dreamy", "Gritty", "Raw", "Clean", "Minimal", "Dramatic"],
         "location_list": ["New York", "London", "Paris", "Berlin", "Tokyo", "Beijing", "Moscow", "Dubai", "Rio de Janeiro", "Cape Town"],
         "tattoo_list": ["-", "No tattoos", "Small tattoo", "Arm tattoo", "Leg tattoo", "Back tattoo", "Sleeve tattoo", "Face tattoo", "Chest tattoo", "Shoulder tattoo", "Neck tattoo", "Hand tattoo", "Finger tattoo", "Foot tattoo", "Ankle tattoo", "Thigh tattoo", "Full body tattoo"],
+        # --- Add props_color_list ---
+        "props_color_list": ["-", "Red", "Blue", "Green", "Black", "White", "Yellow", "Pink", "Purple", "Brown", "Gray", "Orange", "Gold", "Silver"],
     }
 
 
@@ -465,6 +467,13 @@ class CharacterPromptBuilderActions:
                 _list.insert(0, '-')
             return (_list,)
 
+        # --- Add props_color combo box ---
+        def combo_color(list_key):
+            _list = data.get(list_key, ["-"]).copy()
+            if '-' not in _list:
+                _list.insert(0, '-')
+            return (_list,)
+
         return {
             "required": {
                 "standing_pose": combo("standing_pose_list"),
@@ -472,7 +481,8 @@ class CharacterPromptBuilderActions:
                 "sitting_pose": combo("sitting_pose_list"),
                 "laying_down_pose": combo("laying_down_pose_list"),
                 "nsfw_pose": combo("nsfw_pose_list"),
-                "props": combo("props_list"),  # Add props list to Actions node
+                "props": combo("props_list"),
+                "props_color": combo_color("props_color_list"),
                 "settings_in": ("PM_SETTINGS",),
             },
             "optional": {
@@ -499,6 +509,7 @@ class CharacterPromptBuilderActions:
             laying_down_pose="-",
             nsfw_pose="-",
             props="-",
+            props_color="-",
             settings_in=None,
             custom_action=""):
         settings = settings_in.copy() if settings_in else {}
@@ -531,6 +542,7 @@ class CharacterPromptBuilderActions:
             "model_pose": selected_pose,
             **pose_out,
             "props": props,
+            "props_color": props_color,
             "custom_action": custom_action.strip() if custom_action else "",
         })
         return (settings,)
@@ -1127,9 +1139,26 @@ class CharacterPromptBuilderScene:
 
         # Props
         props = s.get("props", "-")
+        props_color = s.get("props_color", "-")
         props_phrase = ""
         if props and props != "-":
-            props_phrase = f"{subj.lower()} is {props.lower()}"
+            # If props starts with a verb (e.g., "holding", "carrying"), insert color before the object
+            import re
+            match = re.match(r"(\w+ing) (a|an|the)? ?(.+)", props.lower())
+            if match:
+                verb = match.group(1)
+                article = match.group(2) or ""
+                obj = match.group(3)
+                if props_color and props_color != "-":
+                    props_phrase = f"{subj.lower()} is {verb} {article} {props_color.lower()} {obj}".replace("  ", " ")
+                else:
+                    props_phrase = f"{subj.lower()} is {verb} {article} {obj}".replace("  ", " ")
+            else:
+                # fallback: just append color before prop
+                if props_color and props_color != "-":
+                    props_phrase = f"{subj.lower()} is {props_color.lower()} {props.lower()}"
+                else:
+                    props_phrase = f"{subj.lower()} is {props.lower()}"
 
         # Custom action
         custom_action = s.get("custom_action", "")
