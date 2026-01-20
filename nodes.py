@@ -872,7 +872,8 @@ class CharacterPromptBuilderScene:
                 clothing_phrase += f", {poss} vulva appears {get('vulva_appearance').lower()}"
         else:
             clothing = []
-            # Only check for not "-" (no weight) for all female fashion fields
+            # UNDERWEAR (always first, and only mention if visible)
+            underwear_phrase = ""
             if get("underwear") != "-" and shot_level in ("full", "medium", "bust"):
                 uw = get('underwear').lower()
                 uw_color = get("underwear_color").lower()
@@ -881,13 +882,20 @@ class CharacterPromptBuilderScene:
                     uw = f"{uw_color} {uw}"
                 if uw_material and uw_material != "-":
                     uw = f"{uw} made of {uw_material.lower()}"
-                clothing.append(uw)
+                # If a dress or top is present, underwear is only slightly visible
+                if (get("dresses") != "-" or get("tops") != "-"):
+                    underwear_phrase = f"{poss} {uw} is slightly visible beneath {poss} clothing"
+                else:
+                    underwear_phrase = f"{poss} is wearing {uw}"
+                clothing.append(underwear_phrase)
+            # LEGS
             if get("legs") != "-" and shot_level == "full":
                 legs = get("legs").lower()
                 legs_color = get("legs_color").lower()
                 if legs_color != "-" and legs_color != "":
                     legs = f"{legs_color} {legs}"
                 clothing.append(legs)
+            # DRESSES
             if get("dresses") != "-" and shot_level in ("full", "medium", "bust"):
                 dress = get("dresses").lower()
                 dress_color = get("dresses_color").lower()
@@ -897,6 +905,7 @@ class CharacterPromptBuilderScene:
                 if dress_material and dress_material != "-":
                     dress = f"{dress} made of {dress_material.lower()}"
                 clothing.append(dress)
+            # TOPS
             if get("tops") != "-" and shot_level in ("full", "medium", "bust"):
                 top = get("tops").lower()
                 top_color = get("tops_color").lower()
@@ -906,6 +915,7 @@ class CharacterPromptBuilderScene:
                 if top_material and top_material != "-":
                     top = f"{top} made of {top_material.lower()}"
                 clothing.append(top)
+            # PANTS
             if get("pants") != "-" and shot_level in ("full", "medium"):
                 pants = get("pants").lower()
                 pants_color = get("pants_color").lower()
@@ -915,6 +925,7 @@ class CharacterPromptBuilderScene:
                 if pants_material and pants_material != "-":
                     pants = f"{pants} made of {pants_material.lower()}"
                 clothing.append(pants)
+            # CAPES
             if get("capes") != "-" and shot_level in ("full", "medium"):
                 cape = get("capes").lower()
                 cape_color = get("capes_color").lower()
