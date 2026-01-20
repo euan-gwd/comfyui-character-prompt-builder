@@ -1004,11 +1004,11 @@ class CharacterPromptBuilderScene:
                 # Build phrase
                 if areola_desc:
                     subtle_nipple_phrase = (
-                        f"the faint outline of her {nipple_desc} nipples and {areola_desc} areolae are subtly visible through the stretched {garment_material} of her {garment}"
+                        f"the faint outline of her {nipple_desc} nipples and {areola_desc} areolae are subtly visible through the stretched tight {garment_material} of her {garment}"
                     )
                 else:
                     subtle_nipple_phrase = (
-                        f"the faint outline of her {nipple_desc} nipples are subtly visible through the stretched {garment_material} of her {garment}"
+                        f"the faint outline of her {nipple_desc} nipples are subtly visible through the stretched tight {garment_material} of her {garment}"
                     )
                 clothing.append(subtle_nipple_phrase)
             # --- END: Subtle nipple outline logic ---
