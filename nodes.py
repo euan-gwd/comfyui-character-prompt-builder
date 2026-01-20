@@ -1001,8 +1001,15 @@ class CharacterPromptBuilderScene:
                 areola_desc = ""
                 if get("areola_appearance") != "-":
                     areola_desc = get("areola_appearance").lower()
+                vulva_desc = ""
+                if get("vulva_appearance") != "-":
+                    vulva_desc = get("vulva_appearance").lower()
                 # Build phrase
-                if areola_desc:
+                if vulva_desc:
+                    subtle_nipple_phrase = (
+                        f"the faint outline of her {nipple_desc} nipples and {areola_desc} areolae and {vulva_desc} vulva are subtly visible through the stretched tight {garment_material} of her {garment}"
+                    )
+                elif areola_desc:
                     subtle_nipple_phrase = (
                         f"the faint outline of her {nipple_desc} nipples and {areola_desc} areolae are subtly visible through the stretched tight {garment_material} of her {garment}"
                     )
