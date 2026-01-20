@@ -97,40 +97,33 @@ class CharacterPromptBuilderPerson:
             "required": {
                 # === SUBJECT ===
                 "gender": combo("gender_list", "Woman"),
-                "age": ("INT", {"default": 30, "min": 18, "max": 90, "step": 1, "display": "slider"}),
+                "age": ("INT", {"default": 25, "min": 18, "max": 90, "step": 1, "display": "slider"}),
                 "nationality_1": combo("nationality_list", "British"),
                 "nationality_2": combo("nationality_list"),
-                "nationality_mix": weight(0.5),
+                "nationality_mix": weight(0.0),
                 "body_type": combo("body_type_list"),
                 "body_type_weight": weight(),
                 "breast_size": combo("breast_size_list"),
                 "breast_size_weight": weight(),
                 "bum_size": combo("bum_size_list"),
-                "bum_size_weight": weight(),
             },
             "optional": {
                 # === FACE ===
                 "face_shape": combo("face_shape_list"),
-                "face_shape_weight": weight(),
                 "eyes_color": combo("eyes_color_list"),
-                "facial_expression": combo("face_expression_list"),
-                "facial_expression_weight": weight(),
                 "lip_shape": combo("lip_shape_list"),
-                "lip_shape_weight": weight(),
                 "lip_color": combo("lip_color_list"),
-                "lip_color_weight": weight(),
                 "makeup": combo("makeup_list"),
-                "makeup_weight": weight(),
+                "facial_expression": combo("face_expression_list"),
                 # === HAIR ===
                 "hair_style": combo("hair_style_list"),
                 "hair_length": combo("hair_length_list"),
-                "hair_length_weight": weight(),
                 "hair_color": combo("hair_color_list"),
-                "disheveled": weight(),
                 "beard": combo("beard_list"),
+                "disheveled": weight(),
                 # === SKIN ===
-                "skin_details": weight(),
                 "skin_tone": combo("skin_tone_list"),
+                "skin_details": weight(),
                 "skin_pores": weight(),
                 "dimples": weight(),
                 "freckles": weight(),
@@ -144,17 +137,12 @@ class CharacterPromptBuilderPerson:
                 "circular_pupil": weight(1),
                 # === NSFW ===
                 "nsfw_appearance": combo("nsfw_appearance_list"),
-                "nsfw_appearance_weight": weight(),
                 # === NIPPLES & AREOLA & VULVA ===
                 "nipple_appearance": combo("nipple_appearance_list"),
-                "nipple_appearance_weight": weight(),
                 "areola_appearance": combo("areola_appearance_list"),
-                "areola_appearance_weight": weight(),
                 "vulva_appearance": combo("vulva_appearance_list"),
-                "vulva_appearance_weight": weight(),
                 # === TATTOOS ===
                 "tattoo": combo("tattoo_list"),
-                "tattoo_weight": weight(),
                 # === CHAIN ===
                 "settings_in": ("PM_SETTINGS",),
             }
@@ -167,20 +155,22 @@ class CharacterPromptBuilderPerson:
 
     def run(self, gender="-", age=20, nationality_1="-", nationality_2="-", nationality_mix=0.5,
             body_type="-", body_type_weight=0, breast_size="-", breast_size_weight=0,
-            bum_size="-", bum_size_weight=0,
-            face_shape="-", face_shape_weight=0, eyes_color="-",
-            facial_expression="-", facial_expression_weight=0,
-            lip_shape="-", lip_shape_weight=0, lip_color="-", lip_color_weight=0,
-            makeup="-", makeup_weight=0,
-            hair_style="-", hair_length="-", hair_length_weight=0, hair_color="-", disheveled=0, beard="-",
+            bum_size="-",
+            face_shape="-", eyes_color="-",
+            facial_expression="-",
+            lip_shape="-",
+            lip_color="-",
+            makeup="-",
+            hair_style="-", hair_length="-",
+            hair_color="-", disheveled=0, beard="-",
             skin_details=0, skin_tone="-", skin_pores=0, dimples=0, freckles=0, moles=0,
             skin_imperfections=0, skin_acne=0, tanned_skin=0,
             eyes_details=1, iris_details=1, circular_iris=1, circular_pupil=1,
-            nipple_appearance="-", nipple_appearance_weight=0,
-            areola_appearance="-", areola_appearance_weight=0,
-            vulva_appearance="-", vulva_appearance_weight=0,
-            nsfw_appearance="-", nsfw_appearance_weight=0,
-            tattoo="-", tattoo_weight=0,
+            nipple_appearance="-",
+            areola_appearance="-",
+            vulva_appearance="-",
+            nsfw_appearance="-",
+            tattoo="-",
             settings_in=None):
         settings = settings_in.copy() if settings_in else {}
         settings.update({
@@ -188,16 +178,14 @@ class CharacterPromptBuilderPerson:
             "nationality_2": nationality_2, "nationality_mix": nationality_mix,
             "body_type": body_type, "body_type_weight": body_type_weight,
             "breast_size": breast_size, "breast_size_weight": breast_size_weight,
-            "bum_size": bum_size, "bum_size_weight": bum_size_weight,
-            "face_shape": face_shape, "face_shape_weight": face_shape_weight,
+            "bum_size": bum_size,
+            "face_shape": face_shape,
             "eyes_color": eyes_color, "facial_expression": facial_expression,
-            "facial_expression_weight": facial_expression_weight,
-            "lip_shape": lip_shape, "lip_shape_weight": lip_shape_weight,
-            "lip_color": lip_color, "lip_color_weight": lip_color_weight,
-            "makeup": makeup, "makeup_weight": makeup_weight,
+            "lip_shape": lip_shape,
+            "lip_color": lip_color,
+            "makeup": makeup,
             "hair_style": hair_style,
             "hair_length": hair_length,
-            "hair_length_weight": hair_length_weight,
             "hair_color": hair_color, "disheveled": disheveled, "beard": beard,
             "skin_details": skin_details, "skin_tone": skin_tone, "skin_pores": skin_pores, "dimples": dimples,
             "freckles": freckles, "moles": moles, "skin_imperfections": skin_imperfections,
@@ -205,15 +193,10 @@ class CharacterPromptBuilderPerson:
             "eyes_details": eyes_details, "iris_details": iris_details,
             "circular_iris": circular_iris, "circular_pupil": circular_pupil,
             "nipple_appearance": nipple_appearance,
-            "nipple_appearance_weight": nipple_appearance_weight,
             "areola_appearance": areola_appearance,
-            "areola_appearance_weight": areola_appearance_weight,
             "vulva_appearance": vulva_appearance,
-            "vulva_appearance_weight": vulva_appearance_weight,
             "nsfw_appearance": nsfw_appearance,
-            "nsfw_appearance_weight": nsfw_appearance_weight,
             "tattoo": tattoo,
-            "tattoo_weight": tattoo_weight,
         })
         return (settings,)
 
@@ -223,7 +206,6 @@ class CharacterPromptBuilderFemaleFashion:
     @classmethod
     def INPUT_TYPES(s):
         data = _load_portrait_data()
-        max_float_value = 1.95
 
         def combo(key, default=None):
             _list = data.get(key, ["-"]).copy()
@@ -231,64 +213,48 @@ class CharacterPromptBuilderFemaleFashion:
                 _list.insert(0, '-')
             return (_list, {"default": default} if default else {})
 
-        def weight(default=0):
-            return ("FLOAT", {"default": default, "step": 0.05, "min": 0, "max": max_float_value, "display": "slider"})
-
         return {
             "required": {
                 "fashion_aesthetic": combo("fashion_aesthetic_list"),
-                "fashion_aesthetic_weight": weight(),
                 "tops": combo("tops_list"),
                 "tops_color": combo("tops_color_list"),
-                "tops_weight": weight(),
+                "tops_material": combo("tops_material_list"),
                 "pants": combo("pants_list"),
                 "pants_color": combo("pants_color_list"),
-                "pants_weight": weight(),
+                "pants_material": combo("pants_material_list"),
                 "dresses": combo("dresses_list"),
                 "dresses_color": combo("dresses_color_list"),
-                "dresses_weight": weight(),
+                "dresses_material": combo("dresses_material_list"),
                 "legs": combo("legs_list"),
                 "legs_color": combo("legs_color_list"),
-                "legs_weight": weight(),
                 "underwear": combo("underwear_list"),
                 "underwear_color": combo("underwear_color_list"),
-                "underwear_weight": weight(),
+                "underwear_material": combo("underwear_material_list"),
                 "capes": combo("capes_list"),
                 "capes_color": combo("capes_color_list"),
-                "capes_weight": weight(),
+                "capes_material": combo("capes_material_list"),
                 "hats": combo("hats_list"),
                 "hats_color": combo("hats_color_list"),
-                "hats_weight": weight(),
                 "womens_suits": combo("womens_suits_list"),
-                "womens_suits_weight": weight(),
                 "womens_suits_helmet": combo("womens_suits_helmet_list"),
             },
             "optional": {
                 "womens_shoes": combo("womens_shoes_list"),
                 "womens_shoe_color": combo("womens_shoe_color_list"),
                 "womens_shoe_material": combo("womens_shoe_material_list"),
-                "womens_shoes_weight": weight(),
                 "womens_gloves": combo("womens_gloves_list"),
                 "womens_gloves_color": combo("womens_gloves_color_list"),
-                "womens_gloves_weight": weight(),
                 "necklace": combo("necklace_list"),
-                "necklace_weight": weight(),
                 "earrings": combo("earrings_list"),
-                "earrings_weight": weight(),
                 "bracelet": combo("bracelet_list"),
-                "bracelet_weight": weight(),
                 "watches": combo("watches_list"),
                 "watches_color": combo("watches_color_list"),
-                "watches_weight": weight(),
                 "ring": combo("ring_list"),
-                "ring_weight": weight(),
                 "fingernail_style": combo("fingernail_style_list"),
                 "nail_color": combo("nail_color_list"),
-                "fingernail_weight": weight(),
                 "settings_in": ("PM_SETTINGS",),
                 "womens_glasses": combo("womens_glasses_list"),
                 "womens_glasses_color": combo("womens_glasses_color_list"),
-                "womens_glasses_weight": weight(),
                 "custom_clothing": (
                     "STRING",
                     {
@@ -305,55 +271,48 @@ class CharacterPromptBuilderFemaleFashion:
     FUNCTION = "run"
     CATEGORY = "CharacterPromptBuilder"
 
-    def run(self, fashion_aesthetic="-", fashion_aesthetic_weight=0,
-            tops="-", tops_color="-", tops_weight=0,
-            pants="-", pants_color="-", pants_weight=0,
-            dresses="-", dresses_color="-", dresses_weight=0,
-            legs="-", legs_color="-", legs_weight=0,
-            underwear="-", underwear_color="-", underwear_weight=0,
-            capes="-", capes_color="-", capes_weight=0,
-            hats="-", hats_color="-", hats_weight=0,
-            womens_suits="-", womens_suits_weight=0, womens_suits_helmet="-",
-            womens_shoes="-", womens_shoe_color="-", womens_shoes_weight=0,
-            womens_shoe_material="-",
-            womens_gloves="-", womens_gloves_color="-", womens_gloves_weight=0,
-            necklace="-", necklace_weight=0, earrings="-", earrings_weight=0,
-            bracelet="-", bracelet_weight=0, ring="-", ring_weight=0,
-            watches="-", watches_color="-", watches_weight=0,
-            fingernail_style="-", nail_color="-", fingernail_weight=0,
+    def run(self,
+            fashion_aesthetic="-",
+            tops="-", tops_color="-", tops_material="-",
+            pants="-", pants_color="-", pants_material="-",
+            dresses="-", dresses_color="-", dresses_material="-",
+            legs="-", legs_color="-",
+            underwear="-", underwear_color="-", underwear_material="-",
+            capes="-", capes_color="-", capes_material="-",
+            hats="-", hats_color="-",
+            womens_suits="-", womens_suits_helmet="-",
+            womens_shoes="-", womens_shoe_color="-", womens_shoe_material="-",
+            womens_gloves="-", womens_gloves_color="-",
+            necklace="-", earrings="-", bracelet="-", ring="-",
+            watches="-", watches_color="-",
+            fingernail_style="-", nail_color="-",
             settings_in=None,
-            womens_glasses="-", womens_glasses_color="-", womens_glasses_weight=0,
+            womens_glasses="-", womens_glasses_color="-",
             custom_clothing="",
     ):
         settings = settings_in.copy() if settings_in else {}
         settings.update({
-            "fashion_aesthetic": fashion_aesthetic, "fashion_aesthetic_weight": fashion_aesthetic_weight,
-            "tops": tops, "tops_color": tops_color, "tops_weight": tops_weight,
-            "pants": pants, "pants_color": pants_color, "pants_weight": pants_weight,
-            "dresses": dresses, "dresses_color": dresses_color, "dresses_weight": dresses_weight,
-            "legs": legs, "legs_color": legs_color, "legs_weight": legs_weight,
-            "underwear": underwear, "underwear_color": underwear_color, "underwear_weight": underwear_weight,
-            "capes": capes, "capes_color": capes_color, "capes_weight": capes_weight,
-            "hats": hats, "hats_color": hats_color, "hats_weight": hats_weight,
-            "womens_suits": womens_suits, "womens_suits_weight": womens_suits_weight,
+            "fashion_aesthetic": fashion_aesthetic,
+            "tops": tops, "tops_color": tops_color, "tops_material": tops_material,
+            "pants": pants, "pants_color": pants_color, "pants_material": pants_material,
+            "dresses": dresses, "dresses_color": dresses_color, "dresses_material": dresses_material,
+            "legs": legs, "legs_color": legs_color,
+            "underwear": underwear, "underwear_color": underwear_color, "underwear_material": underwear_material,
+            "capes": capes, "capes_color": capes_color, "capes_material": capes_material,
+            "hats": hats, "hats_color": hats_color,
+            "womens_suits": womens_suits,
             "womens_suits_helmet": womens_suits_helmet,
-            "womens_shoes": womens_shoes, "womens_shoe_color": womens_shoe_color,
-            "womens_shoes_weight": womens_shoes_weight,
-            "womens_shoe_material": womens_shoe_material,
+            "womens_shoes": womens_shoes, "womens_shoe_color": womens_shoe_color, "womens_shoe_material": womens_shoe_material,
             "womens_gloves": womens_gloves, "womens_gloves_color": womens_gloves_color,
-            "womens_gloves_weight": womens_gloves_weight,
-            "necklace": necklace, "necklace_weight": necklace_weight,
-            "earrings": earrings, "earrings_weight": earrings_weight,
-            "bracelet": bracelet, "bracelet_weight": bracelet_weight,
+            "necklace": necklace,
+            "earrings": earrings,
+            "bracelet": bracelet,
             "watches": watches,
             "watches_color": watches_color,
-            "watches_weight": watches_weight,
-            "ring": ring, "ring_weight": ring_weight,
+            "ring": ring,
             "fingernail_style": fingernail_style, "nail_color": nail_color,
-            "fingernail_weight": fingernail_weight,
             "womens_glasses": womens_glasses,
             "womens_glasses_color": womens_glasses_color,
-            "womens_glasses_weight": womens_glasses_weight,
             "custom_clothing": custom_clothing,
         })
         return (settings,)
@@ -828,11 +787,11 @@ class CharacterPromptBuilderScene:
         body_features = []
         if get("breast_size") != "-" and getf("breast_size_weight") > 0 and gender == "Woman" and shot_level in ("full", "medium", "bust"):
             breast = get('breast_size').lower()
-            if "breast" in breast or "bust" in breast:
+            if "breast" in breast or "bzust" in breast:
                 body_features.append(breast)
             else:
                 body_features.append(f"{breast} breasts")
-        if get("bum_size") != "-" and getf("bum_size_weight") > 0 and shot_level == "full":
+        if get("bum_size") != "-" and shot_level == "full":
             body_features.append(f"{get('bum_size').lower()} bum")
         body_features_phrase = ""
         if body_features:
@@ -843,7 +802,7 @@ class CharacterPromptBuilderScene:
         eye_adj, eye_quality, eye_gleam = get_eye_mood(get("facial_expression"))
         if get("eyes_color") != "-":
             face_features.append(f"{eye_adj} {get('eyes_color').lower()} eyes")
-        if get("face_shape") != "-" and getf("face_shape_weight") > 0:
+        if get("face_shape") != "-":
             face_shape = get('face_shape').lower().replace('-shaped', '').replace(' ', '-')
             article = get_article(face_shape)
             face_features.append(f"{article} {face_shape}-shaped face")
@@ -853,29 +812,27 @@ class CharacterPromptBuilderScene:
 
         # Lips
         lips_phrase = ""
-        if get("lip_shape") != "-" and getf("lip_shape_weight") > 0:
+        if get("lip_shape") != "-":
             lip_desc = get("lip_shape").lower()
-            if get("lip_color") != "-" and getf("lip_color_weight") > 0:
+            if get("lip_color") != "-":
                 lips_phrase = f"{poss} {lip_desc} lips are painted {get('lip_color').lower()}"
             else:
                 lips_phrase = f"{poss} {lip_desc} lips"
-        elif get("lip_color") != "-" and getf("lip_color_weight") > 0:
+        elif get("lip_color") != "-":
             lips_phrase = f"{poss} lips are painted {get('lip_color').lower()}"
 
         # Makeup
         makeup_phrase = ""
-        if get("makeup") != "-" and getf("makeup_weight") > 0 and gender == "Woman":
+        if get("makeup") != "-" and gender == "Woman":
             makeup_phrase = f"{subj} is wearing {get('makeup').lower().replace(' makeup', '')} makeup"
 
         # Hair
         hair_parts = []
         vivid_hair_length = ""
         hair_length = get("hair_length")
-        hair_length_weight = getf("hair_length_weight")
         if get("hair_color") != "-":
             hair_parts.append(get("hair_color").lower())
-        # Only include hair_length if weight > 0
-        if hair_length != "-" and hair_length_weight > 0:
+        if hair_length != "-":
             hair_parts.append(hair_length.lower())
             # Remove vivid phrase for extra long hair (no longer supported)
             if hair_length.lower() in ["waist length", "hip length", "tailbone length"]:
@@ -898,67 +855,82 @@ class CharacterPromptBuilderScene:
 
         # Fashion aesthetic
         fashion_phrase = ""
-        if get("fashion_aesthetic") != "-" and getf("fashion_aesthetic_weight") > 0 and shot_level in ("full", "medium"):
+        # Only check for not "-" (no weight)
+        if get("fashion_aesthetic") != "-" and shot_level in ("full", "medium"):
             fashion_phrase = f"{poss} style is {get('fashion_aesthetic').lower()}"
 
         # NSFW or Clothing
         clothing_phrase = ""
         nsfw_appearance = get("nsfw_appearance")
-        nsfw_appearance_weight = getf("nsfw_appearance_weight")
-        if get("nsfw_appearance") != "-" and getf("nsfw_appearance_weight") > 0 and shot_level in ("full", "medium", "bust"):
+        if get("nsfw_appearance") != "-" and shot_level in ("full", "medium", "bust"):
             clothing_phrase = f"{subj} is {get('nsfw_appearance').lower()}"
-            # Only show these if NSFW is active
-            if get("nipple_appearance") != "-" and getf("nipple_appearance_weight") > 0 and shot_level in ("full", "medium", "bust"):
+            if get("nipple_appearance") != "-" and shot_level in ("full", "medium", "bust"):
                 clothing_phrase += f", {poss} nipples are {get('nipple_appearance').lower()}"
-            if get("areola_appearance") != "-" and getf("areola_appearance_weight") > 0 and shot_level in ("full", "medium", "bust"):
+            if get("areola_appearance") != "-" and shot_level in ("full", "medium", "bust"):
                 clothing_phrase += f", {poss} areolae are {get('areola_appearance').lower()}"
-            if get("vulva_appearance") != "-" and getf("vulva_appearance_weight") > 0 and shot_level == "full":
+            if get("vulva_appearance") != "-" and shot_level == "full":
                 clothing_phrase += f", {poss} vulva appears {get('vulva_appearance').lower()}"
         else:
             clothing = []
-            if get("underwear") != "-" and getf("underwear_weight") > 0 and shot_level in ("full", "medium", "bust"):
+            # Only check for not "-" (no weight) for all female fashion fields
+            if get("underwear") != "-" and shot_level in ("full", "medium", "bust"):
                 uw = get('underwear').lower()
                 uw_color = get("underwear_color").lower()
+                uw_material = s.get("underwear_material", "-")
                 if uw_color != "-" and uw_color != "":
                     uw = f"{uw_color} {uw}"
+                if uw_material and uw_material != "-":
+                    uw = f"{uw} made of {uw_material.lower()}"
                 clothing.append(uw)
-            if get("legs") != "-" and getf("legs_weight") > 0 and shot_level == "full":
+            if get("legs") != "-" and shot_level == "full":
                 legs = get("legs").lower()
                 legs_color = get("legs_color").lower()
                 if legs_color != "-" and legs_color != "":
                     legs = f"{legs_color} {legs}"
                 clothing.append(legs)
-            if get("dresses") != "-" and getf("dresses_weight") > 0 and shot_level in ("full", "medium", "bust"):
+            if get("dresses") != "-" and shot_level in ("full", "medium", "bust"):
                 dress = get("dresses").lower()
                 dress_color = get("dresses_color").lower()
+                dress_material = s.get("dresses_material", "-")
                 if dress_color != "-" and dress_color != "":
                     dress = f"{dress_color} {dress}"
+                if dress_material and dress_material != "-":
+                    dress = f"{dress} made of {dress_material.lower()}"
                 clothing.append(dress)
-            if get("tops") != "-" and getf("tops_weight") > 0 and shot_level in ("full", "medium", "bust"):
+            if get("tops") != "-" and shot_level in ("full", "medium", "bust"):
                 top = get("tops").lower()
                 top_color = get("tops_color").lower()
+                top_material = s.get("tops_material", "-")
                 if top_color != "-" and top_color != "":
                     top = f"{top_color} {top}"
+                if top_material and top_material != "-":
+                    top = f"{top} made of {top_material.lower()}"
                 clothing.append(top)
-            if get("pants") != "-" and getf("pants_weight") > 0 and shot_level in ("full", "medium"):
+            if get("pants") != "-" and shot_level in ("full", "medium"):
                 pants = get("pants").lower()
                 pants_color = get("pants_color").lower()
+                pants_material = s.get("pants_material", "-")
                 if pants_color != "-" and pants_color != "":
                     pants = f"{pants_color} {pants}"
+                if pants_material and pants_material != "-":
+                    pants = f"{pants} made of {pants_material.lower()}"
                 clothing.append(pants)
-            if get("capes") != "-" and getf("capes_weight") > 0 and shot_level in ("full", "medium"):
+            if get("capes") != "-" and shot_level in ("full", "medium"):
                 cape = get("capes").lower()
                 cape_color = get("capes_color").lower()
+                cape_material = s.get("capes_material", "-")
                 if cape_color != "-" and cape_color != "":
                     cape = f"{cape_color} {cape}"
+                if cape_material and cape_material != "-":
+                    cape = f"{cape} made of {cape_material.lower()}"
                 clothing.append(cape)
-            if get("hats") != "-" and getf("hats_weight") > 0 and shot_level in ("full", "medium", "bust", "close"):
+            if get("hats") != "-" and shot_level in ("full", "medium", "bust", "close"):
                 hat = get("hats").lower()
                 hat_color = get("hats_color").lower()
                 if hat_color != "-" and hat_color != "":
                     hat = f"{hat_color} {hat}"
                 clothing.append(hat)
-            if s.get("womens_gloves", "-") != "-" and float(s.get("womens_gloves_weight", 0)) > 0 and s.get("gender", "-") == "Woman" and shot_level in ("full", "medium", "bust"):
+            if s.get("womens_gloves", "-") != "-" and s.get("gender", "-") == "Woman" and shot_level in ("full", "medium", "bust"):
                 gloves = s.get("womens_gloves").lower()
                 gloves_color = s.get("womens_gloves_color", "-").lower()
                 if gloves_color != "-" and gloves_color != "":
@@ -982,10 +954,50 @@ class CharacterPromptBuilderScene:
             custom_clothing = s.get("custom_clothing", "")
             if custom_clothing and custom_clothing.strip() and shot_level in ("full", "medium", "bust"):
                 clothing.append(custom_clothing.strip())
+            # --- BEGIN: Subtle nipple outline logic ---
+            subtle_nipple_phrase = ""
+            # Only allow for certain materials
+            allowed_materials = {"sheer", "thin", "transparent", "mesh", "lace", "silk", "satin", "wet", "see-through"}
+            # Get material for top or dress
+            garment_material = None
+            if get("dresses") != "-":
+                garment = "dress"
+                garment_material = s.get("dresses_material", "-").lower()
+            else:
+                garment = "top"
+                garment_material = s.get("tops_material", "-").lower()
+            # Check if garment material is in allowed list
+            material_ok = any(mat in garment_material for mat in allowed_materials)
+            if (
+                gender == "Woman"
+                and (get("underwear") == "-")
+                and ((get("tops") != "-") or (get("dresses") != "-"))
+                and (not nsfw_appearance or nsfw_appearance == "-")
+                and garment_material != "-" and material_ok
+            ):
+                # Use selected nipple/areola appearance if set, otherwise default to "nipples"
+                nipple_desc = ""
+                if get("nipple_appearance") != "-":
+                    nipple_desc = get("nipple_appearance").lower()
+                areola_desc = ""
+                if get("areola_appearance") != "-":
+                    areola_desc = get("areola_appearance").lower()
+                # Build phrase
+                if areola_desc:
+                    subtle_nipple_phrase = (
+                        f"the faint outline of her {nipple_desc} nipples and {areola_desc} areolae are subtly visible through the fabric of her {garment}"
+                    )
+                else:
+                    subtle_nipple_phrase = (
+                        f"the faint outline of her {nipple_desc} nipples are subtly visible through the fabric of her {garment}"
+                    )
+                clothing.append(subtle_nipple_phrase)
+            # --- END: Subtle nipple outline logic ---
             if clothing:
                 clothing_phrase = f"{subj} is wearing " + " and ".join(clothing)
 
         # Accessories
+        # Only check for not "-" (no weight) for all female fashion fields
         jewelry = []
         necklace = get("necklace")
         earrings = get("earrings")
@@ -995,23 +1007,22 @@ class CharacterPromptBuilderScene:
         watches_color = get("watches_color")
         glasses = ""
         glasses_color = ""
-        if s.get("mens_glasses", "-") != "-" and float(s.get("mens_glasses_weight", 0)) > 0 and s.get("gender", "-") == "Man" and shot_level in ("full", "medium", "bust", "close"):
+        if s.get("mens_glasses", "-") != "-" and s.get("gender", "-") == "Man" and shot_level in ("full", "medium", "bust", "close"):
             glasses = s.get("mens_glasses").lower()
             glasses_color = s.get("mens_glasses_color", "-").lower()
-        if s.get("womens_glasses", "-") != "-" and float(s.get("womens_glasses_weight", 0)) > 0 and s.get("gender", "-") == "Woman" and shot_level in ("full", "medium", "bust", "close"):
+        if s.get("womens_glasses", "-") != "-" and s.get("gender", "-") == "Woman" and shot_level in ("full", "medium", "bust", "close"):
             glasses = s.get("womens_glasses").lower()
             glasses_color = s.get("womens_glasses_color", "-").lower()
-        # Build jewelry/accessory phrase more naturally
         accessory_parts = []
-        if necklace != "-" and getf("necklace_weight") > 0 and shot_level in ("full", "medium", "bust"):
+        if necklace != "-" and shot_level in ("full", "medium", "bust"):
             accessory_parts.append(f"{get('necklace').lower()} necklace")
-        if earrings != "-" and getf("earrings_weight") > 0 and shot_level in ("full", "medium", "bust", "close"):
+        if earrings != "-" and shot_level in ("full", "medium", "bust", "close"):
             accessory_parts.append(f"{get('earrings').lower()} earrings")
-        if bracelet != "-" and getf("bracelet_weight") > 0 and shot_level in ("full", "medium"):
+        if bracelet != "-" and shot_level in ("full", "medium"):
             accessory_parts.append(f"{get('bracelet').lower()} bracelet")
-        if ring != "-" and getf("ring_weight") > 0 and shot_level in ("full", "medium"):
+        if ring != "-" and shot_level in ("full", "medium"):
             accessory_parts.append(f"{get('ring').lower()} ring")
-        if watches != "-" and getf("watches_weight") > 0 and shot_level in ("full", "medium"):
+        if watches != "-" and shot_level in ("full", "medium"):
             watch = watches.lower()
             if watches_color != "-" and watches_color != "":
                 watch = f"{watches_color.lower()} {watch}"
@@ -1030,7 +1041,7 @@ class CharacterPromptBuilderScene:
 
         # Tattoo
         tattoo_phrase = ""
-        if get("tattoo") != "-" and getf("tattoo_weight") > 0 and shot_level in ("full", "medium", "bust"):
+        if get("tattoo") != "-" and shot_level in ("full", "medium", "bust"):
             tattoo_desc = get("tattoo").lower()
             if tattoo_desc not in ["-", "no tattoos"]:
                 tattoo_phrase = f"with {tattoo_desc}"
@@ -1038,13 +1049,11 @@ class CharacterPromptBuilderScene:
         # Fingernails (for women, if not wearing gloves)
         fingernails_present = (
             get("fingernail_style") != "-" and
-            getf("fingernail_weight") > 0 and
             gender == "Woman"
         )
         gloves_type = s.get("womens_gloves", "-").lower()
         gloves_present = (
             gloves_type != "-" and
-            float(s.get("womens_gloves_weight", 0)) > 0 and
             s.get("gender", "-") == "Woman"
         )
         show_fingernails = fingernails_present and (
@@ -1063,7 +1072,7 @@ class CharacterPromptBuilderScene:
 
         # Shoes
         shoes_phrase = ""
-        if get("womens_shoes") != "-" and getf("womens_shoes_weight") > 0 and gender == "Woman" and shot_level == "full":
+        if get("womens_shoes") != "-" and gender == "Woman" and shot_level == "full":
             shoe_desc = get("womens_shoes").lower()
             if get("womens_shoe_color") != "-":
                 shoe_desc = f"{get('womens_shoe_color').lower()} {shoe_desc}"
@@ -1071,7 +1080,7 @@ class CharacterPromptBuilderScene:
             if shoe_material and shoe_material != "-":
                 shoe_desc = f"{shoe_desc} made of {shoe_material.lower()}"
             shoes_phrase = f"wearing {shoe_desc}"
-        elif get("mens_shoes") != "-" and getf("mens_shoes_weight") > 0 and gender == "Man" and shot_level == "full":
+        elif get("mens_shoes") != "-" and gender == "Man" and shot_level == "full":
             shoe_desc = get("mens_shoes").lower()
             if get("mens_shoe_color") != "-":
                 shoe_desc = f"{get('mens_shoe_color').lower()} {shoe_desc}"
@@ -1104,7 +1113,7 @@ class CharacterPromptBuilderScene:
 
         # Expression
         expression_phrase = ""
-        if get("facial_expression") != "-" and getf("facial_expression_weight") > 0:
+        if get("facial_expression") != "-":
             expression_phrase = f"looking {get('facial_expression').lower()}"
 
         # Shot
