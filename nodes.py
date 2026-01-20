@@ -855,7 +855,6 @@ class CharacterPromptBuilderScene:
             hair_parts.append(get("hair_color").lower())
         if hair_length != "-":
             hair_parts.append(hair_length.lower())
-            # Remove vivid phrase for extra long hair (no longer supported)
             if hair_length.lower() in ["waist length", "hip length", "tailbone length"]:
                 vivid_hair_length = f"that reaches down to {hair_length.lower().replace(' length', '')}"
         if get("hair_style") != "-":
@@ -1007,27 +1006,23 @@ class CharacterPromptBuilderScene:
                 and garment_material != "-" and stretched_material
             ):
                 # Use selected nipple/areola appearance if set, otherwise default to "nipples"
+                breast_size_desc = ""
+                if get("breast_size") != "-":
+                    breast_size_desc = get("breast_size").lower()
                 nipple_desc = ""
                 if get("nipple_appearance") != "-":
                     nipple_desc = get("nipple_appearance").lower()
                 areola_desc = ""
                 if get("areola_appearance") != "-":
                     areola_desc = get("areola_appearance").lower()
-                vulva_desc = ""
-                if get("vulva_appearance") != "-":
-                    vulva_desc = get("vulva_appearance").lower()
                 # Build phrase
-                if vulva_desc:
+                if areola_desc:
                     subtle_nipple_phrase = (
-                        f"the faint outline of her {nipple_desc} nipples and {areola_desc} areolae and {vulva_desc} vulva are subtly visible through the stretched tight {garment_material} of her {garment}"
-                    )
-                elif areola_desc:
-                    subtle_nipple_phrase = (
-                        f"the faint outline of her {nipple_desc} nipples and {areola_desc} areolae are subtly visible through the stretched tight {garment_material} of her {garment}"
+                        f"the faint outline of her {breast_size_desc} breasts, {nipple_desc} nipples and {areola_desc} areolae are subtly visible through the stretched tight {garment_material} of her {garment}"
                     )
                 else:
                     subtle_nipple_phrase = (
-                        f"the faint outline of her {nipple_desc} nipples are subtly visible through the stretched tight {garment_material} of her {garment}"
+                        f"the faint outline of her {breast_size_desc} breasts and {nipple_desc} nipples are subtly visible through the stretched tight {garment_material} of her {garment}"
                     )
                 clothing.append(subtle_nipple_phrase)
             # --- END: Subtle nipple outline logic ---
