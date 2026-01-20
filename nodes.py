@@ -894,9 +894,9 @@ class CharacterPromptBuilderScene:
                 # If a dress or top is present, underwear is only slightly visible
                 if (get("dresses") != "-" or get("tops") != "-"):
                     garment = "dress" if get("dresses") != "-" else "top" if get("tops") != "-" else None
-                    underwear_phrase = f"{poss} {uw} is slightly visible beneath {poss} {garment}"
+                    underwear_phrase = f"{poss} {uw} is slightly visible beneath {poss}"
                 else:
-                    underwear_phrase = f"{poss} is wearing {uw}"
+                    underwear_phrase = f"{poss} {uw}"
                 clothing.append(underwear_phrase)
             # LEGS
             if get("legs") != "-" and shot_level == "full":
@@ -1012,8 +1012,8 @@ class CharacterPromptBuilderScene:
                     )
                 clothing.append(subtle_nipple_phrase)
             # --- END: Subtle nipple outline logic ---
-            if clothing:
-                clothing_phrase = f"{subj} is wearing " + " and ".join(clothing)
+        if clothing:
+            clothing_phrase = f"{subj} is wearing " + " ".join(clothing)
 
         # Accessories
         # Only check for not "-" (no weight) for all female fashion fields
