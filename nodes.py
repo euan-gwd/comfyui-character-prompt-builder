@@ -255,6 +255,13 @@ class CharacterPromptBuilderFemaleFashion:
                 "settings_in": ("PM_SETTINGS",),
                 "womens_glasses": combo("womens_glasses_list"),
                 "womens_glasses_color": combo("womens_glasses_color_list"),
+                "stretched_material": (
+                    "BOOLEAN",
+                    {
+                        "default": False,
+                        "label": "Show subtle outline"
+                    }
+                 ),
                 "custom_clothing": (
                     "STRING",
                     {
@@ -288,6 +295,7 @@ class CharacterPromptBuilderFemaleFashion:
             fingernail_style="-", nail_color="-",
             settings_in=None,
             womens_glasses="-", womens_glasses_color="-",
+            stretched_material=False,
             custom_clothing="",
     ):
         settings = settings_in.copy() if settings_in else {}
@@ -313,6 +321,7 @@ class CharacterPromptBuilderFemaleFashion:
             "fingernail_style": fingernail_style, "nail_color": nail_color,
             "womens_glasses": womens_glasses,
             "womens_glasses_color": womens_glasses_color,
+            "stretched_material": stretched_material,
             "custom_clothing": custom_clothing,
         })
         return (settings,)
@@ -884,7 +893,8 @@ class CharacterPromptBuilderScene:
                     uw = f"{uw} made of {uw_material.lower()}"
                 # If a dress or top is present, underwear is only slightly visible
                 if (get("dresses") != "-" or get("tops") != "-"):
-                    underwear_phrase = f"{poss} {uw} is slightly visible beneath {poss} clothing"
+                    garment = "dress" if get("dresses") != "-" else "top" if get("tops") != "-" else None
+                    underwear_phrase = f"{poss} {uw} is slightly visible beneath {poss} {garment}"
                 else:
                     underwear_phrase = f"{poss} is wearing {uw}"
                 clothing.append(underwear_phrase)
@@ -967,9 +977,9 @@ class CharacterPromptBuilderScene:
                 clothing.append(custom_clothing.strip())
             # --- BEGIN: Subtle nipple outline logic ---
             subtle_nipple_phrase = ""
-            # Only allow for certain materials
-            allowed_materials = {"sheer", "thin", "transparent", "mesh", "lace", "silk", "satin", "wet", "see-through"}
+            stretched_material = s.get("stretched_material", False)
             # Get material for top or dress
+            garment = None
             garment_material = None
             if get("dresses") != "-":
                 garment = "dress"
@@ -977,14 +987,12 @@ class CharacterPromptBuilderScene:
             else:
                 garment = "top"
                 garment_material = s.get("tops_material", "-").lower()
-            # Check if garment material is in allowed list
-            material_ok = any(mat in garment_material for mat in allowed_materials)
             if (
                 gender == "Woman"
                 and (get("underwear") == "-")
                 and ((get("tops") != "-") or (get("dresses") != "-"))
                 and (not nsfw_appearance or nsfw_appearance == "-")
-                and garment_material != "-" and material_ok
+                and garment_material != "-" and stretched_material
             ):
                 # Use selected nipple/areola appearance if set, otherwise default to "nipples"
                 nipple_desc = ""
@@ -996,11 +1004,11 @@ class CharacterPromptBuilderScene:
                 # Build phrase
                 if areola_desc:
                     subtle_nipple_phrase = (
-                        f"the faint outline of her {nipple_desc} nipples and {areola_desc} areolae are subtly visible through the fabric of her {garment}"
+                        f"the faint outline of her {nipple_desc} nipples and {areola_desc} areolae are subtly visible through the stretched {garment_material} of her {garment}"
                     )
                 else:
                     subtle_nipple_phrase = (
-                        f"the faint outline of her {nipple_desc} nipples are subtly visible through the fabric of her {garment}"
+                        f"the faint outline of her {nipple_desc} nipples are subtly visible through the stretched {garment_material} of her {garment}"
                     )
                 clothing.append(subtle_nipple_phrase)
             # --- END: Subtle nipple outline logic ---
