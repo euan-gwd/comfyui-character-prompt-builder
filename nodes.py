@@ -1032,7 +1032,7 @@ class CharacterPromptBuilderScene:
                 clothing.append(subtle_nipple_phrase)
             # --- END: Subtle nipple outline logic ---
         if clothing:
-            clothing_phrase = f"{subj} is wearing " + " ".join(clothing)
+            clothing_phrase = f"{subj} is wearing a" + " ".join(clothing)
 
         # Accessories
         # Only check for not "-" (no weight) for all female fashion fields
