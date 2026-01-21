@@ -246,6 +246,7 @@ class CharacterPromptBuilderFemaleFashion:
                 "womens_shoe_material": combo("womens_shoe_material_list"),
                 "womens_gloves": combo("womens_gloves_list"),
                 "womens_gloves_color": combo("womens_gloves_color_list"),
+                "womens_gloves_material": combo("womens_gloves_material_list"),
                 "necklace": combo("necklace_list"),
                 "earrings": combo("earrings_list"),
                 "bracelet": combo("bracelet_list"),
@@ -292,6 +293,7 @@ class CharacterPromptBuilderFemaleFashion:
             womens_suits="-", womens_suits_helmet="-",
             womens_shoes="-", womens_shoe_color="-", womens_shoe_material="-",
             womens_gloves="-", womens_gloves_color="-",
+            womens_gloves_material="-",
             necklace="-", earrings="-", bracelet="-", ring="-",
             watches="-", watches_color="-",
             fingernail_style="-", nail_color="-",
@@ -314,6 +316,7 @@ class CharacterPromptBuilderFemaleFashion:
             "womens_suits_helmet": womens_suits_helmet,
             "womens_shoes": womens_shoes, "womens_shoe_color": womens_shoe_color, "womens_shoe_material": womens_shoe_material,
             "womens_gloves": womens_gloves, "womens_gloves_color": womens_gloves_color,
+            "womens_gloves_material": womens_gloves_material,
             "necklace": necklace,
             "earrings": earrings,
             "bracelet": bracelet,
@@ -965,8 +968,12 @@ class CharacterPromptBuilderScene:
             if s.get("womens_gloves", "-") != "-" and s.get("gender", "-") == "Woman" and shot_level in ("full", "medium", "bust"):
                 gloves = s.get("womens_gloves").lower()
                 gloves_color = s.get("womens_gloves_color", "-").lower()
+                # --- Add gloves material ---
+                gloves_material = s.get("womens_gloves_material", "-").lower()
                 if gloves_color != "-" and gloves_color != "":
                     gloves = f"{gloves_color} {gloves}"
+                if gloves_material != "-" and gloves_material != "":
+                    gloves = f"{gloves} made of {gloves_material}"
                 clothing.append(gloves)
             suit = None
             helmet = None
@@ -1015,19 +1022,25 @@ class CharacterPromptBuilderScene:
                 areola_desc = ""
                 if get("areola_appearance") != "-":
                     areola_desc = get("areola_appearance").lower()
-                # Build phrase
+                # --- Improved, always safe-for-work phrasing ---
+                details = []
+                if breast_size_desc:
+                    details.append(f"{breast_size_desc} breasts")
+                if nipple_desc:
+                    details.append(f"{nipple_desc} nipples")
                 if areola_desc:
-                    subtle_nipple_phrase = (
-                        f"the faint outline of her {breast_size_desc} breasts, {nipple_desc} nipples and {areola_desc} areolae are subtly visible through the stretched tight {garment_material} of her {garment}"
-                    )
+                    details.append(f"{areola_desc} areolae")
+                if details:
+                    details_str = ", ".join(details)
                 else:
-                    subtle_nipple_phrase = (
-                        f"the faint outline of her {breast_size_desc} breasts and {nipple_desc} nipples are subtly visible through the stretched tight {garment_material} of her {garment}"
-                    )
+                    details_str = "breasts and nipples"
+                subtle_nipple_phrase = (
+                    f"the subtle outline of her {details_str} is visible through the tight, stretched {garment_material} of her {garment}, but nothing is exposed"
+                )
                 clothing.append(subtle_nipple_phrase)
             # --- END: Subtle nipple outline logic ---
         if clothing:
-            clothing_phrase = f"{subj} is wearing a" + " ".join(clothing)
+            clothing_phrase = f"{subj} is wearing a " + " ".join(clothing)
 
         # Accessories
         # Only check for not "-" (no weight) for all female fashion fields
