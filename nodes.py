@@ -1035,12 +1035,14 @@ class CharacterPromptBuilderScene:
                 else:
                     details_str = "breasts and nipples"
                 subtle_nipple_phrase = (
-                    f"the subtle outline of her {details_str} is visible through the tight, stretched {garment_material} of her {garment}, but nothing is exposed"
+                    f"Her {garment}, made of {garment_material}, is tightly stretched and visibly compressing her {details_str}, conforming closely to her shape and realistically revealing the natural contours beneath the fabric, including subtle outlines; the effect is natural and realistic, never explicit or exposed."
                 )
-                clothing.append(subtle_nipple_phrase)
+                extra_clothing_description = subtle_nipple_phrase
             # --- END: Subtle nipple outline logic ---
         if clothing:
             clothing_phrase = f"{subj} is wearing a " + " ".join(clothing)
+            if 'extra_clothing_description' in locals():
+                clothing_phrase += ", " + extra_clothing_description
 
         # Accessories
         # Only check for not "-" (no weight) for all female fashion fields
