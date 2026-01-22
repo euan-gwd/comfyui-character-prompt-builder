@@ -69,7 +69,7 @@ def _get_default_portrait_data():
         "model_pose_list": ["Standing", "Sitting", "Walking", "Leaning"],
         "shot_list": ["Portrait", "Full body", "Close-up", "Medium shot"],
         "light_type_list": ["Natural sunlight", "Studio lighting", "Soft ambient light"],
-        "light_direction_list": ["front", "left", "right", "top", "back"],
+        "light_quality_list": ["soft diffused", "hard dramatic", "even balanced", "high contrast", "low key", "high key", "chiaroscuro", "volumetric", "atmospheric"],
         "artistic_style_list": ["Photorealistic", "Impressionistic", "Cubist", "Surrealistic", "Abstract"],
         "visual_style_list": ["Cinematic", "Editorial", "Fashion Photography", "Fine Art", "Glamour", "High Fashion", "Vintage Film", "Noir", "Neon Noir", "Cyberpunk", "Vaporwave", "Lo-fi", "Polaroid", "35mm Film", "Medium Format", "Analog", "HDR", "Matte", "Glossy", "Soft Focus", "Bokeh", "Tilt-shift", "Double Exposure", "Light Leaks", "Grain", "Desaturated", "High Contrast", "Low Key", "High Key", "Golden Hour", "Blue Hour", "Moody", "Ethereal", "Dreamy", "Gritty", "Raw", "Clean", "Minimal", "Dramatic"],
         "location_list": ["New York", "London", "Paris", "Berlin", "Tokyo", "Beijing", "Moscow", "Dubai", "Rio de Janeiro", "Cape Town"],
@@ -582,7 +582,7 @@ class CharacterPromptBuilderScene:
                 "weather": (["-", "Sunny", "Cloudy", "Overcast", "Rainy", "Stormy", "Snowy", "Foggy", "Misty", "Windy", "Clear"],),
                 "season": (["-", "Spring", "Summer", "Autumn", "Winter"],),
                 "light_type": combo("light_type_list"),
-                "light_direction": combo("light_direction_list"),
+                "light_quality": combo("light_quality_list"),
                 "light_weight": weight(),
                 "prompt_prefix": ("STRING", {"multiline": True, "default": "", "placeholder": "Added before the generated prompt"}),
                 "prompt_suffix": ("STRING", {"multiline": True, "default": "", "placeholder": "Added after the generated prompt"}),
@@ -603,7 +603,7 @@ class CharacterPromptBuilderScene:
 
     def generate(self, num_people, settings1, artistic_style="-", artistic_style_weight=1,
                  shot="-", shot_weight=1,
-                 light_type="-", light_direction="-", light_weight=0,
+                 light_type="-", light_quality="-", light_weight=0,
                  preset_location="-", location="", time_of_day="-", weather="-", season="-",
                  prompt_prefix="", prompt_suffix="", negative_prompt="",
                  photorealism_improvement="disable",
@@ -639,7 +639,7 @@ class CharacterPromptBuilderScene:
             "artistic_style": artistic_style, "artistic_style_weight": artistic_style_weight,
             "shot": shot, "shot_weight": shot_weight,
             "location": scene_location, "time_of_day": time_of_day, "weather": weather, "season": season,
-            "light_type": light_type, "light_direction": light_direction, "light_weight": light_weight,
+            "light_type": light_type, "light_quality": light_quality, "light_weight": light_weight,
         }
 
         # Generate prose for each person
@@ -1231,9 +1231,13 @@ class CharacterPromptBuilderScene:
         # Lighting
         lighting_phrase = ""
         if get("light_type") != '-' and getf("light_weight") > 0:
-            light_desc = get("light_type").lower()
-            if get("light_direction") != '-':
-                light_desc += f" from the {get('light_direction').lower()}"
+            light_desc = ""
+            if s.get("light_quality", '-') != '-':
+                light_desc += s.get("light_quality").lower()
+            if get("light_type") != '-':
+                if light_desc:
+                    light_desc += " "
+                light_desc += get("light_type").lower()
             lighting_phrase = f"the scene is lit by {light_desc}"
 
         # Compose into a single natural language paragraph
