@@ -574,7 +574,7 @@ class CharacterPromptBuilderScene:
                 "settings1": ("PM_SETTINGS",),
                 "artistic_style": combo("artistic_style_list", "Photorealistic"),
                 "artistic_style_weight": weight(1),
-                "shot": combo("shot_list"),
+                # "shot": combo("shot_list"),
                 "field_of_view": combo("field_of_view_list"),
                 "camera_distance": combo("camera_distance_list"),
                 "preset_location": combo("location_list"),
@@ -602,7 +602,7 @@ class CharacterPromptBuilderScene:
     CATEGORY = "CharacterPromptBuilder"
 
     def generate(self, num_people, settings1, artistic_style="-", artistic_style_weight=1,
-                 shot="-",
+                #  shot="-",
                  field_of_view="-", camera_distance="-",
                  light_type="-", light_quality="-", light_weight=0,
                  preset_location="-", location="", time_of_day="-", weather="-", season="-",
@@ -637,7 +637,7 @@ class CharacterPromptBuilderScene:
 
         scene_settings = {
             "artistic_style": artistic_style, "artistic_style_weight": artistic_style_weight,
-            "shot": shot,
+            # "shot": shot,
             "field_of_view": field_of_view,
             "camera_distance": camera_distance,
             "location": scene_location, "time_of_day": time_of_day, "weather": weather, "season": season,
@@ -678,7 +678,7 @@ class CharacterPromptBuilderScene:
         return (final_prompt.strip(), neg)
 
     def _generate_natural_language(self, s, negative_prompt):
-        shot_type = s.get("shot", "-")
+        # shot_type = s.get("shot", "-")
 
         def get_eye_mood(expression):
             expression_lower = expression.lower() if expression and expression != "-" else ""
@@ -1196,10 +1196,10 @@ class CharacterPromptBuilderScene:
             expression_phrase = f"looking {get('facial_expression').lower()}"
 
         # Shot
-        shot_phrase = ""
-        if get("shot") != "-":
-            shot_type_str = get('shot').lower()
-            shot_phrase = f"The shot is {shot_type_str}"
+        # shot_phrase = ""
+        # if get("shot") != "-":
+        #     shot_type_str = get('shot').lower()
+        #     shot_phrase = f"Shot is a{shot_type_str}"
         # Field of view
         field_of_view_phrase = ""
         if get("field_of_view") != "-":
@@ -1207,7 +1207,7 @@ class CharacterPromptBuilderScene:
         # Camera distance
         camera_distance_phrase = ""
         if get("camera_distance") != "-":
-            camera_distance_phrase = f"Camera distance is {get('camera_distance').lower()}"
+            camera_distance_phrase = f"The Camera distance is {get('camera_distance').lower()}"
         # Location
         location = get("location", "")
         location_phrase = ""
@@ -1263,12 +1263,6 @@ class CharacterPromptBuilderScene:
                 light_desc += get("light_type").lower()
             lighting_phrase = f"The scene is lit by {light_desc}"
 
-        # Shot
-        shot_phrase = ""
-        if get("shot") != "-":
-            shot_type_str = get('shot').lower()
-            shot_phrase = f"The image is captured as a {shot_type_str}"
-
 
         # Compose into a single natural language paragraph
         # Insert style_prefix first if present
@@ -1300,9 +1294,9 @@ class CharacterPromptBuilderScene:
             location_phrase,
             environment_phrase,
             lighting_phrase,
-            shot_phrase,
             field_of_view_phrase,
-            camera_distance_phrase,
+            camera_distance_phrase
+            # shot_phrase
         ]
 
         # Remove empty phrases and strip
