@@ -777,7 +777,25 @@ class CharacterPromptBuilderScene:
             obj = "them"
             gender_word = "person"
 
-        nationality_str = get("nationality_1", "").strip()
+        # --- Nationality mix logic ---
+        nationality_1 = get("nationality_1", "").strip()
+        nationality_2 = get("nationality_2", "").strip()
+        nationality_mix = getf("nationality_mix", 0.0)
+        nationality_str = ""
+        if nationality_1 and nationality_1 != "-" and nationality_2 and nationality_2 != "-" and nationality_1 != nationality_2:
+            if nationality_mix >= 0.95:
+                nationality_str = nationality_2
+            elif nationality_mix <= 0.05:
+                nationality_str = nationality_1
+            else:
+                percent_2 = int(nationality_mix * 100)
+                percent_1 = 100 - percent_2
+                nationality_str = f"{percent_1}% {nationality_1} and {percent_2}% {nationality_2}"
+        elif nationality_1 and nationality_1 != "-":
+            nationality_str = nationality_1
+        elif nationality_2 and nationality_2 != "-":
+            nationality_str = nationality_2
+
         # --- skin tone addition ---
         skin_tone = get("skin_tone", "-")
         skin_tone_phrase = ""
