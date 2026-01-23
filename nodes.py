@@ -583,8 +583,7 @@ class CharacterPromptBuilderScene:
                 "light_weight": weight(),
                 "prompt_prefix": ("STRING", {"multiline": True, "default": "", "placeholder": "Added before the generated prompt"}),
                 "prompt_suffix": ("STRING", {"multiline": True, "default": "", "placeholder": "Added after the generated prompt"}),
-                "negative_prompt": ("STRING", {"multiline": True, "default": ""}),
-                "photorealism_improvement": (["disable", "enable"],),
+                "negative_prompt": ("STRING", {"multiline": True, "default": "","placeholder": "Negative prompt"})
             },
             "optional": {
                 "settings2": ("PM_SETTINGS",),
@@ -603,7 +602,6 @@ class CharacterPromptBuilderScene:
                  light_type="-", light_quality="-", light_weight=0,
                  preset_location="-", location="", time_of_day="-", weather="-", season="-",
                  prompt_prefix="", prompt_suffix="", negative_prompt="",
-                 photorealism_improvement="disable",
                  settings2=None, settings3=None, settings4=None):
 
         # Collect settings for each person
@@ -646,7 +644,7 @@ class CharacterPromptBuilderScene:
             # Merge scene-level settings for each person (for pose, shot, etc.)
             s.update(scene_settings)
             # For clarity, add a label for each person if more than one
-            prompt, _ = self._generate_natural_language(s, "", photorealism_improvement)
+            prompt, _ = self._generate_natural_language(s, "")
             if num_people != "1":
                 prompt = f"Person {idx+1}: {prompt}"
             person_prompts.append(prompt)
@@ -672,7 +670,7 @@ class CharacterPromptBuilderScene:
 
         return (final_prompt.strip(), neg)
 
-    def _generate_natural_language(self, s, negative_prompt, photorealism_improvement):
+    def _generate_natural_language(self, s, negative_prompt):
         shot_type = s.get("shot", "-")
         # Map shot_type to shot_level for logic
         shot_map = {
@@ -1054,10 +1052,17 @@ class CharacterPromptBuilderScene:
                 extra_clothing_description = subtle_nipple_phrase
             # --- END: Subtle nipple outline logic ---
         if clothing:
-            clothing_phrase = f"{subj} is wearing a " + " ".join(clothing)
+            # Use commas and 'and' for the last item
+            if len(clothing) == 1:
+                clothing_str = clothing[0]
+            elif len(clothing) == 2:
+                clothing_str = f"{clothing[0]} and {clothing[1]}"
+            else:
+                clothing_str = ", ".join(clothing[:-1]) + f", and {clothing[-1]}"
             if 'extra_clothing_description' in locals():
-                clothing_phrase += ", " + extra_clothing_description
-
+                clothing_phrase = f"{subj} is wearing {clothing_str}, {extra_clothing_description}"
+            else:
+                clothing_phrase = f"{subj} is wearing {clothing_str}"
         # Accessories
         # Only check for not "-" (no weight) for all female fashion fields
         jewelry = []
@@ -1316,10 +1321,6 @@ class CharacterPromptBuilderScene:
             prompt = main_desc
             if prompt and not prompt.endswith("."):
                 prompt += "."
-
-        if photorealism_improvement == "enable":
-            prompt += " Professional photography with balanced exposure and subtle film grain."
-            negative_prompt = negative_prompt + ", shiny skin, reflections on the skin" if negative_prompt else "shiny skin, reflections on the skin"
 
         return (prompt.strip(), negative_prompt)
 
