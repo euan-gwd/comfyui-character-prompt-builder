@@ -751,7 +751,12 @@ class CharacterPromptBuilderScene:
             style_clean = style.strip().lower()
             if not any(style_clean.endswith(suffix) for suffix in ["illustration", "portrait", "painting", "drawing"]):
                 style_clean += " style"
-            style_prefix = f"In {style_clean}"
+            if style_weight >= 1.5:
+                style_prefix = f"In a strongly emphasized {style_clean}"
+            elif style_weight >= 1.0:
+                style_prefix = f"In a clear {style_clean}"
+            else:
+                style_prefix = f"In a subtle {style_clean}"
 
         # Subject
         gender = get("gender")
@@ -1264,8 +1269,16 @@ class CharacterPromptBuilderScene:
 
         # Shot
         shot_phrase = ""
-        if get("shot") != "-" and getf("shot_weight") > 0:
-            shot_phrase = f"The image is captured as a {get('shot').lower()}"
+        shot_weight_val = getf("shot_weight")
+        if get("shot") != "-" and shot_weight_val > 0:
+            shot_type_str = get('shot').lower()
+            if shot_weight_val >= 1.5:
+                shot_phrase = f"The image is distinctly captured as a {shot_type_str}, strongly emphasizing this composition."
+            elif shot_weight_val >= 1.0:
+                shot_phrase = f"The image is clearly captured as a {shot_type_str}."
+            else:
+                shot_phrase = f"The image is captured as a {shot_type_str}."
+
 
         # Compose into a single natural language paragraph
         # Insert style_prefix first if present
