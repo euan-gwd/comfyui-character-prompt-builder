@@ -573,7 +573,6 @@ class CharacterPromptBuilderScene:
                 "artistic_style": combo("artistic_style_list", "Photorealistic"),
                 "artistic_style_weight": weight(1),
                 "shot": combo("shot_list"),
-                "shot_weight": weight(1),
                 "preset_location": combo("location_list"),
                 "location": ("STRING", {"multiline": True, "default": "", "placeholder": "Add a custom location description in here"}),
                 "time_of_day": (["-", "Dawn", "Morning", "Midday", "Afternoon", "Golden Hour", "Sunset", "Dusk", "Evening", "Night", "Midnight", "Blue Hour"],),
@@ -600,7 +599,7 @@ class CharacterPromptBuilderScene:
     CATEGORY = "CharacterPromptBuilder"
 
     def generate(self, num_people, settings1, artistic_style="-", artistic_style_weight=1,
-                 shot="-", shot_weight=1,
+                 shot="-",
                  light_type="-", light_quality="-", light_weight=0,
                  preset_location="-", location="", time_of_day="-", weather="-", season="-",
                  prompt_prefix="", prompt_suffix="", negative_prompt="",
@@ -635,7 +634,7 @@ class CharacterPromptBuilderScene:
 
         scene_settings = {
             "artistic_style": artistic_style, "artistic_style_weight": artistic_style_weight,
-            "shot": shot, "shot_weight": shot_weight,
+            "shot": shot,
             "location": scene_location, "time_of_day": time_of_day, "weather": weather, "season": season,
             "light_type": light_type, "light_quality": light_quality, "light_weight": light_weight,
         }
@@ -674,33 +673,19 @@ class CharacterPromptBuilderScene:
         return (final_prompt.strip(), neg)
 
     def _generate_natural_language(self, s, negative_prompt, photorealism_improvement):
-        # --- Helper for shot type filtering using shot_list keywords ---
-        def get_shot_level(shot):
-            """Classify shot type for filtering details using shot_list keywords."""
-            if not shot or shot == "-":
-                return "full"  # Show everything
-            shot = shot.lower()
-            # Use keywords from shot_list for mapping
-            if any(x in shot for x in [
-                "full body", "full-length", "head-to-toe", "entire body", "full figure", "full-body", "runway", "feet fully visible"
-            ]):
-                return "full"
-            if any(x in shot for x in [
-                "medium shot", "waist up", "half-length", "cowboy shot", "three-quarter", "profile view", "over-the-shoulder", "medium"
-            ]):
-                return "medium"
-            if any(x in shot for x in [
-                "head and shoulders", "bust", "shoulders", "portrait", "close-up", "face", "head portrait", "headshot"
-            ]):
-                return "bust"
-            if any(x in shot for x in [
-                "close-up", "face", "eye-level", "pov close-up", "pov intimate", "pov kissing"
-            ]):
-                return "close"
-            return "full"
-
         shot_type = s.get("shot", "-")
-        shot_level = get_shot_level(shot_type)
+        # Map shot_type to shot_level for logic
+        shot_map = {
+            "full body": "full",
+            "full": "full",
+            "medium shot": "medium",
+            "medium": "medium",
+            "bust": "bust",
+            "close-up": "close",
+            "close": "close",
+            "portrait": "bust",
+        }
+        shot_level = shot_map.get(str(shot_type).strip().lower(), "full")
 
         def get_eye_mood(expression):
             expression_lower = expression.lower() if expression and expression != "-" else ""
@@ -826,7 +811,7 @@ class CharacterPromptBuilderScene:
         body_type = get("body_type")
         body_type_phrase = ""
         if body_type != "-" and shot_level in ("full", "medium"):
-            body_type_phrase = f"{poss} body is {body_type.lower()}"
+            body_type_phrase = f"{subj} is {body_type.lower()}"
 
         # Breasts and bum (for women)
         body_features = []
@@ -1212,7 +1197,7 @@ class CharacterPromptBuilderScene:
 
         # Shot
         shot_phrase = ""
-        if get("shot") != "-" and getf("shot_weight") > 0:
+        if get("shot") != "-":
             shot_phrase = f"captured as a {get('shot').lower()}"
 
         # Location
@@ -1269,15 +1254,9 @@ class CharacterPromptBuilderScene:
 
         # Shot
         shot_phrase = ""
-        shot_weight_val = getf("shot_weight")
-        if get("shot") != "-" and shot_weight_val > 0:
+        if get("shot") != "-":
             shot_type_str = get('shot').lower()
-            if shot_weight_val >= 1.5:
-                shot_phrase = f"The image is distinctly captured as a {shot_type_str}, strongly emphasizing this composition."
-            elif shot_weight_val >= 1.0:
-                shot_phrase = f"The image is clearly captured as a {shot_type_str}."
-            else:
-                shot_phrase = f"The image is captured as a {shot_type_str}."
+            shot_phrase = f"The image is captured as a {shot_type_str}."
 
 
         # Compose into a single natural language paragraph
