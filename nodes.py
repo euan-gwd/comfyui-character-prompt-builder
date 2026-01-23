@@ -1214,16 +1214,16 @@ class CharacterPromptBuilderScene:
         location = get("location", "")
         location_phrase = ""
         if location and location.strip() and location.strip() != "-":
-            location_phrase = f"The scene takes place {location.strip()}."
+            location_phrase = f"The scene takes place {location.strip()}"
 
         # Environment
         env_parts = []
         if get("time_of_day") != "-":
-            env_parts.append(f"It is {get('time_of_day').lower()}.")
+            env_parts.append(f"It is {get('time_of_day').lower()}")
         if get("weather") != "-":
-            env_parts.append(f"The weather is {get('weather').lower()}.")
+            env_parts.append(f"The weather is {get('weather').lower()}")
         if get("season") != "-":
-            env_parts.append(f"It is {get('season').lower()} season.")
+            env_parts.append(f"It is {get('season').lower()} season")
         environment_phrase = " ".join(env_parts)
 
         # Skin
@@ -1260,12 +1260,12 @@ class CharacterPromptBuilderScene:
                 if light_desc:
                     light_desc += " "
                 light_desc += get("light_type").lower()
-            lighting_phrase = f"The scene is lit by {light_desc}."
+            lighting_phrase = f"The scene is lit by {light_desc}"
 
         # Shot
         shot_phrase = ""
         if get("shot") != "-" and getf("shot_weight") > 0:
-            shot_phrase = f"The image is captured as a {get('shot').lower()}."
+            shot_phrase = f"The image is captured as a {get('shot').lower()}"
 
         # Compose into a single natural language paragraph
         # Insert style_prefix first if present
