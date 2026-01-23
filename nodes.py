@@ -835,7 +835,7 @@ class CharacterPromptBuilderScene:
             body_features.append(f"{get('bum_size').lower()} bum")
         body_features_phrase = ""
         if body_features:
-            body_features_phrase = f"{poss} " + " and ".join(body_features)
+            body_features_phrase = f"{subj} has " + " and ".join(body_features)
 
         # Face features
         face_features = []
