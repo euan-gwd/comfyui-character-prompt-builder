@@ -104,7 +104,6 @@ class CharacterPromptBuilderPerson:
                 "nationality_2": combo("nationality_list"),
                 "nationality_mix": weight(0.0),
                 "body_type": combo("body_type_list"),
-                "body_type_weight": weight(),
                 "breast_size": combo("breast_size_list"),
                 "breast_size_weight": weight(),
                 "bum_size": combo("bum_size_list"),
@@ -156,7 +155,7 @@ class CharacterPromptBuilderPerson:
     CATEGORY = "CharacterPromptBuilder"
 
     def run(self, gender="-", age=20, nationality_1="-", nationality_2="-", nationality_mix=0.5,
-            body_type="-", body_type_weight=0, breast_size="-", breast_size_weight=0,
+            body_type="-", breast_size="-", breast_size_weight=0,
             bum_size="-",
             face_shape="-", eyes_color="-",
             facial_expression="-",
@@ -178,7 +177,7 @@ class CharacterPromptBuilderPerson:
         settings.update({
             "gender": gender, "age": age, "nationality_1": nationality_1,
             "nationality_2": nationality_2, "nationality_mix": nationality_mix,
-            "body_type": body_type, "body_type_weight": body_type_weight,
+            "body_type": body_type,
             "breast_size": breast_size, "breast_size_weight": breast_size_weight,
             "bum_size": bum_size,
             "face_shape": face_shape,
@@ -804,7 +803,7 @@ class CharacterPromptBuilderScene:
         # Body type
         body_type = get("body_type")
         body_type_phrase = ""
-        if body_type != "-" and getf("body_type_weight") > 0 and shot_level in ("full", "medium"):
+        if body_type != "-" and shot_level in ("full", "medium"):
             body_type_phrase = f"{poss} build is {body_type.lower()}"
 
         # Breasts and bum (for women)
