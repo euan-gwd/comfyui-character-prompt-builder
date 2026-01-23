@@ -809,12 +809,22 @@ class CharacterPromptBuilderScene:
 
         # Breasts and bum (for women)
         body_features = []
+        breast_size_weight_val = getf("breast_size_weight")
         if get("breast_size") != "-" and getf("breast_size_weight") > 0 and gender == "Woman" and shot_level in ("full", "medium", "bust"):
             breast = get('breast_size').lower()
-            if "breast" in breast or "bzust" in breast:
-                body_features.append(breast)
+             # Emphasize breast size based on weight
+            if breast_size_weight_val >= 1.5:
+                breast_desc = f"strikingly {breast}"
+            elif breast_size_weight_val >= 1.0:
+                breast_desc = f"noticeably {breast}"
+            elif breast_size_weight_val >= 0.5:
+                breast_desc = f"slightly {breast}"
             else:
-                body_features.append(f"{breast} breasts")
+                breast_desc = f"{breast}"
+            if "breast" in breast or "bust" in breast:
+                body_features.append(breast_desc)
+            else:
+                body_features.append(f"{breast_desc} breasts")
         if get("bum_size") != "-" and shot_level == "full":
             body_features.append(f"{get('bum_size').lower()} bum")
         body_features_phrase = ""
