@@ -121,7 +121,6 @@ class CharacterPromptBuilderPerson:
                 "hair_length": combo("hair_length_list"),
                 "hair_color": combo("hair_color_list"),
                 "beard": combo("beard_list"),
-                "disheveled": weight(),
                 # === SKIN ===
                 "skin_tone": combo("skin_tone_list"),
                 "skin_details": weight(),
@@ -163,7 +162,7 @@ class CharacterPromptBuilderPerson:
             lip_color="-",
             makeup="-",
             hair_style="-", hair_length="-",
-            hair_color="-", disheveled=0, beard="-",
+            hair_color="-", beard="-",
             skin_details=0, skin_tone="-", skin_pores=0, dimples=0, freckles=0, moles=0,
             skin_imperfections=0, skin_acne=0, tanned_skin=0,
             eyes_details=1, iris_details=1, circular_iris=1, circular_pupil=1,
@@ -187,7 +186,7 @@ class CharacterPromptBuilderPerson:
             "makeup": makeup,
             "hair_style": hair_style,
             "hair_length": hair_length,
-            "hair_color": hair_color, "disheveled": disheveled, "beard": beard,
+            "hair_color": hair_color, "beard": beard,
             "skin_details": skin_details, "skin_tone": skin_tone, "skin_pores": skin_pores, "dimples": dimples,
             "freckles": freckles, "moles": moles, "skin_imperfections": skin_imperfections,
             "skin_acne": skin_acne, "tanned_skin": tanned_skin,
@@ -892,8 +891,6 @@ class CharacterPromptBuilderScene:
         hair_phrase = ""
         if hair_parts:
             hair_desc = ", ".join(hair_parts)
-            if getf("disheveled") > 0:
-                hair_desc += ", slightly disheveled"
             if vivid_hair_length:
                 hair_phrase = f"{poss} hair is {hair_desc} {vivid_hair_length}"
             else:
