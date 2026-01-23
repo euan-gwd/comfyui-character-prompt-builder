@@ -68,6 +68,8 @@ def _get_default_portrait_data():
         "nsfw_appearance_list": ["Topless", "Nude", "Sensual", "Erotic"],
         "model_pose_list": ["Standing", "Sitting", "Walking", "Leaning"],
         "shot_list": ["Portrait", "Full body", "Close-up", "Medium shot"],
+        "camera_distance_list": ["Medium shot (camera 4–8 feet from subject, waist up visible)"],
+        "field_of_view_list": ["Normal (40°–50°)"],
         "light_type_list": ["Natural sunlight", "Studio lighting", "Soft ambient light"],
         "light_quality_list": ["soft diffused", "hard dramatic", "even balanced", "high contrast", "low key", "high key", "chiaroscuro", "volumetric", "atmospheric"],
         "artistic_style_list": ["Photorealistic", "Impressionistic", "Cubist", "Surrealistic", "Abstract"],
@@ -573,6 +575,8 @@ class CharacterPromptBuilderScene:
                 "artistic_style": combo("artistic_style_list", "Photorealistic"),
                 "artistic_style_weight": weight(1),
                 "shot": combo("shot_list"),
+                "field_of_view": combo("field_of_view_list"),
+                "camera_distance": combo("camera_distance_list"),
                 "preset_location": combo("location_list"),
                 "location": ("STRING", {"multiline": True, "default": "", "placeholder": "Add a custom location description in here"}),
                 "time_of_day": (["-", "Dawn", "Morning", "Midday", "Afternoon", "Golden Hour", "Sunset", "Dusk", "Evening", "Night", "Midnight", "Blue Hour"],),
@@ -599,6 +603,7 @@ class CharacterPromptBuilderScene:
 
     def generate(self, num_people, settings1, artistic_style="-", artistic_style_weight=1,
                  shot="-",
+                 field_of_view="-", camera_distance="-",
                  light_type="-", light_quality="-", light_weight=0,
                  preset_location="-", location="", time_of_day="-", weather="-", season="-",
                  prompt_prefix="", prompt_suffix="", negative_prompt="",
@@ -633,6 +638,8 @@ class CharacterPromptBuilderScene:
         scene_settings = {
             "artistic_style": artistic_style, "artistic_style_weight": artistic_style_weight,
             "shot": shot,
+            "field_of_view": field_of_view,
+            "camera_distance": camera_distance,
             "location": scene_location, "time_of_day": time_of_day, "weather": weather, "season": season,
             "light_type": light_type, "light_quality": light_quality, "light_weight": light_weight,
         }
@@ -1203,8 +1210,16 @@ class CharacterPromptBuilderScene:
         # Shot
         shot_phrase = ""
         if get("shot") != "-":
-            shot_phrase = f"captured as a {get('shot').lower()}"
-
+            shot_type_str = get('shot').lower()
+            shot_phrase = f"The shot is {shot_type_str}"
+        # Field of view
+        field_of_view_phrase = ""
+        if get("field_of_view") != "-":
+            field_of_view_phrase = f"Field of view: {get('field_of_view').lower()}"
+        # Camera distance
+        camera_distance_phrase = ""
+        if get("camera_distance") != "-":
+            camera_distance_phrase = f"Camera distance: {get('camera_distance').lower()}"
         # Location
         location = get("location", "")
         location_phrase = ""
@@ -1261,7 +1276,7 @@ class CharacterPromptBuilderScene:
         shot_phrase = ""
         if get("shot") != "-":
             shot_type_str = get('shot').lower()
-            shot_phrase = f"The image is captured as a {shot_type_str}."
+            shot_phrase = f"The image is captured as a {shot_type_str}"
 
 
         # Compose into a single natural language paragraph
@@ -1295,6 +1310,8 @@ class CharacterPromptBuilderScene:
             environment_phrase,
             lighting_phrase,
             shot_phrase,
+            field_of_view_phrase,
+            camera_distance_phrase,
         ]
 
         # Remove empty phrases and strip

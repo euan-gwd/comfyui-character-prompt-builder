@@ -1695,6 +1695,25 @@
     "Wide shot (shows subject and environment, lots of background)",
     "Extreme long shot (subject is very small in a vast environment)"
   ],
+  "field_of_view_list": [
+    "Ultra wide (120°+)",
+    "Wide (80°–120°)",
+    "Standard (50°–80°)",
+    "Normal (40°–50°)",
+    "Portrait (30°–40°)",
+    "Telephoto (15°–30°)",
+    "Super telephoto (<15°)"
+  ],
+  "camera_distance_list": [
+    "Extreme close-up (camera inches from subject, only part of face visible)",
+    "Close-up (camera 1–2 feet from subject, face fills frame)",
+    "Medium close-up (camera 2–4 feet from subject, head and shoulders visible)",
+    "Medium shot (camera 4–8 feet from subject, waist up visible)",
+    "Medium long shot (camera 8–12 feet from subject, knees up visible)",
+    "Full shot (camera 12–20 feet from subject, full body visible)",
+    "Long shot (camera 20+ feet from subject, subject and environment visible)",
+    "Extreme long shot (camera 50+ feet from subject, subject very small in frame)"
+  ],
   "fashion_aesthetic_list": [
     "Supermodel",
     "Runway Model",
