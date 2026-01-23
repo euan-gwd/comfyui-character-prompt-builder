@@ -826,7 +826,7 @@ class CharacterPromptBuilderScene:
         body_type = get("body_type")
         body_type_phrase = ""
         if body_type != "-" and shot_level in ("full", "medium"):
-            body_type_phrase = f"{poss} build is {body_type.lower()}"
+            body_type_phrase = f"{poss} body is {body_type.lower()}"
 
         # Breasts and bum (for women)
         body_features = []
