@@ -67,8 +67,7 @@ def _get_default_portrait_data():
         "fingernail_color_list": ["Natural", "Red", "Pink", "Black"],
         "nsfw_appearance_list": ["Topless", "Nude", "Sensual", "Erotic"],
         "model_pose_list": ["Standing", "Sitting", "Walking", "Leaning"],
-        "shot_list": ["Portrait", "Full body", "Close-up", "Medium shot"],
-        "camera_distance_list": ["Medium shot (camera 4–8 feet from subject, waist up visible)"],
+        "camera_angle_list": ["Medium shot (camera 4–8 feet from subject, waist up visible)"],
         "field_of_view_list": ["Normal (40°–50°)"],
         "light_type_list": ["Natural sunlight", "Studio lighting", "Soft ambient light"],
         "light_quality_list": ["soft diffused", "hard dramatic", "even balanced", "high contrast", "low key", "high key", "chiaroscuro", "volumetric", "atmospheric"],
@@ -574,9 +573,9 @@ class CharacterPromptBuilderScene:
                 "settings1": ("PM_SETTINGS",),
                 "artistic_style": combo("artistic_style_list", "Photorealistic"),
                 "artistic_style_weight": weight(1),
-                # "shot": combo("shot_list"),
+                "camera_lens": combo("camera_lens_specs"),
                 "field_of_view": combo("field_of_view_list"),
-                "camera_distance": combo("camera_distance_list"),
+                "camera_angle": combo("camera_angle_list"),
                 "preset_location": combo("location_list"),
                 "location": ("STRING", {"multiline": True, "default": "", "placeholder": "Add a custom location description in here"}),
                 "time_of_day": (["-", "Dawn", "Morning", "Midday", "Afternoon", "Golden Hour", "Sunset", "Dusk", "Evening", "Night", "Midnight", "Blue Hour"],),
@@ -602,8 +601,7 @@ class CharacterPromptBuilderScene:
     CATEGORY = "CharacterPromptBuilder"
 
     def generate(self, num_people, settings1, artistic_style="-", artistic_style_weight=1,
-                #  shot="-",
-                 field_of_view="-", camera_distance="-",
+                 field_of_view="-", camera_angle="-", camera_lens="-",
                  light_type="-", light_quality="-", light_weight=0,
                  preset_location="-", location="", time_of_day="-", weather="-", season="-",
                  prompt_prefix="", prompt_suffix="", negative_prompt="",
@@ -637,9 +635,9 @@ class CharacterPromptBuilderScene:
 
         scene_settings = {
             "artistic_style": artistic_style, "artistic_style_weight": artistic_style_weight,
-            # "shot": shot,
             "field_of_view": field_of_view,
-            "camera_distance": camera_distance,
+            "camera_angle": camera_angle,
+            "camera_lens": camera_lens,
             "location": scene_location, "time_of_day": time_of_day, "weather": weather, "season": season,
             "light_type": light_type, "light_quality": light_quality, "light_weight": light_weight,
         }
@@ -678,8 +676,6 @@ class CharacterPromptBuilderScene:
         return (final_prompt.strip(), neg)
 
     def _generate_natural_language(self, s, negative_prompt):
-        # shot_type = s.get("shot", "-")
-
         def get_eye_mood(expression):
             expression_lower = expression.lower() if expression and expression != "-" else ""
             if expression_lower in ["happy", "excited", "amused", "in love", "surprised and amused", "smiling", "silly"]:
@@ -1195,19 +1191,18 @@ class CharacterPromptBuilderScene:
         if get("facial_expression") != "-":
             expression_phrase = f"looking {get('facial_expression').lower()}"
 
-        # Shot
-        # shot_phrase = ""
-        # if get("shot") != "-":
-        #     shot_type_str = get('shot').lower()
-        #     shot_phrase = f"Shot is a{shot_type_str}"
         # Field of view
         field_of_view_phrase = ""
         if get("field_of_view") != "-":
             field_of_view_phrase = f"Field of view is {get('field_of_view').lower()}"
         # Camera distance
-        camera_distance_phrase = ""
-        if get("camera_distance") != "-":
-            camera_distance_phrase = f"The Camera distance is {get('camera_distance').lower()}"
+        camera_angle_phrase = ""
+        if get("camera_angle") != "-":
+            camera_angle_phrase = f"The Camera distance is {get('camera_angle').lower()}"
+        camera_lens_phrase = ""
+        if get("camera_lens") != "-":
+            camera_lens_phrase = f"The Camera lens is a {get('camera_lens').lower()}"
+
         # Location
         location = get("location", "")
         location_phrase = ""
@@ -1295,8 +1290,8 @@ class CharacterPromptBuilderScene:
             environment_phrase,
             lighting_phrase,
             field_of_view_phrase,
-            camera_distance_phrase
-            # shot_phrase
+            camera_angle_phrase,
+            camera_lens_phrase
         ]
 
         # Remove empty phrases and strip

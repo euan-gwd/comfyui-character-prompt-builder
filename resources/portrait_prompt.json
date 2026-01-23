@@ -1695,6 +1695,23 @@
     "Wide shot (shows subject and environment, lots of background)",
     "Extreme long shot (subject is very small in a vast environment)"
   ],
+  "camera_lens_specs": [
+    "24mm f/1.4 (wide angle, fast prime)",
+    "35mm f/1.8 (classic street/portrait prime)",
+    "50mm f/1.2 (standard portrait, shallow depth of field)",
+    "85mm f/1.4 (portrait prime, creamy bokeh)",
+    "105mm f/2.8 (macro, portrait)",
+    "135mm f/2 (telephoto portrait)",
+    "16-35mm f/2.8 (ultra wide zoom)",
+    "24-70mm f/2.8 (standard zoom)",
+    "70-200mm f/2.8 (telephoto zoom)",
+    "200mm f/2 (super telephoto prime)",
+    "300mm f/4 (wildlife/telephoto prime)",
+    "400mm f/2.8 (sports/telephoto prime)",
+    "18-55mm f/3.5-5.6 (kit lens)",
+    "50mm f/1.8 (nifty fifty, affordable prime)",
+    "100mm f/2.8 (macro prime)"
+  ],
   "field_of_view_list": [
     "Ultra wide (120°+)",
     "Wide (80°–120°)",
@@ -1704,15 +1721,20 @@
     "Telephoto (15°–30°)",
     "Super telephoto (<15°)"
   ],
-  "camera_distance_list": [
-    "Extreme close-up (camera inches from subject, only part of face visible)",
-    "Close-up (camera 1–2 feet from subject, face fills frame)",
-    "Medium close-up (camera 2–4 feet from subject, head and shoulders visible)",
-    "Medium shot (camera 4–8 feet from subject, waist up visible)",
-    "Medium long shot (camera 8–12 feet from subject, knees up visible)",
-    "Full shot (camera 12–20 feet from subject, full body visible)",
-    "Long shot (camera 20+ feet from subject, subject and environment visible)",
-    "Extreme long shot (camera 50+ feet from subject, subject very small in frame)"
+  "camera_angle_list": [
+    "Eye level (camera at subject's eye height, natural perspective)",
+    "High angle (camera above subject, looking down)",
+    "Low angle (camera below subject, looking up)",
+    "Overhead (bird's-eye view, directly above subject)",
+    "Worm's-eye view (extreme low angle, ground level)",
+    "Dutch angle (camera tilted for dramatic effect)",
+    "Shoulder level (camera at subject's shoulder height)",
+    "Hip level (camera at subject's hip height)",
+    "Knee level (camera at subject's knee height)",
+    "Ground level (camera on the ground, looking up or across)",
+    "Reverse angle (camera positioned opposite to previous shot, e.g., for dialogue)",
+    "Point of view (POV, from subject's perspective)",
+    "Back angle (camera behind subject, showing their back)"
   ],
   "fashion_aesthetic_list": [
     "Supermodel",
