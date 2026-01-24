@@ -1879,19 +1879,19 @@
     "Super telephoto (<15°)"
   ],
   "camera_angle_list": [
-    "Eye level (camera at subject's eye height, natural perspective)",
-    "High angle (camera above subject, looking down)",
-    "Low angle (camera below subject, looking up)",
-    "Overhead (bird's-eye view, directly above subject)",
-    "Worm's-eye view (extreme low angle, ground level)",
-    "Dutch angle (camera tilted for dramatic effect)",
-    "Shoulder level (camera at subject's shoulder height)",
-    "Hip level (camera at subject's hip height)",
-    "Knee level (camera at subject's knee height)",
-    "Ground level (camera on the ground, looking up or across)",
-    "Reverse angle (camera positioned opposite to previous shot, e.g., for dialogue)",
-    "Point of view (POV, from subject's perspective)",
-    "Back angle (camera behind subject, showing their back)"
+    "Eye level (camera at subject's eye height, 0° horizontal angle)",
+    "High angle (camera 30–60° above subject, looking down)",
+    "Low angle (camera 30–60° below subject, looking up)",
+    "Overhead (bird's-eye view, 90° above subject, directly down)",
+    "Worm's-eye view (extreme low angle, 80–90° below subject, ground level)",
+    "Dutch angle (camera tilted 15–45° for dramatic effect)",
+    "Shoulder level (camera at subject's shoulder height, ~10–20° below eye level)",
+    "Hip level (camera at subject's hip height, ~30–40° below eye level)",
+    "Knee level (camera at subject's knee height, ~60–70° below eye level)",
+    "Ground level (camera on the ground, 85–90° below subject, looking up or across)",
+    "Reverse angle (camera 180° opposite to previous shot, e.g., for dialogue)",
+    "Point of view (POV, from subject's perspective, matches subject's eye level and direction)",
+    "Back angle (camera behind subject, 180° from front, showing their back)"
   ],
   "fashion_aesthetic_list": [
     "Supermodel",
