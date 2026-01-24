@@ -49,8 +49,8 @@ def _get_default_portrait_data():
             "80lbs", "90lbs", "100lbs", "110lbs", "120lbs", "130lbs", "140lbs", "150lbs", "160lbs", "170lbs", "180lbs", "190lbs", "200lbs", "210lbs", "220lbs", "230lbs", "240lbs", "250lbs", "260lbs", "270lbs", "280lbs", "290lbs", "300lbs"
         ],
         "breast_cup_size_list": ["AA", "A", "B", "C", "D", "DD", "E", "F", "G", "H", "I", "J", "K"],
-        "breast_shape_list": ["Round", "Teardrop", "Asymmetrical", "East West", "Side Set", "Bell Shape", "Slender", "Relaxed", "Athletic", "Conical"],
         "bust_measurement_list": ["28", "30", "32", "34", "36", "38", "40", "42", "44", "46", "48", "50", "52", "54", "56", "58", "60"],
+        "breast_shape_list": ["Round", "Teardrop", "Asymmetrical", "East West", "Side Set", "Bell Shape", "Slender", "Relaxed", "Athletic", "Conical"],
         "bum_size_list": ["Small", "Medium", "Large"],
         "face_shape_list": ["Oval", "Round", "Square", "Heart-shaped", "Long"],
         "eyes_color_list": ["Brown", "Blue", "Green", "Hazel", "Gray"],
@@ -125,9 +125,9 @@ class CharacterPromptBuilderPerson:
                 "body_type": combo("body_type_list"),
                 "height": combo("height_list"),
                 "body_weight": combo("body_weight_list"),
-                "breast_cup_size": combo("breast_cup_size_list"),
+                # "breast_cup_size": combo("breast_cup_size_list"),
+                # "bust_measurement": combo("bust_measurement_list"),
                 "breast_shape": combo("breast_shape_list"),
-                "bust_measurement": combo("bust_measurement_list"),
                 "breast_size": combo("breast_size_list"),
                 "breast_size_weight": weight(),
                 "bum_size": combo("bum_size_list"),
@@ -182,7 +182,7 @@ class CharacterPromptBuilderPerson:
     CATEGORY = "CharacterPromptBuilder"
 
     def run(self, gender="-", age=20, nationality_1="-", nationality_2="-", nationality_mix=0.5,
-            body_type="-", height="-", body_weight="-", breast_cup_size="-", breast_shape="-", bust_measurement="-",
+            body_type="-", height="-", body_weight="-", breast_cup_size="-", bust_measurement="-", breast_shape="-",
             breast_size="-", breast_size_weight=0,
             bum_size="-",
             face_shape="-", nose_shape="-", nose_size="-", eyes_color="-", eye_shape="-",
@@ -207,7 +207,8 @@ class CharacterPromptBuilderPerson:
             "nationality_2": nationality_2, "nationality_mix": nationality_mix,
             "body_type": body_type,
             "height": height, "body_weight": body_weight,
-            "breast_cup_size": breast_cup_size, "breast_shape": breast_shape, "bust_measurement": bust_measurement,
+            # "breast_cup_size": breast_cup_size, "bust_measurement": bust_measurement,
+            "breast_shape": breast_shape,
             "breast_size": breast_size, "breast_size_weight": breast_size_weight,
             "bum_size": bum_size,
             "face_shape": face_shape,
@@ -849,14 +850,14 @@ class CharacterPromptBuilderScene:
         # Breasts and bum (for women)
         body_features = []
         if gender == "Woman":
-            cup = get("breast_cup_size")
+            # cup = get("breast_cup_size")
             shape = get("breast_shape")
-            bust = get("bust_measurement")
+            # bust = get("bust_measurement")
             breast_parts = []
-            if cup != "-":
-                breast_parts.append(f"{cup} cup")
-            if bust != "-":
-                breast_parts.append(f"{bust} inch bust")
+            # if cup != "-":
+            #     breast_parts.append(f"{cup} cup")
+            # if bust != "-":
+            #     breast_parts.append(f"{bust} inch bust")
             if shape != "-":
                 breast_parts.append(f"{shape.lower()} shaped")
             if breast_parts and get("breast_size") != "-" and getf("breast_size_weight") > 0:
