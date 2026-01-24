@@ -44,6 +44,9 @@ def _get_default_portrait_data():
         "bum_size_list": ["Small", "Medium", "Large"],
         "face_shape_list": ["Oval", "Round", "Square", "Heart-shaped", "Long"],
         "eyes_color_list": ["Brown", "Blue", "Green", "Hazel", "Gray"],
+        "eye_shape_list": ["Almond", "Round", "Monolid", "Hooded", "Upturned", "Downturned"],
+        "nose_shape_list": ["Straight", "Button", "Roman", "Snub", "Hawk"],
+        "nose_size_list": ["Small", "Medium", "Large"],
         "face_expression_list": ["Happy", "Sad", "Serious", "Surprised", "Calm", "Confident"],
         "lip_shape_list": ["Full Lips", "Thin Lips", "Medium Lips"],
         "lip_color_list": ["Natural", "Red", "Pink", "Nude"],
@@ -113,6 +116,9 @@ class CharacterPromptBuilderPerson:
                 # === FACE ===
                 "face_shape": combo("face_shape_list"),
                 "eyes_color": combo("eyes_color_list"),
+                "eye_shape": combo("eye_shape_list"),
+                "nose_shape": combo("nose_shape_list"),
+                "nose_size": combo("nose_size_list"),
                 "lip_shape": combo("lip_shape_list"),
                 "lip_color": combo("lip_color_list"),
                 "makeup": combo("makeup_list"),
@@ -121,7 +127,6 @@ class CharacterPromptBuilderPerson:
                 "hair_style": combo("hair_style_list"),
                 "hair_length": combo("hair_length_list"),
                 "hair_color": combo("hair_color_list"),
-                "beard": combo("beard_list"),
                 # === SKIN ===
                 "skin_tone": combo("skin_tone_list"),
                 "skin_details": weight(),
@@ -144,6 +149,8 @@ class CharacterPromptBuilderPerson:
                 "vulva_appearance": combo("vulva_appearance_list"),
                 # === TATTOOS ===
                 "tattoo": combo("tattoo_list"),
+                # === BEARDS ===
+                "beard": combo("beard_list"),
                 # === CHAIN ===
                 "settings_in": ("PM_SETTINGS",),
             }
@@ -157,7 +164,7 @@ class CharacterPromptBuilderPerson:
     def run(self, gender="-", age=20, nationality_1="-", nationality_2="-", nationality_mix=0.5,
             body_type="-", breast_size="-", breast_size_weight=0,
             bum_size="-",
-            face_shape="-", eyes_color="-",
+            face_shape="-", nose_shape="-", nose_size="-", eyes_color="-", eye_shape="-",
             facial_expression="-",
             lip_shape="-",
             lip_color="-",
@@ -181,13 +188,17 @@ class CharacterPromptBuilderPerson:
             "breast_size": breast_size, "breast_size_weight": breast_size_weight,
             "bum_size": bum_size,
             "face_shape": face_shape,
-            "eyes_color": eyes_color, "facial_expression": facial_expression,
+            "eyes_color": eyes_color,
+            "eye_shape": eye_shape,
+            "nose_shape": nose_shape,
+            "nose_size": nose_size,
             "lip_shape": lip_shape,
             "lip_color": lip_color,
             "makeup": makeup,
+            "facial_expression": facial_expression,
             "hair_style": hair_style,
             "hair_length": hair_length,
-            "hair_color": hair_color, "beard": beard,
+            "hair_color": hair_color,
             "skin_details": skin_details, "skin_tone": skin_tone, "skin_pores": skin_pores, "dimples": dimples,
             "freckles": freckles, "moles": moles, "skin_imperfections": skin_imperfections,
             "skin_acne": skin_acne, "tanned_skin": tanned_skin,
@@ -198,6 +209,7 @@ class CharacterPromptBuilderPerson:
             "vulva_appearance": vulva_appearance,
             "nsfw_appearance": nsfw_appearance,
             "tattoo": tattoo,
+            "beard": beard,
         })
         return (settings,)
 
@@ -831,6 +843,12 @@ class CharacterPromptBuilderScene:
         eye_adj, eye_quality, eye_gleam = get_eye_mood(get("facial_expression"))
         if get("eyes_color") != "-":
             face_features.append(f"{eye_adj} {get('eyes_color').lower()} eyes")
+        if get("eye_shape") != "-":
+            face_features.append(f"{get('eye_shape').lower()} eye shape")
+        if get("nose_shape") != "-":
+            face_features.append(f"{get('nose_shape').lower()} nose")
+        if get("nose_size") != "-":
+            face_features.append(f"{get('nose_size').lower()} nose size")
         if get("face_shape") != "-":
             face_shape = get('face_shape').lower().replace('-shaped', '').replace(' ', '-')
             article = get_article(face_shape)
