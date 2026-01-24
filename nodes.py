@@ -839,23 +839,45 @@ class CharacterPromptBuilderScene:
             body_features_phrase = f"{subj} has " + " and ".join(body_features)
 
         # Face features
-        face_features = []
         eye_adj, eye_quality, eye_gleam = get_eye_mood(get("facial_expression"))
+        face_features = []
+        # Eyes
+        eye_desc = None
         if get("eyes_color") != "-":
-            face_features.append(f"{eye_adj} {get('eyes_color').lower()} eyes")
+            eye_desc = f"{eye_adj} {get('eyes_color').lower()} eyes"
+            # Add extra color nuance if present in eyes_color (e.g., "gray (often appears blue or greenish in some lights)")
         if get("eye_shape") != "-":
-            face_features.append(f"{get('eye_shape').lower()} eye shape")
+            if eye_desc:
+                eye_desc += f" with {get('eye_shape').lower()} shape"
+            else:
+                eye_desc = f"{get('eye_shape').lower()} eye shape"
+        if eye_desc:
+            face_features.append(eye_desc)
+        # Nose
+        nose_desc = None
         if get("nose_shape") != "-":
-            face_features.append(f"{get('nose_shape').lower()} nose")
+            nose_desc = f"{get('nose_shape').lower()} nose"
         if get("nose_size") != "-":
-            face_features.append(f"{get('nose_size').lower()} nose size")
+            if nose_desc:
+                nose_desc += f" and {get('nose_size').lower()} size"
+            else:
+                nose_desc = f"{get('nose_size').lower()} nose size"
+        if nose_desc:
+            face_features.append(nose_desc)
+        # Face shape
         if get("face_shape") != "-":
             face_shape = get('face_shape').lower().replace('-shaped', '').replace(' ', '-')
             article = get_article(face_shape)
             face_features.append(f"{article} {face_shape}-shaped face")
+        # Join features naturally
         face_features_phrase = ""
         if face_features:
-            face_features_phrase = f"{poss} " + " and ".join(face_features)
+            if len(face_features) == 1:
+                face_features_phrase = f"{poss} {face_features[0]}"
+            elif len(face_features) == 2:
+                face_features_phrase = f"{poss} {face_features[0]} and {face_features[1]}"
+            else:
+                face_features_phrase = f"{poss} {face_features[0]}, {', '.join(face_features[1:-1])}, and {face_features[-1]}"
 
         # Lips
         lips_phrase = ""
