@@ -40,7 +40,7 @@ def _get_default_portrait_data():
         "gender_list": ["Man", "Woman"],
         "nationality_list": ["British", "American", "French", "German", "Italian", "Spanish", "Japanese", "Chinese", "Korean", "Indian"],
         "body_type_list": ["Slim", "Athletic", "Curvy", "Petite", "Muscular", "Average"],
-        # Deprecated: "breast_size_list": ["Small", "Medium", "Large"],
+        "breast_size_list": ["Small", "Medium", "Large"],
         # --- Height and weight fields ---
         "height_list": [
             "4ft10", "4ft11", "5ft0", "5ft1", "5ft2", "5ft3", "5ft4", "5ft5", "5ft6", "5ft7", "5ft8", "5ft9", "5ft10", "5ft11", "6ft0", "6ft1", "6ft2", "6ft3", "6ft4", "6ft5", "6ft6", "6ft7", "6ft8", "6ft9", "6ft10", "6ft11", "7ft0"
@@ -128,6 +128,8 @@ class CharacterPromptBuilderPerson:
                 "breast_cup_size": combo("breast_cup_size_list"),
                 "breast_shape": combo("breast_shape_list"),
                 "bust_measurement": combo("bust_measurement_list"),
+                "breast_size": combo("breast_size_list"),
+                "breast_size_weight": weight(),
                 "bum_size": combo("bum_size_list"),
             },
             "optional": {
@@ -181,6 +183,7 @@ class CharacterPromptBuilderPerson:
 
     def run(self, gender="-", age=20, nationality_1="-", nationality_2="-", nationality_mix=0.5,
             body_type="-", height="-", body_weight="-", breast_cup_size="-", breast_shape="-", bust_measurement="-",
+            breast_size="-", breast_size_weight=0,
             bum_size="-",
             face_shape="-", nose_shape="-", nose_size="-", eyes_color="-", eye_shape="-",
             facial_expression="-",
@@ -205,6 +208,7 @@ class CharacterPromptBuilderPerson:
             "body_type": body_type,
             "height": height, "body_weight": body_weight,
             "breast_cup_size": breast_cup_size, "breast_shape": breast_shape, "bust_measurement": bust_measurement,
+            "breast_size": breast_size, "breast_size_weight": breast_size_weight,
             "bum_size": bum_size,
             "face_shape": face_shape,
             "eyes_color": eyes_color,
@@ -854,14 +858,38 @@ class CharacterPromptBuilderScene:
             if bust != "-":
                 breast_parts.append(f"{bust} inch bust")
             if shape != "-":
-                breast_parts.append(f"{shape.lower()} shape")
-            if breast_parts:
+                breast_parts.append(f"{shape.lower()} shaped")
+            if breast_parts and get("breast_size") != "-" and getf("breast_size_weight") > 0:
+                body_features.append("/".join(breast_parts))
+            else :
                 body_features.append("/".join(breast_parts) + " breasts")
+
+        breast_size_weight_val = getf("breast_size_weight")
+        if get("breast_size") != "-" and getf("breast_size_weight") > 0 and gender == "Woman" :
+                breast = get('breast_size').lower()
+                # Emphasize breast size based on weight
+                if breast_size_weight_val >= 1.5:
+
+                    breast_desc = f"strikingly {breast}"
+                elif breast_size_weight_val >= 1.0:
+                    breast_desc = f"noticeably {breast}"
+                elif breast_size_weight_val >= 0.5:
+                    breast_desc = f"slightly {breast}"
+                else:
+                    breast_desc = f"{breast}"
+                if "breast" in breast or "bust" in breast:
+                    body_features.append(breast_desc)
+                else:
+                    body_features.append(f"{breast_desc} breasts")
+
+
         if get("bum_size") != "-":
             body_features.append(f"{get('bum_size').lower()} bum")
         body_features_phrase = ""
         if body_features:
             body_features_phrase = f"{subj} has " + " and ".join(body_features)
+
+
 
         # Face features
         eye_adj, eye_quality, eye_gleam = get_eye_mood(get("facial_expression"))
