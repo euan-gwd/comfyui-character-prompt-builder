@@ -64,7 +64,6 @@ def _get_default_character_data():
         "hair_style_list": ["Long straight", "Short", "Curly", "Wavy", "Pixie cut", "Bob cut"],
         "hair_length_list": ["Short", "Medium", "Long"],
         "hair_color_list": ["Black", "Brown", "Blonde", "Red", "Gray"],
-        "beard_list": ["Clean shaven", "Stubble", "Full Beard", "Goatee"],
         "fashion_aesthetic_list": ["Casual", "Formal", "Streetwear", "Elegant", "Bohemian"],
         "outfit_list": ["Casual dress", "Business suit", "Jeans and t-shirt", "Evening gown"],
         "revealing_outfit_list": ["Bikini", "Lingerie", "Crop top"],
@@ -169,8 +168,6 @@ class CharacterPromptBuilderPerson:
                 "vulva_appearance": combo("vulva_appearance_list"),
                 # === TATTOOS ===
                 "tattoo": combo("tattoo_list"),
-                # === BEARDS ===
-                "beard": combo("beard_list"),
                 # === CHAIN ===
                 "settings_in": ("PM_SETTINGS",),
             }
@@ -191,7 +188,7 @@ class CharacterPromptBuilderPerson:
             lip_color="-",
             makeup="-",
             hair_style="-", hair_length="-",
-            hair_color="-", beard="-",
+            hair_color="-",
             skin_details=0, skin_tone="-", skin_pores=0, dimples=0, freckles=0, moles=0,
             skin_imperfections=0, skin_acne=0, tanned_skin=0,
             eyes_details=1, iris_details=1, circular_iris=1, circular_pupil=1,
@@ -233,7 +230,6 @@ class CharacterPromptBuilderPerson:
             "vulva_appearance": vulva_appearance,
             "nsfw_appearance": nsfw_appearance,
             "tattoo": tattoo,
-            "beard": beard,
         })
         return (settings,)
 
@@ -367,132 +363,6 @@ class CharacterPromptBuilderFemaleFashion:
         return (settings,)
 
 
-# Character Prompt Builder - Male Fashion Node (Style + Outfit + Accessories)
-class CharacterPromptBuilderMaleFashion:
-    @classmethod
-    def INPUT_TYPES(s):
-        data = _load_character_data()
-        max_float_value = 1.95
-
-        def combo(key, default=None):
-            _list = data.get(key, ["-"]).copy()
-            if '-' not in _list:
-                _list.insert(0, '-')
-            return (_list, {"default": default} if default else {})
-
-        def weight(default=0):
-            return ("FLOAT", {"default": default, "step": 0.05, "min": 0, "max": max_float_value, "display": "slider"})
-
-        return {
-            "required": {
-                "fashion_aesthetic": combo("fashion_aesthetic_list"),
-                "fashion_aesthetic_weight": weight(),
-                "tops": combo("tops_list"),
-                "tops_color": combo("tops_color_list"),
-                "tops_weight": weight(),
-                "pants": combo("pants_list"),
-                "pants_color": combo("pants_color_list"),
-                "pants_weight": weight(),
-                "legs": combo("legs_list"),
-                "legs_color": combo("legs_color_list"),
-                "legs_weight": weight(),
-                "underwear": combo("underwear_list"),
-                "underwear_color": combo("underwear_color_list"),
-                "underwear_weight": weight(),
-                "capes": combo("capes_list"),
-                "capes_color": combo("capes_color_list"),
-                "capes_weight": weight(),
-                "hats": combo("hats_list"),
-                "hats_color": combo("hats_color_list"),
-                "hats_weight": weight(),
-                "mens_suits": combo("mens_suits_list"),
-                "mens_suits_helmet": combo("mens_suits_helmet_list"),
-            },
-            "optional": {
-                "mens_shoes": combo("mens_shoes_list"),
-                "mens_shoe_color": combo("mens_shoe_color_list"),
-                "mens_shoes_weight": weight(),
-                "necklace": combo("necklace_list"),
-                "necklace_weight": weight(),
-                "earrings": combo("earrings_list"),
-                "earrings_weight": weight(),
-                "bracelet": combo("bracelet_list"),
-                "bracelet_weight": weight(),
-                "watches": combo("watches_list"),
-                "watches_color": combo("watches_color_list"),
-                "watches_weight": weight(),
-                "ring": combo("ring_list"),
-                "ring_weight": weight(),
-                "fingernail_style": combo("fingernail_style_list"),
-                "nail_color": combo("nail_color_list"),
-                "fingernail_weight": weight(),
-                "settings_in": ("PM_SETTINGS",),
-                "mens_glasses": combo("mens_glasses_list"),
-                "mens_glasses_color": combo("mens_glasses_color_list"),
-                "mens_glasses_weight": weight(),
-                "custom_clothing": (
-                    "STRING",
-                    {
-                        "multiline": True,
-                        "default": "",
-                        "placeholder": "Enter custom outfit"
-                    }
-                ),
-            }
-        }
-
-    RETURN_TYPES = ("PM_SETTINGS",)
-    RETURN_NAMES = ("settings",)
-    FUNCTION = "run"
-    CATEGORY = "CharacterPromptBuilder"
-
-    def run(self, fashion_aesthetic="-", fashion_aesthetic_weight=0,
-            tops="-", tops_color="-", tops_weight=0,
-            pants="-", pants_color="-", pants_weight=0,
-            legs="-", legs_color="-", legs_weight=0,
-            underwear="-", underwear_color="-", underwear_weight=0,
-            capes="-", capes_color="-", capes_weight=0,
-            hats="-", hats_color="-", hats_weight=0,
-            mens_suits="-", mens_suits_helmet="-",
-            mens_shoes="-", mens_shoe_color="-", mens_shoes_weight=0,
-            necklace="-", necklace_weight=0, earrings="-", earrings_weight=0,
-            bracelet="-", bracelet_weight=0, ring="-", ring_weight=0,
-            watches="-", watches_color="-", watches_weight=0,
-            fingernail_style="-", nail_color="-", fingernail_weight=0,
-            settings_in=None,
-            mens_glasses="-", mens_glasses_color="-", mens_glasses_weight=0,
-            custom_clothing="",
-    ):
-        settings = settings_in.copy() if settings_in else {}
-        settings.update({
-            "fashion_aesthetic": fashion_aesthetic, "fashion_aesthetic_weight": fashion_aesthetic_weight,
-            "tops": tops, "tops_color": tops_color, "tops_weight": tops_weight,
-            "pants": pants, "pants_color": pants_color, "pants_weight": pants_weight,
-            "legs": legs, "legs_color": legs_color, "legs_weight": legs_weight,
-            "underwear": underwear, "underwear_color": underwear_color, "underwear_weight": underwear_weight,
-            "capes": capes, "capes_color": capes_color, "capes_weight": capes_weight,
-            "hats": hats, "hats_color": hats_color, "hats_weight": hats_weight,
-            "mens_suits": mens_suits, "mens_suits_weight": mens_suits_weight,
-            "mens_suits_helmet": mens_suits_helmet,
-            "mens_shoes": mens_shoes, "mens_shoe_color": mens_shoe_color,
-            "mens_shoes_weight": mens_shoes_weight,
-            "necklace": necklace, "necklace_weight": necklace_weight,
-            "earrings": earrings, "earrings_weight": earrings_weight,
-            "bracelet": bracelet, "bracelet_weight": bracelet_weight,
-            "watches": watches,
-            "watches_color": watches_color,
-            "watches_weight": watches_weight,
-            "ring": ring, "ring_weight": ring_weight,
-            "fingernail_style": fingernail_style, "nail_color": nail_color,
-            "fingernail_weight": fingernail_weight,
-            "mens_glasses": mens_glasses,
-            "mens_glasses_color": mens_glasses_color,
-            "mens_glasses_weight": mens_glasses_weight,
-            "custom_clothing": custom_clothing,
-        })
-        return (settings,)
-
-
 # Character Prompt Builder - Actions Node (Pose/Action)
 class CharacterPromptBuilderActions:
     @classmethod
@@ -608,7 +478,6 @@ class CharacterPromptBuilderScene:
                 "num_people": (["1", "2", "3", "4"], {"default": "1"}),
                 "settings1": ("PM_SETTINGS",),
                 "artistic_style": combo("artistic_style_list", "Photorealistic"),
-                "artistic_style_weight": weight(1),
                 "camera_lens": combo("camera_lens_specs"),
                 "field_of_view": combo("field_of_view_list"),
                 "camera_angle": combo("camera_angle_list"),
@@ -636,7 +505,7 @@ class CharacterPromptBuilderScene:
     FUNCTION = "generate"
     CATEGORY = "CharacterPromptBuilder"
 
-    def generate(self, num_people, settings1, artistic_style="-", artistic_style_weight=1,
+    def generate(self, num_people, settings1, artistic_style="-",
                  field_of_view="-", camera_angle="-", camera_lens="-",
                  light_type="-", light_quality="-", light_weight=0,
                  preset_location="-", location="", time_of_day="-", weather="-", season="-",
@@ -670,7 +539,7 @@ class CharacterPromptBuilderScene:
             scene_location = preset_location
 
         scene_settings = {
-            "artistic_style": artistic_style, "artistic_style_weight": artistic_style_weight,
+            "artistic_style": artistic_style,
             "field_of_view": field_of_view,
             "camera_angle": camera_angle,
             "camera_lens": camera_lens,
@@ -755,18 +624,12 @@ class CharacterPromptBuilderScene:
 
         # Artistic style phrase
         style = s.get("artistic_style", "")
-        style_weight = getf("artistic_style_weight")
         style_prefix = ""
-        if style and style != "-" and style_weight > 0:
+        if style and style != "-":
             style_clean = style.strip().lower()
             if not any(style_clean.endswith(suffix) for suffix in ["illustration", "portrait", "painting", "drawing"]):
                 style_clean += " style"
-            if style_weight >= 1.5:
-                style_prefix = f"In a strongly emphasized {style_clean}"
-            elif style_weight >= 1.0:
-                style_prefix = f"In a clear {style_clean}"
-            else:
-                style_prefix = f"In a subtle {style_clean}"
+            style_prefix = f"In a highly detailed {style_clean}"
 
         # Subject
         gender = get("gender")
@@ -968,10 +831,6 @@ class CharacterPromptBuilderScene:
                 hair_phrase = f"{poss} hair is {hair_desc} {vivid_hair_length}"
             else:
                 hair_phrase = f"{poss} hair is {hair_desc}"
-
-        beard_phrase = ""
-        if get("beard") != "-" and gender == "Man":
-            beard_phrase = f"{poss} beard is {get('beard').lower()}"
 
         # Fashion aesthetic
         fashion_phrase = ""
@@ -1364,7 +1223,6 @@ class CharacterPromptBuilderScene:
             lips_phrase,
             makeup_phrase,
             hair_phrase,
-            beard_phrase,
             fashion_phrase,
             clothing_phrase,
             shoes_phrase,
@@ -1420,7 +1278,6 @@ class CharacterPromptBuilderScene:
 NODE_CLASS_MAPPINGS = {
     "Character Prompt Builder Person": CharacterPromptBuilderPerson,
     "Character Prompt Builder Female Fashion": CharacterPromptBuilderFemaleFashion,
-    "Character Prompt Builder Male Fashion": CharacterPromptBuilderMaleFashion,
     "Character Prompt Builder Actions": CharacterPromptBuilderActions,
     "Character Prompt Builder Scene": CharacterPromptBuilderScene,
 }
@@ -1428,7 +1285,6 @@ NODE_CLASS_MAPPINGS = {
 NODE_DISPLAY_NAME_MAPPINGS = {
     "Character Prompt Builder Person": "Character Prompt Builder - Person",
     "Character Prompt Builder Female Fashion": "Character Prompt Builder - Female Fashion",
-    "Character Prompt Builder Male Fashion": "Character Prompt Builder - Male Fashion",
     "Character Prompt Builder Actions": "Character Prompt Builder - Actions",
     "Character Prompt Builder Scene": "Character Prompt Builder - Scene & Generate",
 }
