@@ -626,10 +626,11 @@ class CharacterPromptBuilderScene:
         style = s.get("artistic_style", "")
         style_prefix = ""
         if style and style != "-":
-            style_clean = style.strip().lower()
-            if not any(style_clean.endswith(suffix) for suffix in ["illustration", "portrait", "painting", "drawing"]):
+            style_clean = style.strip()
+            # Use the style directly, optionally add "style" if not present
+            if not style_clean.lower().endswith("style"):
                 style_clean += " style"
-            style_prefix = f"In a highly detailed {style_clean}"
+            style_prefix = f"In a {style_clean}"
 
         # Subject
         gender = get("gender")
@@ -991,7 +992,7 @@ class CharacterPromptBuilderScene:
                 else:
                     details_str = "breasts and nipples"
                 subtle_nipple_phrase = (
-                    f"Her {garment}, made of {garment_material}, is tightly stretched and visibly compressing her {details_str}, conforming closely to her shape and realistically revealing the natural contours beneath the fabric, including subtle outlines; the effect is natural and realistic, never explicit or exposed."
+                    f"Her {garment}, made of {garment_material}, is tightly stretched and visibly compressing her {details_str}, conforming closely to her shape and realistically revealing the natural contours beneath the fabric, including subtle outlines; the effect is natural and realistic, never explicit or exposed"
                 )
                 extra_clothing_description = subtle_nipple_phrase
             # --- END: Subtle nipple outline logic ---
