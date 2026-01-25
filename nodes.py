@@ -14,27 +14,27 @@ RESOURCES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "resou
 os.makedirs(RESOURCES_DIR, exist_ok=True)
 
 
-def _load_portrait_data():
-    """Load portrait prompt data from local file or download if missing."""
-    prompt_path = os.path.join(RESOURCES_DIR, 'portrait_prompt.json')
+def _load_character_data():
+    """Load character prompt data from local file or download if missing."""
+    prompt_path = os.path.join(RESOURCES_DIR, 'character_prompt.json')
     if not os.path.exists(prompt_path):
         try:
-            response = urlopen('https://raw.githubusercontent.com/euan-gwd/comfyui-character-prompt-builder/main/resources/portrait_prompt.json')
+            response = urlopen('https://raw.githubusercontent.com/euan-gwd/comfyui-character-prompt-builder/main/resources/character_prompt.json')
             temp_prompt = json.loads(response.read())
             prompt_serialized = json.dumps(temp_prompt, indent=4)
             with open(prompt_path, "w") as f:
                 f.write(prompt_serialized)
             del response, temp_prompt
         except Exception as e:
-            print(f"[CharacterPromptBuilder] Warning: Could not download portrait data: {e}")
+            print(f"[CharacterPromptBuilder] Warning: Could not download character data: {e}")
             # Return minimal default data
-            return _get_default_portrait_data()
+            return _get_default_character_data()
 
     with open(prompt_path, 'r') as f:
         return json.load(f)
 
 
-def _get_default_portrait_data():
+def _get_default_character_data():
     """Return minimal default data if download fails."""
     return {
         "gender_list": ["Man", "Woman"],
@@ -101,7 +101,7 @@ def _get_default_portrait_data():
 class CharacterPromptBuilderPerson:
     @classmethod
     def INPUT_TYPES(s):
-        data = _load_portrait_data()
+        data = _load_character_data()
         max_float_value = 1.95
 
 
@@ -242,7 +242,7 @@ class CharacterPromptBuilderPerson:
 class CharacterPromptBuilderFemaleFashion:
     @classmethod
     def INPUT_TYPES(s):
-        data = _load_portrait_data()
+        data = _load_character_data()
 
         def combo(key, default=None):
             _list = data.get(key, ["-"]).copy()
@@ -371,7 +371,7 @@ class CharacterPromptBuilderFemaleFashion:
 class CharacterPromptBuilderMaleFashion:
     @classmethod
     def INPUT_TYPES(s):
-        data = _load_portrait_data()
+        data = _load_character_data()
         max_float_value = 1.95
 
         def combo(key, default=None):
@@ -497,7 +497,7 @@ class CharacterPromptBuilderMaleFashion:
 class CharacterPromptBuilderActions:
     @classmethod
     def INPUT_TYPES(s):
-        data = _load_portrait_data()
+        data = _load_character_data()
 
         def combo(list_key):
             _list = data.get(list_key, ["-"]).copy()
@@ -590,7 +590,7 @@ class CharacterPromptBuilderActions:
 class CharacterPromptBuilderScene:
     @classmethod
     def INPUT_TYPES(s):
-        data = _load_portrait_data()
+        data = _load_character_data()
         max_float_value = 1.95
 
         def combo(key, default=None):
