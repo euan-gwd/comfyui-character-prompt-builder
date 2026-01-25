@@ -628,8 +628,8 @@ class CharacterPromptBuilderScene:
         if style and style != "-":
             style_clean = style.strip()
             # Use the style directly, optionally add "style" if not present
-            if not style_clean.lower().endswith("style"):
-                style_clean += " style"
+            # if not style_clean.lower().endswith("style"):
+            #     style_clean += " style"
             style_prefix = f"In a {style_clean}"
 
         # Subject
