@@ -653,14 +653,18 @@ class CharacterPromptBuilderScene:
         nationality_mix = int(getf("nationality_mix", 0))  # Now expects 0-100
         nationality_str = ""
         if nationality_1 and nationality_1 != "-" and nationality_2 and nationality_2 != "-" and nationality_1 != nationality_2:
-            if nationality_mix >= 100:
+            percent_2 = nationality_mix
+            percent_1 = 100 - percent_2
+            # Special case for 50/50 and near-equal mixes
+            if 45 <= percent_1 <= 55 and 45 <= percent_2 <= 55:
+                nationality_str = f"mixed heritage {nationality_1.lower()} and {nationality_2.lower()}"
+            elif nationality_mix >= 100:
                 nationality_str = nationality_2
             elif nationality_mix <= 0:
                 nationality_str = nationality_1
             else:
-                percent_2 = nationality_mix
-                percent_1 = 100 - percent_2
-                nationality_str = f"{percent_1}% {nationality_1} and {percent_2}% {nationality_2}"
+                # For other mixes, use a natural phrasing
+                nationality_str = f"of {percent_1}% {nationality_1.lower()} and {percent_2}% {nationality_2.lower()} heritage"
         elif nationality_1 and nationality_1 != "-":
             nationality_str = nationality_1
         elif nationality_2 and nationality_2 != "-":
