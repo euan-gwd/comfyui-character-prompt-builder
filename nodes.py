@@ -110,7 +110,7 @@ class CharacterPromptBuilderPerson:
             return (_list, {"default": default} if default else {})
 
         def weight(default=0):
-            return ("FLOAT", {"default": default, "step": 0.05, "min": 0, "max": max_float_value, "display": "slider"})
+            return ("INT", {"default": int(default * 100) if isinstance(default, float) else default, "step": 1, "min": 0, "max": 100, "display": "slider"})
 
         return {
             "required": {
@@ -119,7 +119,7 @@ class CharacterPromptBuilderPerson:
                 "age": ("INT", {"default": 25, "min": 18, "max": 90, "step": 1, "display": "slider"}),
                 "nationality_1": combo("nationality_list", "British"),
                 "nationality_2": combo("nationality_list"),
-                "nationality_mix": weight(0.0),
+                "nationality_mix": weight(0),
                 "body_type": combo("body_type_list"),
                 "height": combo("height_list"),
                 "body_weight": combo("body_weight_list"),
@@ -462,7 +462,7 @@ class CharacterPromptBuilderScene:
             return (_list, {"default": default} if default else {})
 
         def weight(default=0):
-            return ("FLOAT", {"default": default, "step": 0.05, "min": 0, "max": max_float_value, "display": "slider"})
+            return ("INT", {"default": int(default * 100) if isinstance(default, float) else default, "step": 1, "min": 0, "max": 100, "display": "slider"})
 
         # Add preset_location combo box
         return {
@@ -480,7 +480,7 @@ class CharacterPromptBuilderScene:
                 "season": (["-", "Spring", "Summer", "Autumn", "Winter"],),
                 "light_type": combo("light_type_list"),
                 "light_quality": combo("light_quality_list"),
-                "light_weight": weight(),
+                "light_weight": weight(0),
                 "prompt_prefix": ("STRING", {"multiline": True, "default": "", "placeholder": "Added before the generated prompt"}),
                 "prompt_suffix": ("STRING", {"multiline": True, "default": "", "placeholder": "Added after the generated prompt"}),
                 "negative_prompt": ("STRING", {"multiline": True, "default": "","placeholder": "Negative prompt"})
@@ -650,15 +650,15 @@ class CharacterPromptBuilderScene:
         # --- Nationality mix logic ---
         nationality_1 = get("nationality_1", "").strip()
         nationality_2 = get("nationality_2", "").strip()
-        nationality_mix = getf("nationality_mix", 0.0)
+        nationality_mix = int(getf("nationality_mix", 0))  # Now expects 0-100
         nationality_str = ""
         if nationality_1 and nationality_1 != "-" and nationality_2 and nationality_2 != "-" and nationality_1 != nationality_2:
-            if nationality_mix >= 0.95:
+            if nationality_mix >= 100:
                 nationality_str = nationality_2
-            elif nationality_mix <= 0.05:
+            elif nationality_mix <= 0:
                 nationality_str = nationality_1
             else:
-                percent_2 = int(nationality_mix * 100)
+                percent_2 = nationality_mix
                 percent_1 = 100 - percent_2
                 nationality_str = f"{percent_1}% {nationality_1} and {percent_2}% {nationality_2}"
         elif nationality_1 and nationality_1 != "-":
@@ -1211,14 +1211,16 @@ class CharacterPromptBuilderScene:
         # Lighting
         lighting_phrase = ""
         if get("light_type") != '-' and getf("light_weight") > 0:
-            light_desc = ""
-            if s.get("light_quality", '-') != '-':
-                light_desc += s.get("light_quality").lower()
-            if get("light_type") != '-':
-                if light_desc:
-                    light_desc += " "
-                light_desc += get("light_type").lower()
-            lighting_phrase = f"The scene is lit by {light_desc}"
+            light_weight_val = int(getf("light_weight", 0))
+            if light_weight_val > 0:
+                light_desc = ""
+                if s.get("light_quality", '-') != '-':
+                    light_desc += s.get("light_quality").lower()
+                if get("light_type") != '-':
+                    if light_desc:
+                        light_desc += " "
+                    light_desc += get("light_type").lower()
+                lighting_phrase = f"The scene is lit by {light_desc} ({light_weight_val}% intensity)"
 
 
         # Compose into a single natural language paragraph
