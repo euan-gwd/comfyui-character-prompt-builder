@@ -1870,6 +1870,18 @@
     "Point of view (POV, from subject's perspective, matches subject's eye level and direction)",
     "Back angle (camera behind subject, 180° from front, showing their back)"
   ],
+  "camera_distance_list": [
+    "Extreme close-up (0.2–0.5m / 8–20in)",
+    "Close-up (0.5–1m / 20–40in)",
+    "Head and shoulders (1–1.5m / 3–5ft)",
+    "Portrait (1.5–2.5m / 5–8ft)",
+    "Medium shot (2–3.5m / 6–12ft)",
+    "Full body (3–5m / 10–16ft)",
+    "Long shot (5–10m / 16–33ft)",
+    "Wide shot (10–20m / 33–66ft)",
+    "Distant shot (20m+ / 66ft+)",
+    "Aerial/very distant (50m+ / 160ft+)"
+  ],
   "fashion_aesthetic_list": [
     "Supermodel",
     "Runway Model",
