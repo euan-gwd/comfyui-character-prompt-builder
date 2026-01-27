@@ -723,25 +723,25 @@ class CharacterPromptBuilderScene:
 
 
         if get("breast_size") != "-" and getf("breast_size_weight") > 0 and gender == "Woman" :
-                breast_size = get('breast_size').lower()
-                breast_size_weight_val = getf("breast_size_weight")
-                breast_shape = get("breast_shape")
-                if breast_shape != "-":
-                   breast_shape = f"{breast_shape.lower()}-shaped"
+            breast_size = get('breast_size').lower()
+            breast_size_weight_val = int(getf("breast_size_weight", 0))  # Now expects 0-100
+            breast_shape = get("breast_shape")
+            if breast_shape != "-":
+                breast_shape = f"{breast_shape.lower()}-shaped"
 
-                # Emphasize breast size based on weight
-                if breast_size_weight_val >= 1.5:
-                    breast_desc = f"strikingly {breast_size}"
-                elif breast_size_weight_val >= 1.0:
-                    breast_desc = f"noticeably {breast_size}"
-                elif breast_size_weight_val >= 0.5:
-                    breast_desc = f"slightly {breast_size}"
-                else:
-                    breast_desc = f"{breast_size}"
-                if "breast" in breast_size or "bust" in breast_size:
-                    body_features.append(f"{breast_desc}, {breast_shape}")
-                else:
-                    body_features.append(f"{breast_desc} {breast_shape} breasts")
+            # Emphasize breast size based on weight (percentage)
+            if breast_size_weight_val >= 90:
+                breast_desc = f"strikingly {breast_size}"
+            elif breast_size_weight_val >= 65:
+                breast_desc = f"noticeably {breast_size}"
+            elif breast_size_weight_val >= 35:
+                breast_desc = f"slightly {breast_size}"
+            else:
+                breast_desc = f"{breast_size}"
+            if "breast" in breast_size or "bust" in breast_size:
+                body_features.append(f"{breast_desc}, {breast_shape}")
+            else:
+                body_features.append(f"{breast_desc} {breast_shape} breasts")
 
 
         if get("bum_size") != "-":
