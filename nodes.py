@@ -78,7 +78,8 @@ def _get_default_character_data():
         "fingernail_style_list": ["Natural Nails", "French Manicure", "Long Nails"],
         "fingernail_color_list": ["Natural", "Red", "Pink", "Black"],
         "model_pose_list": ["Standing", "Sitting", "Walking", "Leaning"],
-        "camera_angle_list": ["Medium shot (camera 4–8 feet from subject, waist up visible)"],
+        "camera_horizontal_angle_list": ["camera 0° horizontal angle, straight on view"],
+        "camera_vertical_angle_list": ["camera 0° vertical angle, looking straight on"],
         "camera_distance_list": ["Full body (3–5m / 10–16ft)"],
         "field_of_view_list": ["Normal (40°–50°)"],
         "light_type_list": ["Natural sunlight", "Studio lighting", "Soft ambient light"],
@@ -473,7 +474,8 @@ class CharacterPromptBuilderScene:
                 "artistic_style": combo("artistic_style_list", "Photorealistic"),
                 "camera_lens": combo("camera_lens_specs"),
                 "field_of_view": combo("field_of_view_list"),
-                "camera_angle": combo("camera_angle_list"),
+                "camera_horizontal_angle": combo("camera_horizontal_angle_list"),
+                "camera_vertical_angle": combo("camera_vertical_angle_list"),
                 "camera_distance": combo("camera_distance_list"),
                 "preset_location": combo("location_list"),
                 "location": ("STRING", {"multiline": True, "default": "", "placeholder": "Add a custom location description in here"}),
@@ -500,7 +502,7 @@ class CharacterPromptBuilderScene:
     CATEGORY = "CharacterPromptBuilder"
 
     def generate(self, num_people, settings1, artistic_style="-",
-                 field_of_view="-", camera_angle="-", camera_distance="-", camera_lens="-",
+                 field_of_view="-", camera_vertical_angle="-",camera_horizontal_angle="-", camera_distance="-", camera_lens="-",
                  light_type="-", light_quality="-", light_weight=0,
                  preset_location="-", location="", time_of_day="-", weather="-", season="-",
                  prompt_prefix="", prompt_suffix="", negative_prompt="",
@@ -535,7 +537,8 @@ class CharacterPromptBuilderScene:
         scene_settings = {
             "artistic_style": artistic_style,
             "field_of_view": field_of_view,
-            "camera_angle": camera_angle,
+            "camera_horizontal_angle": camera_horizontal_angle,
+            "camera_vertical_angle": camera_vertical_angle,
             "camera_distance": camera_distance,
             "camera_lens": camera_lens,
             "location": scene_location, "time_of_day": time_of_day, "weather": weather, "season": season,
@@ -1166,10 +1169,23 @@ class CharacterPromptBuilderScene:
         field_of_view_phrase = ""
         if get("field_of_view") != "-":
             field_of_view_phrase = f"Field of view is {get('field_of_view').lower()}"
+        # Camera angles
+        camera_horizontal_angle_phrase = ""
+        camera_horizontal = get("camera_horizontal_angle")
+        camera_vertical = get("camera_vertical_angle")
+        camera_horizontal_angle_phrase = ""
+        camera_vertical_angle_phrase = ""
+        camera_combined_angle_phrase = ""
+        if camera_horizontal != "-" and camera_vertical != "-":
+            camera_combined_angle_phrase = (
+                f"The camera is positioned at a {camera_horizontal.lower()} and is set at a {camera_vertical.lower()}"
+            )
+        else:
+            if camera_horizontal != "-":
+                camera_horizontal_angle_phrase = f"The camera is positioned at a {camera_horizontal.lower()}"
+            if camera_vertical != "-":
+                camera_vertical_angle_phrase = f"The camera is set at a {camera_vertical.lower()}"
         # Camera distance
-        camera_angle_phrase = ""
-        if get("camera_angle") != "-":
-            camera_angle_phrase = f"The Camera angle is {get('camera_angle').lower()}"
         camera_distance_phrase = ""
         if get("camera_distance") != "-":
             camera_distance_phrase = f"The Camera distance is {get('camera_distance').lower()}"
@@ -1268,7 +1284,8 @@ class CharacterPromptBuilderScene:
             environment_phrase,
             lighting_phrase,
             field_of_view_phrase,
-            camera_angle_phrase,
+            camera_combined_angle_phrase if camera_combined_angle_phrase else camera_horizontal_angle_phrase,
+            camera_vertical_angle_phrase if not camera_combined_angle_phrase else "",
             camera_distance_phrase,
             camera_lens_phrase
         ]

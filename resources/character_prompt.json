@@ -1855,20 +1855,30 @@
     "Telephoto (15°–30°)",
     "Super telephoto (<15°)"
   ],
-  "camera_angle_list": [
-    "Eye level (camera at subject's eye height, 0° horizontal angle)",
-    "High angle (camera 30–60° above subject, looking down)",
-    "Low angle (camera 30–60° below subject, looking up)",
-    "Overhead (bird's-eye view, 90° above subject, looking directly down)",
-    "Worm's-eye view (extreme low angle, 80–90° below subject, ground level)",
-    "Dutch angle (camera tilted 15–45° for dramatic effect)",
-    "Shoulder level (camera at subject's shoulder height, ~10–20° below eye level)",
-    "Hip level (camera at subject's hip height, ~30–40° below eye level)",
-    "Knee level (camera at subject's knee height, ~60–70° below eye level)",
-    "Ground level (camera on the ground, 85–90° below subject, looking up or across)",
-    "Reverse angle (camera 180° opposite to previous shot, e.g., for dialogue)",
-    "Point of view (POV, from subject's perspective, matches subject's eye level and direction)",
-    "Back angle (camera behind subject, 180° from front, showing their back)"
+  "camera_horizontal_angle_list": [
+    "90° horizontal angle right side view",
+    "65° horizontal angle, right side view",
+    "45° horizontal angle, right side view",
+    "30° horizontal angle, right side view",
+    "15° horizontal angle, right side view",
+    "0° horizontal angle, straight on view",
+    "-15° horizontal angle, left side view",
+    "-30° horizontal angle, left side view",
+    "-45° horizontal angle, left side view",
+    "-65° horizontal angle, left side view",
+    "-90° horizontal angle, left side view"
+  ],
+  "camera_vertical_angle_list": [
+    "90° vertical angle, looking down",
+    "65° vertical angle, looking down",
+    "45° vertical angle, looking down",
+    "30° vertical angle, looking down",
+    "15° vertical angle, looking down",
+    "0° vertical angle, looking straight on",
+    "-15° vertical angle, looking up",
+    "-45° vertical angle, looking up",
+    "-65° vertical angle, looking up",
+    "-75° vertical angle, looking up"
   ],
   "camera_distance_list": [
     "Extreme close-up (0.2–0.5m / 8–20in)",
