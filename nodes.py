@@ -705,39 +705,43 @@ class CharacterPromptBuilderScene:
 
         # Breasts and bum (for women)
         body_features = []
-        if gender == "Woman":
+        # if gender == "Woman":
             # cup = get("breast_cup_size")
-            shape = get("breast_shape")
+            # shape = get("breast_shape")
             # bust = get("bust_measurement")
-            breast_parts = []
+            # breast_parts = []
             # if cup != "-":
             #     breast_parts.append(f"{cup} cup")
             # if bust != "-":
             #     breast_parts.append(f"{bust} inch bust")
-            if shape != "-":
-                breast_parts.append(f"{shape.lower()} shaped")
-            if breast_parts and get("breast_size") != "-" and getf("breast_size_weight") > 0:
-                body_features.append("/".join(breast_parts))
-            else :
-                body_features.append("/".join(breast_parts) + " breasts")
+            # if shape != "-":
+            #     breast_parts.append(f"{shape.lower()} shaped")
+            # if breast_parts and get("breast_size") != "-" and getf("breast_size_weight") > 0:
+            #     body_features.append("/".join(breast_parts))
+            # else :
+            #     body_features.append("/".join(breast_parts) + " breasts")
 
-        breast_size_weight_val = getf("breast_size_weight")
+
         if get("breast_size") != "-" and getf("breast_size_weight") > 0 and gender == "Woman" :
-                breast = get('breast_size').lower()
+                breast_size = get('breast_size').lower()
+                breast_size_weight_val = getf("breast_size_weight")
+                breast_shape = get("breast_shape")
+                if breast_shape != "-":
+                   breast_shape = f"{breast_shape.lower()}-shaped"
+
                 # Emphasize breast size based on weight
                 if breast_size_weight_val >= 1.5:
-
-                    breast_desc = f"strikingly {breast}"
+                    breast_desc = f"strikingly {breast_size}"
                 elif breast_size_weight_val >= 1.0:
-                    breast_desc = f"noticeably {breast}"
+                    breast_desc = f"noticeably {breast_size}"
                 elif breast_size_weight_val >= 0.5:
-                    breast_desc = f"slightly {breast}"
+                    breast_desc = f"slightly {breast_size}"
                 else:
-                    breast_desc = f"{breast}"
-                if "breast" in breast or "bust" in breast:
-                    body_features.append(breast_desc)
+                    breast_desc = f"{breast_size}"
+                if "breast" in breast_size or "bust" in breast_size:
+                    body_features.append(f"{breast_desc}, {breast_shape}")
                 else:
-                    body_features.append(f"{breast_desc} breasts")
+                    body_features.append(f"{breast_desc} {breast_shape} breasts")
 
 
         if get("bum_size") != "-":
@@ -992,6 +996,25 @@ class CharacterPromptBuilderScene:
                 clothing_phrase = f"{subj} is wearing {clothing_str}, {extra_clothing_description}"
             else:
                 clothing_phrase = f"{subj} is wearing {clothing_str}"
+        else:
+            # Display the selected breast/nipple/areola details if no clothing is present
+            nipple_desc = ""
+            if get("nipple_appearance") != "-":
+                nipple_desc = get("nipple_appearance").lower()
+            areola_desc = ""
+            if get("areola_appearance") != "-":
+                areola_desc = get("areola_appearance").lower()
+            details = []
+            if nipple_desc:
+                details.append(f"{nipple_desc} nipples")
+            if areola_desc:
+                details.append(f"and {poss} {areola_desc} areolae")
+            if details:
+                details_str = ", ".join(details)
+            else:
+                details_str = "breasts and nipples"
+            clothing_phrase = f"{subj} has {details_str} are visible"
+
         # Accessories
         # Only check for not "-" (no weight) for all female fashion fields
         jewelry = []
