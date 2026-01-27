@@ -77,7 +77,6 @@ def _get_default_character_data():
         "ring_list": ["Diamond Ring", "Gold Band", "Silver Ring"],
         "fingernail_style_list": ["Natural Nails", "French Manicure", "Long Nails"],
         "fingernail_color_list": ["Natural", "Red", "Pink", "Black"],
-        "nsfw_appearance_list": ["Topless", "Nude", "Sensual", "Erotic"],
         "model_pose_list": ["Standing", "Sitting", "Walking", "Leaning"],
         "camera_angle_list": ["Medium shot (camera 4–8 feet from subject, waist up visible)"],
         "field_of_view_list": ["Normal (40°–50°)"],
@@ -160,12 +159,9 @@ class CharacterPromptBuilderPerson:
                 "iris_details": weight(1),
                 "circular_iris": weight(1),
                 "circular_pupil": weight(1),
-                # === NSFW ===
-                "nsfw_appearance": combo("nsfw_appearance_list"),
-                # === NIPPLES & AREOLA & VULVA ===
+                # === NIPPLES & AREOLA ===
                 "nipple_appearance": combo("nipple_appearance_list"),
                 "areola_appearance": combo("areola_appearance_list"),
-                "vulva_appearance": combo("vulva_appearance_list"),
                 # === TATTOOS ===
                 "tattoo": combo("tattoo_list"),
                 # === CHAIN ===
@@ -194,8 +190,6 @@ class CharacterPromptBuilderPerson:
             eyes_details=1, iris_details=1, circular_iris=1, circular_pupil=1,
             nipple_appearance="-",
             areola_appearance="-",
-            vulva_appearance="-",
-            nsfw_appearance="-",
             tattoo="-",
             settings_in=None):
         settings = settings_in.copy() if settings_in else {}
@@ -227,8 +221,6 @@ class CharacterPromptBuilderPerson:
             "circular_iris": circular_iris, "circular_pupil": circular_pupil,
             "nipple_appearance": nipple_appearance,
             "areola_appearance": areola_appearance,
-            "vulva_appearance": vulva_appearance,
-            "nsfw_appearance": nsfw_appearance,
             "tattoo": tattoo,
         })
         return (settings,)
@@ -839,22 +831,12 @@ class CharacterPromptBuilderScene:
         if get("fashion_aesthetic") != "-":
             fashion_phrase = f"{poss} style is {get('fashion_aesthetic').lower()}"
 
-        # NSFW or Clothing
+        # Clothing
+        clothing = []
         clothing_phrase = ""
-        nsfw_appearance = get("nsfw_appearance")
-        if get("nsfw_appearance") != "-" :
-            clothing_phrase = f"{subj} is {get('nsfw_appearance').lower()}"
-            if get("nipple_appearance") != "-" :
-                clothing_phrase += f", {poss} nipples are {get('nipple_appearance').lower()}"
-            if get("areola_appearance") != "-" :
-                clothing_phrase += f", {poss} areolae are {get('areola_appearance').lower()}"
-            if get("vulva_appearance") != "-":
-                clothing_phrase += f", {poss} vulva appears {get('vulva_appearance').lower()}"
-        else:
-            clothing = []
-            # UNDERWEAR (always first, and only mention if visible)
-            underwear_phrase = ""
-            if get("underwear") != "-" :
+        underwear_phrase = ""
+        # UNDERWEAR (always first, and only mention if visible)
+        if get("underwear") != "-" :
                 uw = get('underwear').lower()
                 uw_color = get("underwear_color").lower()
                 uw_material = s.get("underwear_material", "-")
@@ -869,15 +851,15 @@ class CharacterPromptBuilderScene:
                 else:
                     underwear_phrase = f"{poss} {uw}"
                 clothing.append(underwear_phrase)
-            # LEGS
-            if get("legs") != "-":
+        # LEGS
+        if get("legs") != "-":
                 legs = get("legs").lower()
                 legs_color = get("legs_color").lower()
                 if legs_color != "-" and legs_color != "":
                     legs = f"{legs_color} {legs}"
                 clothing.append(legs)
-            # DRESSES
-            if get("dresses") != "-" :
+        # DRESSES
+        if get("dresses") != "-" :
                 dress = get("dresses").lower()
                 dress_color = get("dresses_color").lower()
                 dress_material = s.get("dresses_material", "-")
@@ -886,8 +868,8 @@ class CharacterPromptBuilderScene:
                 if dress_material and dress_material != "-":
                     dress = f"{dress} made of {dress_material.lower()}"
                 clothing.append(dress)
-            # TOPS
-            if get("tops") != "-" :
+        # TOPS
+        if get("tops") != "-" :
                 top = get("tops").lower()
                 top_color = get("tops_color").lower()
                 top_material = s.get("tops_material", "-")
@@ -896,8 +878,8 @@ class CharacterPromptBuilderScene:
                 if top_material and top_material != "-":
                     top = f"{top} made of {top_material.lower()}"
                 clothing.append(top)
-            # PANTS
-            if get("pants") != "-":
+        # PANTS
+        if get("pants") != "-":
                 pants = get("pants").lower()
                 pants_color = get("pants_color").lower()
                 pants_material = s.get("pants_material", "-")
@@ -906,8 +888,8 @@ class CharacterPromptBuilderScene:
                 if pants_material and pants_material != "-":
                     pants = f"{pants} made of {pants_material.lower()}"
                 clothing.append(pants)
-            # CAPES
-            if get("capes") != "-":
+        # CAPES
+        if get("capes") != "-":
                 cape = get("capes").lower()
                 cape_color = get("capes_color").lower()
                 cape_material = s.get("capes_material", "-")
@@ -916,13 +898,15 @@ class CharacterPromptBuilderScene:
                 if cape_material and cape_material != "-":
                     cape = f"{cape} made of {cape_material.lower()}"
                 clothing.append(cape)
-            if get("hats") != "-":
+        # HATS
+        if get("hats") != "-":
                 hat = get("hats").lower()
                 hat_color = get("hats_color").lower()
                 if hat_color != "-" and hat_color != "":
                     hat = f"{hat_color} {hat}"
                 clothing.append(hat)
-            if s.get("womens_gloves", "-") != "-" and s.get("gender", "-") == "Woman" :
+        #GLOVES
+        if s.get("womens_gloves", "-") != "-" and s.get("gender", "-") == "Woman" :
                 gloves = s.get("womens_gloves").lower()
                 gloves_color = s.get("womens_gloves_color", "-").lower()
                 # --- Add gloves material ---
@@ -932,41 +916,41 @@ class CharacterPromptBuilderScene:
                 if gloves_material != "-" and gloves_material != "":
                     gloves = f"{gloves} made of {gloves_material}"
                 clothing.append(gloves)
-            suit = None
-            helmet = None
-            gender = s.get("gender", "-")
-            if gender == "Woman":
+        suit = None
+        helmet = None
+        gender = s.get("gender", "-")
+        if gender == "Woman":
                 if s.get("womens_suits", "-") != "-":
                     suit = s.get("womens_suits").lower()
                     helmet = s.get("womens_suits_helmet", "-")
-            elif gender == "Man":
+        elif gender == "Man":
                 if s.get("mens_suits", "-") != "-":
                     suit = s.get("mens_suits").lower()
                     helmet = s.get("mens_suits_helmet", "-")
-            if suit:
+        if suit:
                 if helmet and helmet != "-":
                     suit = f"{suit} ({helmet.lower()})"
                 clothing.append(suit)
-            custom_clothing = s.get("custom_clothing", "")
-            if custom_clothing and custom_clothing.strip() :
+        custom_clothing = s.get("custom_clothing", "")
+        if custom_clothing and custom_clothing.strip() :
                 clothing.append(custom_clothing.strip())
-            # --- BEGIN: Subtle nipple outline logic ---
-            subtle_nipple_phrase = ""
-            stretched_material = s.get("stretched_material", False)
+
+        # --- BEGIN: Subtle nipple outline logic ---
+        subtle_nipple_phrase = ""
+        stretched_material = s.get("stretched_material", False)
             # Get material for top or dress
-            garment = None
-            garment_material = None
-            if get("dresses") != "-":
+        garment = None
+        garment_material = None
+        if get("dresses") != "-":
                 garment = "dress"
                 garment_material = s.get("dresses_material", "-").lower()
-            else:
+        else:
                 garment = "top"
                 garment_material = s.get("tops_material", "-").lower()
-            if (
+        if (
                 gender == "Woman"
                 and (get("underwear") == "-")
                 and ((get("tops") != "-") or (get("dresses") != "-"))
-                and (not nsfw_appearance or nsfw_appearance == "-")
                 and garment_material != "-" and stretched_material
             ):
                 # Use selected nipple/areola appearance if set, otherwise default to "nipples"
@@ -1215,6 +1199,9 @@ class CharacterPromptBuilderScene:
 
         # Compose into a single natural language paragraph
         # Insert style_prefix first if present
+        # Ensure clothing_phrase is always a string
+        if not isinstance(clothing_phrase, str):
+            clothing_phrase = str(clothing_phrase)
         phrases = [
             style_prefix if style_prefix else None,
             subject_sentence,
