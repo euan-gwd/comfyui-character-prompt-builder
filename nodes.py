@@ -1013,7 +1013,8 @@ class CharacterPromptBuilderScene:
                 details_str = ", ".join(details)
             else:
                 details_str = "breasts and nipples"
-            clothing_phrase = f"{subj} has {details_str} are visible"
+
+            clothing_phrase = f"{subj} is completely nude and {poss} {details_str} are visible"
 
         # Accessories
         # Only check for not "-" (no weight) for all female fashion fields
@@ -1150,7 +1151,7 @@ class CharacterPromptBuilderScene:
         # Expression
         expression_phrase = ""
         if get("facial_expression") != "-":
-            expression_phrase = f"looking {get('facial_expression').lower()}"
+            expression_phrase = f"{subj} has a {get('facial_expression').lower()} facial expression"
 
         # Field of view
         field_of_view_phrase = ""
