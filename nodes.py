@@ -776,13 +776,15 @@ class CharacterPromptBuilderScene:
             face_features.append(eye_desc)
         # Nose
         nose_desc = None
-        if get("nose_shape") != "-":
-            nose_desc = f"{get('nose_shape').lower()} nose"
-        if get("nose_size") != "-":
-            if nose_desc:
-                nose_desc += f" and {get('nose_size').lower()} size"
-            else:
-                nose_desc = f"{get('nose_size').lower()} nose size"
+        nose_shape = get("nose_shape")
+        nose_size = get("nose_size")
+        if nose_shape != "-" and nose_size != "-":
+            # Both shape and size present: combine as 'shape and size nose'
+            nose_desc = f"{nose_shape.lower()} and {nose_size.lower()} size nose"
+        elif nose_shape != "-":
+            nose_desc = f"{nose_shape.lower()} nose"
+        elif nose_size != "-":
+            nose_desc = f"{nose_size.lower()} size nose"
         if nose_desc:
             face_features.append(nose_desc)
         # Face shape
