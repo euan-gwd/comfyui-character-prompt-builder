@@ -79,6 +79,7 @@ def _get_default_character_data():
         "fingernail_color_list": ["Natural", "Red", "Pink", "Black"],
         "model_pose_list": ["Standing", "Sitting", "Walking", "Leaning"],
         "camera_angle_list": ["Medium shot (camera 4–8 feet from subject, waist up visible)"],
+        "camera_distance_list": ["Full body (3–5m / 10–16ft)"],
         "field_of_view_list": ["Normal (40°–50°)"],
         "light_type_list": ["Natural sunlight", "Studio lighting", "Soft ambient light"],
         "light_quality_list": ["soft diffused", "hard dramatic", "even balanced", "high contrast", "low key", "high key", "chiaroscuro", "volumetric", "atmospheric"],
@@ -473,6 +474,7 @@ class CharacterPromptBuilderScene:
                 "camera_lens": combo("camera_lens_specs"),
                 "field_of_view": combo("field_of_view_list"),
                 "camera_angle": combo("camera_angle_list"),
+                "camera_distance": combo("camera_distance_list"),
                 "preset_location": combo("location_list"),
                 "location": ("STRING", {"multiline": True, "default": "", "placeholder": "Add a custom location description in here"}),
                 "time_of_day": (["-", "Dawn", "Morning", "Midday", "Afternoon", "Golden Hour", "Sunset", "Dusk", "Evening", "Night", "Midnight", "Blue Hour"],),
@@ -498,7 +500,7 @@ class CharacterPromptBuilderScene:
     CATEGORY = "CharacterPromptBuilder"
 
     def generate(self, num_people, settings1, artistic_style="-",
-                 field_of_view="-", camera_angle="-", camera_lens="-",
+                 field_of_view="-", camera_angle="-", camera_distance="-", camera_lens="-",
                  light_type="-", light_quality="-", light_weight=0,
                  preset_location="-", location="", time_of_day="-", weather="-", season="-",
                  prompt_prefix="", prompt_suffix="", negative_prompt="",
@@ -534,6 +536,7 @@ class CharacterPromptBuilderScene:
             "artistic_style": artistic_style,
             "field_of_view": field_of_view,
             "camera_angle": camera_angle,
+            "camera_distance": camera_distance,
             "camera_lens": camera_lens,
             "location": scene_location, "time_of_day": time_of_day, "weather": weather, "season": season,
             "light_type": light_type, "light_quality": light_quality, "light_weight": light_weight,
@@ -1164,7 +1167,10 @@ class CharacterPromptBuilderScene:
         # Camera distance
         camera_angle_phrase = ""
         if get("camera_angle") != "-":
-            camera_angle_phrase = f"The Camera distance is {get('camera_angle').lower()}"
+            camera_angle_phrase = f"The Camera angle is {get('camera_angle').lower()}"
+        camera_distance_phrase = ""
+        if get("camera_distance") != "-":
+            camera_distance_phrase = f"The Camera distance is {get('camera_distance').lower()}"
         camera_lens_phrase = ""
         if get("camera_lens") != "-":
             camera_lens_phrase = f"The Camera lens is a {get('camera_lens').lower()}"
@@ -1261,6 +1267,7 @@ class CharacterPromptBuilderScene:
             lighting_phrase,
             field_of_view_phrase,
             camera_angle_phrase,
+            camera_distance_phrase,
             camera_lens_phrase
         ]
 
