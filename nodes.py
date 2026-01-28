@@ -94,6 +94,14 @@ def _get_default_character_data():
         "breast_cup_size_list": ["AA", "A", "B", "C", "D", "DD", "E", "F", "G", "H", "I", "J", "K"],
         "breast_shape_list": ["Round", "Teardrop", "Asymmetrical", "East West", "Side Set", "Bell Shape", "Slender", "Relaxed", "Athletic", "Conical"],
         "bust_measurement_list": ["28", "30", "32", "34", "36", "38", "40", "42", "44", "46", "48", "50", "52", "54", "56", "58", "60"],
+        "skin_details_list": ["subtle skin texture", "noticeable skin texture", "highly detailed skin texture"],
+        "skin_pores_list": ["barely visible pores","visible pores","prominent pores"],
+        "freckles_list":["a few freckles", "noticeable freckles","prominent freckles"],
+        "dimples_list":["subtle dimples","noticeable dimples","deep dimples"],
+        "moles_list":["a few moles", "several moles","many moles"],
+        "tanned_skin_list":["a hint of a tan","a sun-kissed tan","deeply tanned skin"],
+        "skin_acne_list":["a few blemishes","some acne","pronounced acne"],
+        "skin_imperfections_list":["minor imperfections","natural imperfections","pronounced imperfections"]
     }
 
 
@@ -149,14 +157,14 @@ class CharacterPromptBuilderPerson:
                 "hair_color": combo("hair_color_list"),
                 # === SKIN ===
                 "skin_tone": combo("skin_tone_list"),
-                "skin_details": weight(),
-                "skin_pores": weight(),
-                "dimples": weight(),
-                "freckles": weight(),
-                "moles": weight(),
-                "skin_imperfections": weight(),
-                "skin_acne": weight(),
-                "tanned_skin": weight(),
+                "skin_details": combo("skin_details_list"),
+                "skin_pores": combo("skin_pores_list"),
+                "dimples": combo("dimples_list"),
+                "freckles": combo("freckles_list"),
+                "moles": combo("moles_list"),
+                "skin_imperfections": combo("skin_imperfections_list"),
+                "skin_acne": combo("skin_acne_list"),
+                "tanned_skin": combo("tanned_skin_list"),
                 "eyes_details": weight(1),
                 "iris_details": weight(1),
                 "circular_iris": weight(1),
@@ -176,7 +184,7 @@ class CharacterPromptBuilderPerson:
     FUNCTION = "run"
     CATEGORY = "CharacterPromptBuilder"
 
-    def run(self, gender="-", age=20, nationality_1="-", nationality_2="-", nationality_mix=0.5,
+    def run(self, gender="woman", age=20, nationality_1="-", nationality_2="-", nationality_mix=0,
             body_type="-", height="-", body_weight="-", breast_cup_size="-", bust_measurement="-", breast_shape="-",
             breast_size="-", breast_size_weight=0,
             bum_size="-",
@@ -187,8 +195,8 @@ class CharacterPromptBuilderPerson:
             makeup="-",
             hair_style="-", hair_length="-",
             hair_color="-",
-            skin_details=0, skin_tone="-", skin_pores=0, dimples=0, freckles=0, moles=0,
-            skin_imperfections=0, skin_acne=0, tanned_skin=0,
+            skin_details="-", skin_tone="-", skin_pores="-", dimples="-", freckles="-", moles="-",
+            skin_imperfections="-", skin_acne="-", tanned_skin="-",
             eyes_details=1, iris_details=1, circular_iris=1, circular_pupil=1,
             nipple_appearance="-",
             areola_appearance="-",
@@ -1020,9 +1028,9 @@ class CharacterPromptBuilderScene:
             else:
                 clothing_str = ", ".join(clothing[:-1]) + f", and {clothing[-1]}"
             if 'extra_clothing_description' in locals():
-                clothing_phrase = f"{subj} is wearing {clothing_str}, {extra_clothing_description}"
+                clothing_phrase = f"{subj} is wearing a {clothing_str}, {extra_clothing_description}"
             else:
-                clothing_phrase = f"{subj} is wearing {clothing_str}"
+                clothing_phrase = f"{subj} is wearing a {clothing_str}"
         else:
             # Display the selected breast/nipple/areola details if no clothing is present
             nipple_desc = ""
@@ -1224,14 +1232,30 @@ class CharacterPromptBuilderScene:
 
         # Skin
         skin_features = []
-        if getf("skin_details") > 0: skin_features.append("detailed texture")
-        if getf("skin_pores") > 0: skin_features.append("visible pores")
-        if getf("freckles") > 0: skin_features.append("freckles")
-        if getf("dimples") > 0: skin_features.append("dimples")
-        if getf("moles") > 0: skin_features.append("moles")
-        if getf("tanned_skin") > 0: skin_features.append("a sun-kissed tan")
-        if getf("skin_acne") > 0: skin_features.append("some acne")
-        if getf("skin_imperfections") > 0: skin_features.append("natural imperfections")
+        skin_details_val = s.get("skin_details", "-")
+        if skin_details_val and skin_details_val != "-":
+            skin_features.append(skin_details_val)
+        skin_pores_val = s.get("skin_pores", "-")
+        if skin_pores_val and skin_pores_val != "-":
+            skin_features.append(skin_pores_val)
+        freckles_val = s.get("freckles", "-")
+        if freckles_val and freckles_val != "-":
+            skin_features.append(freckles_val)
+        dimples_val = s.get("dimples", "-")
+        if dimples_val and dimples_val != "-":
+            skin_features.append(dimples_val)
+        moles_val = s.get("moles", "-")
+        if moles_val and moles_val != "-":
+            skin_features.append(moles_val)
+        tanned_skin_val = s.get("tanned_skin", "-")
+        if tanned_skin_val and tanned_skin_val != "-":
+            skin_features.append(tanned_skin_val)
+        skin_acne_val = s.get("skin_acne", "-")
+        if skin_acne_val and skin_acne_val != "-":
+            skin_features.append(skin_acne_val)
+        skin_imperfections_val = s.get("skin_imperfections", "-")
+        if skin_imperfections_val and skin_imperfections_val != "-":
+            skin_features.append(skin_imperfections_val)
         skin_phrase = ""
         if skin_features:
             skin_phrase = f"{poss} skin shows " + ", ".join(skin_features)

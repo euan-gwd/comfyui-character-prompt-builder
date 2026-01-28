@@ -200,7 +200,7 @@
     "Medium Brown (warm brown)",
     "Light Brown (amber or honey, golden brown)",
     "Hazel (brown with green or gold flecks)",
-    "Gray (often appears blue or greenish)",
+    "Grey (light to deep grey)",
     "Blue (light to deep blue)",
     "Green (muted or mixed with hazel/gold)",
     "Amber (golden or coppery brown)",
@@ -1192,7 +1192,8 @@
     "Intricate lace bodice",
     "Form-fitting, intricate black lace bodice that visibly compresses her breasts",
     "Snug-fitting, intricate black lace bodice that clings to the body and accentuates the bustline",
-    "Glossy bold halter crop top with a criss-cross (X-shaped) front design. The straps cross over the chest and neck, creating a large teardrop-shaped cutout at the center, which dramatically exposes the cleavage and upper chest. The top is fitted and ends just below the bust",
+    "Tight-fitting, halter top with a criss-cross (X-shaped) front design. The straps cross over the chest and neck, creating a large teardrop-shaped cutout at the center, which dramatically exposes the cleavage and upper chest. The top is tightly fitted and ends just below the bust",
+    "Glossy bold halter straps with a criss-cross (X-shaped) front design. The straps cross over the chest and neck, creating a large teardrop-shaped cutout at the center, which dramatically exposes the cleavage and upper chest. The straps are tightly fitted and end just below the bust",
     "Off-shoulder top",
     "Peplum top",
     "Wrap top",
@@ -1731,6 +1732,7 @@
     "Intricate lace bodice",
     "Satin slip",
     "Silk chemise",
+    "Stripper thong",
     "Garter belt and stockings",
     "Crotchless bodysuit",
     "Cage bra and panties",
@@ -1856,29 +1858,29 @@
     "Super telephoto (<15°)"
   ],
   "camera_horizontal_angle_list": [
-    "90° horizontal angle right side view",
-    "65° horizontal angle, right side view",
-    "45° horizontal angle, right side view",
-    "30° horizontal angle, right side view",
-    "15° horizontal angle, right side view",
-    "0° horizontal angle, straight on view",
-    "-15° horizontal angle, left side view",
-    "-30° horizontal angle, left side view",
-    "-45° horizontal angle, left side view",
-    "-65° horizontal angle, left side view",
-    "-90° horizontal angle, left side view"
+    "90° horizontal angle",
+    "65° horizontal angle",
+    "45° horizontal angle",
+    "30° horizontal angle",
+    "15° horizontal angle",
+    "0° horizontal angle",
+    "-15° horizontal angle",
+    "-30° horizontal angle",
+    "-45° horizontal angle",
+    "-65° horizontal angle",
+    "-90° horizontal angle"
   ],
   "camera_vertical_angle_list": [
-    "90° vertical angle, looking down",
-    "65° vertical angle, looking down",
-    "45° vertical angle, looking down",
-    "30° vertical angle, looking down",
-    "15° vertical angle, looking down",
-    "0° vertical angle, looking straight on",
-    "-15° vertical angle, looking up",
-    "-45° vertical angle, looking up",
-    "-65° vertical angle, looking up",
-    "-75° vertical angle, looking up"
+    "90° vertical angle",
+    "65° vertical angle",
+    "45° vertical angle",
+    "30° vertical angle",
+    "15° vertical angle",
+    "0° vertical angle",
+    "-15° vertical angle",
+    "-45° vertical angle",
+    "-65° vertical angle",
+    "-75° vertical angle"
   ],
   "camera_distance_list": [
     "Extreme close-up (0.2–0.5m / 8–20in)",
@@ -3153,25 +3155,44 @@
     "Gradient",
     "Two-tone"
   ],
-  "mens_glasses_color_list": [
-    "Black",
-    "Brown",
-    "Tortoiseshell",
-    "Clear",
-    "White",
-    "Gold",
-    "Silver",
-    "Gunmetal",
-    "Blue",
-    "Gray",
-    "Green",
-    "Navy",
-    "Red",
-    "Bronze",
-    "Matte Black",
-    "Transparent",
-    "Patterned",
-    "Gradient",
-    "Two-tone"
+  "skin_details_list": [
+    "subtle skin texture",
+    "noticeable skin texture",
+    "highly detailed skin texture"
+  ],
+  "skin_pores_list": [
+    "barely visible pores",
+    "visible pores",
+    "prominent pores"
+  ],
+  "freckles_list": [
+    "a few freckles",
+    "noticeable freckles",
+    "prominent freckles"
+  ],
+  "dimples_list": [
+    "subtle dimples",
+    "noticeable dimples",
+    "deep dimples"
+  ],
+  "moles_list": [
+    "a few moles",
+    "several moles",
+    "many moles"
+  ],
+  "tanned_skin_list": [
+    "a hint of a tan",
+    "a sun-kissed tan",
+    "deeply tanned skin"
+  ],
+  "skin_acne_list": [
+    "a few blemishes",
+    "some acne",
+    "pronounced acne"
+  ],
+  "skin_imperfections_list": [
+    "minor imperfections",
+    "natural imperfections",
+    "pronounced imperfections"
   ]
 }
