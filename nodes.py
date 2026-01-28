@@ -912,7 +912,7 @@ class CharacterPromptBuilderScene:
             if uw_material and ("sheer" in uw_material or "see-through" in uw_material or "see through" in uw_material) and (get("dresses") == "-" or get("tops") == "-"):
                 nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else "nipples"
                 areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else "areolae"
-                underwear_phrase = f"{poss} {uw}, revealing {poss} slightly visible {nipple_desc} and {areola_desc} beneath them"
+                underwear_phrase = f"{poss} {uw}, revealing {poss} only slightly visible {nipple_desc} nipples and {areola_desc} areolae beneath them"
             elif (get("dresses") != "-" or get("tops") != "-"):
                 garment = "dress" if get("dresses") != "-" else "top" if get("tops") != "-" else None
                 underwear_phrase = f"{poss} {uw} is only slightly visible beneath {poss} {garment}"
