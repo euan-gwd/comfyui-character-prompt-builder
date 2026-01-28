@@ -906,7 +906,7 @@ class CharacterPromptBuilderScene:
             if uw_color != "-" and uw_color != "":
                 uw = f"{uw_color} {uw}"
             if uw_material and uw_material != "-":
-                uw = f"{uw} made of {uw_material}"
+                uw = f"{uw} made of {uw_material} material"
             # If a dress or top is present, underwear is only slightly visible
             # Check for sheer/see-through underwear
             if uw_material and ("sheer" in uw_material or "see-through" in uw_material or "see through" in uw_material) and (get("dresses") == "-" or get("tops") == "-"):
