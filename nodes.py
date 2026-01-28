@@ -851,22 +851,6 @@ class CharacterPromptBuilderScene:
         clothing = []
         clothing_phrase = ""
         underwear_phrase = ""
-        # UNDERWEAR (always first, and only mention if visible)
-        if get("underwear") != "-" :
-                uw = get('underwear').lower()
-                uw_color = get("underwear_color").lower()
-                uw_material = s.get("underwear_material", "-")
-                if uw_color != "-" and uw_color != "":
-                    uw = f"{uw_color} {uw}"
-                if uw_material and uw_material != "-":
-                    uw = f"{uw} made of {uw_material.lower()}"
-                # If a dress or top is present, underwear is only slightly visible
-                if (get("dresses") != "-" or get("tops") != "-"):
-                    garment = "dress" if get("dresses") != "-" else "top" if get("tops") != "-" else None
-                    underwear_phrase = f"{poss} {uw} is slightly visible beneath {poss}"
-                else:
-                    underwear_phrase = f"{poss} {uw}"
-                clothing.append(underwear_phrase)
         # LEGS
         if get("legs") != "-":
                 legs = get("legs").lower()
@@ -876,24 +860,34 @@ class CharacterPromptBuilderScene:
                 clothing.append(legs)
         # DRESSES
         if get("dresses") != "-" :
-                dress = get("dresses").lower()
-                dress_color = get("dresses_color").lower()
-                dress_material = s.get("dresses_material", "-")
-                if dress_color != "-" and dress_color != "":
-                    dress = f"{dress_color} {dress}"
-                if dress_material and dress_material != "-":
-                    dress = f"{dress} made of {dress_material.lower()}"
-                clothing.append(dress)
+            dress = get("dresses").lower()
+            dress_color = get("dresses_color").lower()
+            dress_material = s.get("dresses_material", "-").lower()
+            if dress_color != "-" and dress_color != "":
+                dress = f"{dress_color} {dress}"
+            if dress_material and dress_material != "-":
+                dress = f"{dress} made of {dress_material} material"
+            clothing.append(dress)
+            # Check for sheer/see-through/thin dress material
+            if dress_material and ("sheer" in dress_material or "see-through" in dress_material or "see through" in dress_material or "thin" in dress_material) and (get("underwear") == "-"):
+                nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else "nipples"
+                areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else "areolae"
+                clothing.append(f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the dress")
         # TOPS
         if get("tops") != "-" :
-                top = get("tops").lower()
-                top_color = get("tops_color").lower()
-                top_material = s.get("tops_material", "-")
-                if top_color != "-" and top_color != "":
-                    top = f"{top_color} {top}"
-                if top_material and top_material != "-":
-                    top = f"{top} made of {top_material.lower()}"
-                clothing.append(top)
+            top = get("tops").lower()
+            top_color = get("tops_color").lower()
+            top_material = s.get("tops_material", "-").lower()
+            if top_color != "-" and top_color != "":
+                top = f"{top_color} {top}"
+            if top_material and top_material != "-":
+                top = f"{top} made of {top_material} material"
+            clothing.append(top)
+            # Check for sheer/see-through/thin top material
+            if top_material and ("sheer" in top_material or "see-through" in top_material or "see through" in top_material or "thin" in top_material) and (get("underwear") == "-"):
+                nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else "nipples"
+                areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else "areolae"
+                clothing.append(f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the top")
         # PANTS
         if get("pants") != "-":
                 pants = get("pants").lower()
@@ -902,8 +896,29 @@ class CharacterPromptBuilderScene:
                 if pants_color != "-" and pants_color != "":
                     pants = f"{pants_color} {pants}"
                 if pants_material and pants_material != "-":
-                    pants = f"{pants} made of {pants_material.lower()}"
+                    pants = f"{pants} made of {pants_material.lower()} material"
                 clothing.append(pants)
+        # UNDERWEAR (always first, and only mention if visible)
+        if get("underwear") != "-" :
+            uw = get('underwear').lower()
+            uw_color = get("underwear_color").lower()
+            uw_material = s.get("underwear_material", "-").lower()
+            if uw_color != "-" and uw_color != "":
+                uw = f"{uw_color} {uw}"
+            if uw_material and uw_material != "-":
+                uw = f"{uw} made of {uw_material}"
+            # If a dress or top is present, underwear is only slightly visible
+            # Check for sheer/see-through underwear
+            if uw_material and ("sheer" in uw_material or "see-through" in uw_material or "see through" in uw_material) and (get("dresses") == "-" or get("tops") == "-"):
+                nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else "nipples"
+                areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else "areolae"
+                underwear_phrase = f"{poss} {uw}, revealing {poss} slightly visible {nipple_desc} and {areola_desc} beneath them"
+            elif (get("dresses") != "-" or get("tops") != "-"):
+                garment = "dress" if get("dresses") != "-" else "top" if get("tops") != "-" else None
+                underwear_phrase = f"{poss} {uw} is only slightly visible beneath {poss} {garment}"
+            else:
+                underwear_phrase = f"{poss} {uw}"
+            clothing.append(underwear_phrase)
         # CAPES
         if get("capes") != "-":
                 cape = get("capes").lower()
@@ -965,7 +980,7 @@ class CharacterPromptBuilderScene:
                 garment_material = s.get("tops_material", "-").lower()
         if (
                 gender == "Woman"
-                and (get("underwear") == "-")
+                and (get("underwear") != "-")
                 and ((get("tops") != "-") or (get("dresses") != "-"))
                 and garment_material != "-" and stretched_material
             ):
@@ -1111,12 +1126,7 @@ class CharacterPromptBuilderScene:
             shoe_material = s.get("womens_shoe_material", "-")
             if shoe_material and shoe_material != "-":
                 shoe_desc = f"{shoe_desc} made of {shoe_material.lower()}"
-            shoes_phrase = f"wearing {shoe_desc}"
-        elif get("mens_shoes") != "-" and gender == "Man":
-            shoe_desc = get("mens_shoes").lower()
-            if get("mens_shoe_color") != "-":
-                shoe_desc = f"{get('mens_shoe_color').lower()} {shoe_desc}"
-            shoes_phrase = f"wearing {shoe_desc}"
+            shoes_phrase = f"{subj} is wearing {shoe_desc}"
 
         # Pose
         pose_fields = [
