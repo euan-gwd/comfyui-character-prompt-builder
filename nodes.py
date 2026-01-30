@@ -1196,20 +1196,20 @@ class CharacterPromptBuilderScene:
         camera_combined_angle_phrase = ""
         if camera_horizontal != "-" and camera_vertical != "-":
             camera_combined_angle_phrase = (
-                f"The camera is positioned at a {camera_horizontal.lower()} and is set at a {camera_vertical.lower()}"
+                f"the camera is positioned at a {camera_horizontal.lower()} and is set at a {camera_vertical.lower()}"
             )
         else:
             if camera_horizontal != "-":
-                camera_horizontal_angle_phrase = f"The camera is positioned at a {camera_horizontal.lower()}"
+                camera_horizontal_angle_phrase = f"the camera is positioned at a {camera_horizontal.lower()}"
             if camera_vertical != "-":
-                camera_vertical_angle_phrase = f"The camera is set at a {camera_vertical.lower()}"
+                camera_vertical_angle_phrase = f"the camera is set at a {camera_vertical.lower()}"
         # Camera distance
         camera_distance_phrase = ""
         if get("camera_distance") != "-":
-            camera_distance_phrase = f"The Camera distance is {get('camera_distance').lower()}"
+            camera_distance_phrase = f"the camera is positioned for a {get('camera_distance').lower()}"
         camera_lens_phrase = ""
         if get("camera_lens") != "-":
-            camera_lens_phrase = f"The Camera lens is a {get('camera_lens').lower()}"
+            camera_lens_phrase = f"the camera lens is a {get('camera_lens').lower()}"
 
         # Location
         location = get("location", "")
@@ -1287,13 +1287,19 @@ class CharacterPromptBuilderScene:
 
         # Compose into a single natural language paragraph
         # Insert style_prefix first if present
-        # Ensure clothing_phrase is always a string
-        if not isinstance(clothing_phrase, str):
-            clothing_phrase = str(clothing_phrase)
         phrases = [
             style_prefix if style_prefix else None,
+            camera_distance_phrase,
+            camera_combined_angle_phrase if camera_combined_angle_phrase else camera_horizontal_angle_phrase,
+            camera_vertical_angle_phrase if not camera_combined_angle_phrase else "",
+            camera_lens_phrase,
             subject_sentence,
             body_type_phrase,
+            fashion_phrase,
+            pose_phrase,
+            custom_action_phrase,
+            props_phrase,
+            location_phrase,
             face_features_phrase,
             makeup_phrase,
             lips_phrase,
@@ -1310,18 +1316,9 @@ class CharacterPromptBuilderScene:
         ]
         # Action/pose/location/etc. are better as separate sentences
         tail_phrases = [
-            pose_phrase,
-            fashion_phrase,
-            camera_combined_angle_phrase if camera_combined_angle_phrase else camera_horizontal_angle_phrase,
-            camera_vertical_angle_phrase if not camera_combined_angle_phrase else "",
-            camera_distance_phrase,
-            camera_lens_phrase,
-            props_phrase,
-            custom_action_phrase,
-            location_phrase,
-            environment_phrase,
             lighting_phrase,
-            field_of_view_phrase
+            field_of_view_phrase,
+            environment_phrase,
         ]
 
         # Remove empty phrases and strip
