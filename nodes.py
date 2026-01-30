@@ -721,55 +721,6 @@ class CharacterPromptBuilderScene:
         if body_parts:
             body_type_phrase = f"{subj} is {' '.join(body_parts)}"
 
-        # Breasts and bum (for women)
-        body_features = []
-        # if gender == "Woman":
-            # cup = get("breast_cup_size")
-            # shape = get("breast_shape")
-            # bust = get("bust_measurement")
-            # breast_parts = []
-            # if cup != "-":
-            #     breast_parts.append(f"{cup} cup")
-            # if bust != "-":
-            #     breast_parts.append(f"{bust} inch bust")
-            # if shape != "-":
-            #     breast_parts.append(f"{shape.lower()} shaped")
-            # if breast_parts and get("breast_size") != "-" and getf("breast_size_weight") > 0:
-            #     body_features.append("/".join(breast_parts))
-            # else :
-            #     body_features.append("/".join(breast_parts) + " breasts")
-
-
-        if get("breast_size") != "-" and getf("breast_size_weight") > 0 and gender == "Woman" :
-            breast_size = get('breast_size').lower()
-            breast_size_weight_val = int(getf("breast_size_weight", 0))  # Now expects 0-100
-            breast_shape = get("breast_shape")
-            if breast_shape != "-":
-                breast_shape = f"{breast_shape.lower()}-shaped"
-
-            # Emphasize breast size based on weight (percentage)
-            if breast_size_weight_val >= 90:
-                breast_desc = f"strikingly {breast_size}"
-            elif breast_size_weight_val >= 65:
-                breast_desc = f"noticeably {breast_size}"
-            elif breast_size_weight_val >= 35:
-                breast_desc = f"slightly {breast_size}"
-            else:
-                breast_desc = f"{breast_size}"
-            if "breast" in breast_size or "bust" in breast_size:
-                body_features.append(f"{breast_desc}, {breast_shape}")
-            else:
-                body_features.append(f"{breast_desc} {breast_shape} breasts")
-
-
-        if get("bum_size") != "-":
-            body_features.append(f"{get('bum_size').lower()} bum")
-        body_features_phrase = ""
-        if body_features:
-            body_features_phrase = f"{subj} has " + " and ".join(body_features)
-
-
-
         # Face features
         eye_adj, eye_quality, eye_gleam = get_eye_mood(get("facial_expression"))
         face_features = []
@@ -962,10 +913,6 @@ class CharacterPromptBuilderScene:
                 if s.get("womens_suits", "-") != "-":
                     suit = s.get("womens_suits").lower()
                     helmet = s.get("womens_suits_helmet", "-")
-        elif gender == "Man":
-                if s.get("mens_suits", "-") != "-":
-                    suit = s.get("mens_suits").lower()
-                    helmet = s.get("mens_suits_helmet", "-")
         if suit:
                 if helmet and helmet != "-":
                     suit = f"{suit} ({helmet.lower()})"
@@ -973,6 +920,53 @@ class CharacterPromptBuilderScene:
         custom_clothing = s.get("custom_clothing", "")
         if custom_clothing and custom_clothing.strip() :
                 clothing.append(custom_clothing.strip())
+
+        # Breasts and bum (for women)
+        body_features = []
+        # if gender == "Woman":
+            # cup = get("breast_cup_size")
+            # shape = get("breast_shape")
+            # bust = get("bust_measurement")
+            # breast_parts = []
+            # if cup != "-":
+            #     breast_parts.append(f"{cup} cup")
+            # if bust != "-":
+            #     breast_parts.append(f"{bust} inch bust")
+            # if shape != "-":
+            #     breast_parts.append(f"{shape.lower()} shaped")
+            # if breast_parts and get("breast_size") != "-" and getf("breast_size_weight") > 0:
+            #     body_features.append("/".join(breast_parts))
+            # else :
+            #     body_features.append("/".join(breast_parts) + " breasts")
+
+
+        if get("breast_size") != "-" and getf("breast_size_weight") > 0 and gender == "Woman" :
+            breast_size = get('breast_size').lower()
+            breast_size_weight_val = int(getf("breast_size_weight", 0))  # Now expects 0-100
+            breast_shape = get("breast_shape")
+            if breast_shape != "-":
+                breast_shape = f"{breast_shape.lower()}-shaped"
+
+            # Emphasize breast size based on weight (percentage)
+            if breast_size_weight_val >= 90:
+                breast_desc = f"strikingly {breast_size}"
+            elif breast_size_weight_val >= 65:
+                breast_desc = f"noticeably {breast_size}"
+            elif breast_size_weight_val >= 35:
+                breast_desc = f"slightly {breast_size}"
+            else:
+                breast_desc = f"{breast_size}"
+            if "breast" in breast_size or "bust" in breast_size:
+                body_features.append(f"{breast_desc}, {breast_shape}")
+            else:
+                body_features.append(f"{breast_desc} {breast_shape} breasts")
+
+
+        if get("bum_size") != "-":
+            body_features.append(f"{get('bum_size').lower()} bum")
+        body_features_phrase = ""
+        if body_features:
+            body_features_phrase = f"{subj} has " + " and ".join(body_features)
 
         # --- BEGIN: Subtle nipple outline logic ---
         subtle_nipple_phrase = ""
@@ -1031,6 +1025,12 @@ class CharacterPromptBuilderScene:
                 clothing_phrase = f"{subj} is wearing a {clothing_str}, {extra_clothing_description}"
             else:
                 clothing_phrase = f"{subj} is wearing a {clothing_str}"
+            # If body features exist, append "covering ..." after clothing
+            if body_features_phrase:
+                import re
+                covering_features = re.sub(f"^{subj} has ", f"{poss} ", body_features_phrase, flags=re.IGNORECASE)
+                clothing_phrase += f" covering {covering_features}"
+            body_features_phrase = ""
         else:
             # Display the selected breast/nipple/areola details if no clothing is present
             nipple_desc = ""
@@ -1294,34 +1294,34 @@ class CharacterPromptBuilderScene:
             style_prefix if style_prefix else None,
             subject_sentence,
             body_type_phrase,
-            body_features_phrase,
             face_features_phrase,
-            lips_phrase,
             makeup_phrase,
+            lips_phrase,
             hair_phrase,
-            fashion_phrase,
             clothing_phrase,
+            body_features_phrase,
             shoes_phrase,
             jewelry_phrase,
             fingernail_phrase,
             skin_phrase,
+            eye_detail_phrase,
+            expression_phrase,
             tattoo_phrase,
         ]
         # Action/pose/location/etc. are better as separate sentences
         tail_phrases = [
             pose_phrase,
+            fashion_phrase,
+            camera_combined_angle_phrase if camera_combined_angle_phrase else camera_horizontal_angle_phrase,
+            camera_vertical_angle_phrase if not camera_combined_angle_phrase else "",
+            camera_distance_phrase,
+            camera_lens_phrase,
             props_phrase,
-            expression_phrase,
-            eye_detail_phrase,
             custom_action_phrase,
             location_phrase,
             environment_phrase,
             lighting_phrase,
-            field_of_view_phrase,
-            camera_combined_angle_phrase if camera_combined_angle_phrase else camera_horizontal_angle_phrase,
-            camera_vertical_angle_phrase if not camera_combined_angle_phrase else "",
-            camera_distance_phrase,
-            camera_lens_phrase
+            field_of_view_phrase
         ]
 
         # Remove empty phrases and strip
