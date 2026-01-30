@@ -469,6 +469,9 @@ class CharacterPromptBuilderScene:
             _list = data.get(key, ["-"]).copy()
             if '-' not in _list:
                 _list.insert(0, '-')
+            # Always set default to "Photorealistic" for artistic_style_list
+            if key == "artistic_style_list":
+                default = "Photorealistic"
             return (_list, {"default": default} if default else {})
 
         def weight(default=0):
@@ -591,7 +594,7 @@ class CharacterPromptBuilderScene:
             expression_lower = expression.lower() if expression and expression != "-" else ""
             if expression_lower in ["happy", "excited", "amused", "in love", "surprised and amused", "smiling", "silly"]:
                 return ("bright", "sparkling with life", "a warm, lively gleam")
-            elif expression_lower in ["angry", "serious", "proud", "prideful", "sarcastic", "contemptuous"]:
+            elif expression_lower in ["angry", "serious", "proud", "prideful", "sarcastic", "contemptuous", "mischievous"]:
                 return ("piercing", "intense and focused", "a sharp, penetrating gaze")
             elif expression_lower in ["sad", "disappointed", "fearful", "anxious", "nervous"]:
                 return ("glistening", "deep with emotion", "a soft, vulnerable depth")
@@ -982,7 +985,6 @@ class CharacterPromptBuilderScene:
                 garment_material = s.get("tops_material", "-").lower()
         if (
                 gender == "Woman"
-                and (get("underwear") != "-")
                 and ((get("tops") != "-") or (get("dresses") != "-"))
                 and garment_material != "-" and stretched_material
             ):
@@ -1009,7 +1011,7 @@ class CharacterPromptBuilderScene:
                 else:
                     details_str = "breasts and nipples"
                 subtle_nipple_phrase = (
-                    f"Her {garment}, made of {garment_material}, is tightly stretched and visibly compressing her {details_str}, conforming closely to her shape and realistically revealing the natural contours beneath the fabric, including subtle outlines; the effect is natural and realistic, never explicit or exposed"
+                    f"Her {garment}, made of {garment_material}, is tightly stretched and visibly compressing her {details_str}, conforming closely to her shape and realistically revealing the natural contours beneath the fabric, including subtle outlines, the effect is natural and realistic, never explicit or exposed"
                 )
                 extra_clothing_description = subtle_nipple_phrase
             # --- END: Subtle nipple outline logic ---
