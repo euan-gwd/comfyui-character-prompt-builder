@@ -1907,9 +1907,9 @@
     "Full body (3–5m / 10–16ft)",
     "Long shot (5–10m / 16–33ft)",
     "Wide shot (10–20m / 33–66ft)",
-    "Distant shot (20m-50m / 66ft-160ft)",
-    "Aerial shot (50m-100m / 160ft-300ft)",
-    "Landscape shot (100m-300m / 300ft-1000ft), with the subject small and centered, focus on the scenery.)"
+    "Distant shot",
+    "Aerial shot",
+    "Extreme long shot"
   ],
   "fashion_aesthetic_list": [
     "Supermodel",
@@ -3171,5 +3171,47 @@
     "minor imperfections",
     "natural imperfections",
     "pronounced imperfections"
+  ],
+  "eyes_details_list": [
+    "highly detailed",
+    "subtle eye detail",
+    "naturally expressive",
+    "framed by defined eyelashes",
+    "bright with catchlights",
+    "accented by visible tear ducts",
+    "shadowed softly under the brow",
+    "with a detailed waterline",
+    "slightly reddened in the sclera",
+    "moist on the lower eyelid",
+    "showing fine lines around the eyes"
+  ],
+  "iris_details_list": [
+    "intricate iris patterns",
+    "subtle iris pattern",
+    "natural iris striations",
+    "visible radial lines",
+    "complex iris texture",
+    "multi-toned iris color",
+    "defined limbal ring",
+    "starburst pattern in iris",
+    "flecks of gold in iris",
+    "heterochromia (two different colors)",
+    "brightly colored iris",
+    "deeply saturated iris color"
+  ],
+  "circular_iris_list": [
+    "perfectly round irises",
+    "slightly oval irises",
+    "unusually large round irises",
+    "small round irises",
+    "exaggerated circular irises"
+  ],
+  "circular_pupil_list": [
+    "realistic pupils",
+    "perfectly round pupils",
+    "slightly oval pupils",
+    "dilated pupils",
+    "constricted pupils",
+    "exaggerated circular pupils"
   ]
 }

@@ -165,10 +165,10 @@ class CharacterPromptBuilderPerson:
                 "skin_imperfections": combo("skin_imperfections_list"),
                 "skin_acne": combo("skin_acne_list"),
                 "tanned_skin": combo("tanned_skin_list"),
-                "eyes_details": weight(1),
-                "iris_details": weight(1),
-                "circular_iris": weight(1),
-                "circular_pupil": weight(1),
+                "eyes_details": combo("eyes_details_list"),
+                "iris_details": combo("iris_details_list"),
+                "circular_iris": combo("circular_iris_list"),
+                "circular_pupil": combo("circular_pupil_list"),
                 # === NIPPLES & AREOLA ===
                 "nipple_appearance": combo("nipple_appearance_list"),
                 "areola_appearance": combo("areola_appearance_list"),
@@ -197,7 +197,7 @@ class CharacterPromptBuilderPerson:
             hair_color="-",
             skin_details="-", skin_tone="-", skin_pores="-", dimples="-", freckles="-", moles="-",
             skin_imperfections="-", skin_acne="-", tanned_skin="-",
-            eyes_details=1, iris_details=1, circular_iris=1, circular_pupil=1,
+            eyes_details="-", iris_details="-", circular_iris="-", circular_pupil="-",
             nipple_appearance="-",
             areola_appearance="-",
             tattoo="-",
@@ -225,10 +225,9 @@ class CharacterPromptBuilderPerson:
             "hair_length": hair_length,
             "hair_color": hair_color,
             "skin_details": skin_details, "skin_tone": skin_tone, "skin_pores": skin_pores, "dimples": dimples,
+            "eyes_details": eyes_details,"iris_details": iris_details,
             "freckles": freckles, "moles": moles, "skin_imperfections": skin_imperfections,
             "skin_acne": skin_acne, "tanned_skin": tanned_skin,
-            "eyes_details": eyes_details, "iris_details": iris_details,
-            "circular_iris": circular_iris, "circular_pupil": circular_pupil,
             "nipple_appearance": nipple_appearance,
             "areola_appearance": areola_appearance,
             "tattoo": tattoo,
@@ -727,31 +726,67 @@ class CharacterPromptBuilderScene:
         # Face features
         eye_adj, eye_quality, eye_gleam = get_eye_mood(get("facial_expression"))
         face_features = []
-        # Eyes
-        eye_desc = None
-        if get("eyes_color") != "-":
-            eye_desc = f"{eye_adj} {get('eyes_color').lower()} eyes"
-            # Add extra color nuance if present in eyes_color (e.g., "gray (often appears blue or greenish in some lights)")
-        if get("eye_shape") != "-":
-            if eye_desc:
-                eye_desc += f" with {get('eye_shape').lower()} shape"
+        # Eyes: always include color and shape if present
+        eye_color = get("eyes_color")
+        eye_shape = get("eye_shape")
+        eye_base = ""
+        if eye_color != "-" and eye_shape != "-":
+            eye_base = f"{eye_adj} {eye_color.lower()} eyes with {eye_shape.lower()} shape"
+        elif eye_color != "-":
+            eye_base = f"{eye_adj} {eye_color.lower()} eyes"
+        elif eye_shape != "-":
+            eye_base = f"{eye_adj} eyes with {eye_shape.lower()} shape"
+        else:
+            eye_base = f"{eye_adj} eyes"
+
+        # Eye details
+        eye_features = []
+        eyes_details_val = s.get("eyes_details", "-")
+        if eyes_details_val and eyes_details_val != "-":
+            eye_features.append(eyes_details_val)
+        iris_details_val = s.get("iris_details", "-")
+        if iris_details_val and iris_details_val != "-":
+            eye_features.append(iris_details_val)
+        circular_iris_val = s.get("circular_iris", "-")
+        if circular_iris_val and circular_iris_val != "-":
+            eye_features.append(circular_iris_val)
+        circular_pupil_val = s.get("circular_pupil", "-")
+        if circular_pupil_val and circular_pupil_val != "-":
+            eye_features.append(circular_pupil_val)
+
+        eye_detail_phrase = f"{poss} {eye_base}"
+        if eye_features:
+            # Join features with commas and 'and'
+            if len(eye_features) == 1:
+                details = eye_features[0]
+            elif len(eye_features) == 2:
+                details = f"{eye_features[0]} and {eye_features[1]}"
             else:
-                eye_desc = f"{get('eye_shape').lower()} eye shape"
-        if eye_desc:
-            face_features.append(eye_desc)
+                details = ", ".join(eye_features[:-1]) + f", and {eye_features[-1]}"
+            eye_detail_phrase += f" ({details})"
+        # Add gleam/catchlights if present
+        if eye_gleam and "catchlights" not in eye_detail_phrase:
+            eye_detail_phrase += f", with {eye_gleam} and natural catchlights"
+        elif eye_gleam:
+            eye_detail_phrase += f", with {eye_gleam}"
+        elif "catchlights" not in eye_detail_phrase:
+            eye_detail_phrase += ", with natural catchlights"
+
+        face_features.append(eye_detail_phrase)
+
         # Nose
         nose_desc = None
         nose_shape = get("nose_shape")
         nose_size = get("nose_size")
         if nose_shape != "-" and nose_size != "-":
             # Both shape and size present: combine as 'shape and size nose'
-            nose_desc = f"{nose_shape.lower()} and {nose_size.lower()} size nose"
+            nose_desc = f"{nose_size.lower()} and {nose_shape.lower()} shaped nose"
         elif nose_shape != "-":
-            nose_desc = f"{nose_shape.lower()} nose"
+            nose_desc = f"{nose_shape.lower()} shaped nose"
         elif nose_size != "-":
-            nose_desc = f"{nose_size.lower()} size nose"
+            nose_desc = f"{nose_size.lower()} nose"
         if nose_desc:
-            face_features.append(nose_desc)
+            face_features.append(f"{subj} has a {nose_desc}")
         # Face shape
         if get("face_shape") != "-":
             face_shape = get('face_shape').lower().replace('-shaped', '').replace(' ', '-')
@@ -760,12 +795,14 @@ class CharacterPromptBuilderScene:
         # Join features naturally
         face_features_phrase = ""
         if face_features:
+            def ensure_poss(s):
+                return s if s.strip().startswith(poss) else f"{poss} {s}"
             if len(face_features) == 1:
-                face_features_phrase = f"{poss} {face_features[0]}"
+                face_features_phrase = ensure_poss(face_features[0])
             elif len(face_features) == 2:
-                face_features_phrase = f"{poss} {face_features[0]} and {face_features[1]}"
+                face_features_phrase = f"{ensure_poss(face_features[0])} and {face_features[1]}"
             else:
-                face_features_phrase = f"{poss} {face_features[0]}, {', '.join(face_features[1:-1])}, and {face_features[-1]}"
+                face_features_phrase = f"{ensure_poss(face_features[0])}, {', '.join(face_features[1:-1])}, and {face_features[-1]}"
 
         # Lips
         lips_phrase = ""
@@ -1264,13 +1301,36 @@ class CharacterPromptBuilderScene:
 
         # Eye details
         eye_features = []
-        if getf("eyes_details") > 0: eye_features.append("highly detailed")
-        if getf("iris_details") > 0: eye_features.append("intricate iris patterns")
-        if getf("circular_iris") > 0: eye_features.append("perfectly round irises")
-        if getf("circular_pupil") > 0: eye_features.append("realistic pupils")
+        eyes_details_val = s.get("eyes_details", "-")
+        if eyes_details_val and eyes_details_val != "-":
+            eye_features.append(eyes_details_val)
+        iris_details_val = s.get("iris_details", "-")
+        if iris_details_val and iris_details_val != "-":
+            eye_features.append(iris_details_val)
+        circular_iris_val = s.get("circular_iris", "-")
+        if circular_iris_val and circular_iris_val != "-":
+            eye_features.append(circular_iris_val)
+        circular_pupil_val = s.get("circular_pupil", "-")
+        if circular_pupil_val and circular_pupil_val != "-":
+            eye_features.append(circular_pupil_val)
         eye_detail_phrase = ""
         if eye_features:
-            eye_detail_phrase = f"{poss} eyes are " + ", ".join(eye_features) + f", with {eye_gleam} and natural catchlights"
+            # Compose a natural phrase based on which features are present
+            base = f"{poss} eyes are "
+            if len(eye_features) == 1:
+                base += eye_features[0]
+            elif len(eye_features) == 2:
+                base += f"{eye_features[0]} and {eye_features[1]}"
+            else:
+                base += ", ".join(eye_features[:-1]) + f", and {eye_features[-1]}"
+            # Add gleam/catchlights if present
+            if eye_gleam and "catchlights" not in base:
+                base += f", with {eye_gleam} and natural catchlights"
+            elif eye_gleam:
+                base += f", with {eye_gleam}"
+            elif "catchlights" not in base:
+                base += ", with natural catchlights"
+            eye_detail_phrase = base
 
         # Lighting
         lighting_phrase = ""
@@ -1303,24 +1363,23 @@ class CharacterPromptBuilderScene:
             props_phrase,
             location_phrase,
             face_features_phrase,
-            makeup_phrase,
             lips_phrase,
             hair_phrase,
+            makeup_phrase,
             clothing_phrase,
             body_features_phrase,
             shoes_phrase,
             jewelry_phrase,
             fingernail_phrase,
             skin_phrase,
-            eye_detail_phrase,
             expression_phrase,
             tattoo_phrase,
         ]
         # Action/pose/location/etc. are better as separate sentences
         tail_phrases = [
+            environment_phrase,
             lighting_phrase,
             field_of_view_phrase,
-            environment_phrase,
         ]
 
         # Remove empty phrases and strip
