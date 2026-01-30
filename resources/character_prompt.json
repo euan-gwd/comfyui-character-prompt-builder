@@ -1888,15 +1888,15 @@
     "15° vertical angle, slightly above (camera slightly above subject, angled down)",
     "30° vertical angle, moderately above (camera above subject, angled down)",
     "45° vertical angle, high above (camera well above subject, angled down)",
-    "60° vertical angle, steeply above (camera much higher, steep angle down)",
-    "75° vertical angle, nearly overhead (camera almost directly above, looking down)",
-    "90° vertical angle, overhead (camera directly above, looking straight down)",
+    "60° vertical angle, steeply above (camera much higher than the subject, steep angle down)",
+    "75° vertical angle, nearly overhead (camera almost directly above the subject, looking down on the subject)",
+    "90° vertical angle, overhead (camera directly above the subject, looking straight down the subject)",
     "-15° vertical angle, slightly below (camera slightly below subject, angled up)",
     "-30° vertical angle, moderately below (camera below subject, angled up)",
     "-45° vertical angle, low below (camera well below subject, angled up)",
     "-60° vertical angle, steeply below (camera much lower, steep angle up)",
-    "-75° vertical angle, nearly underneath (camera almost directly below, looking up)",
-    "-90° vertical angle, underneath (camera directly below, looking straight up)"
+    "-75° vertical angle, nearly underneath (camera almost directly below the subject, looking up at the subject)",
+    "-90° vertical angle, underneath (camera directly below the subject, looking straight up at the subject)"
   ],
   "camera_distance_list": [
     "Extreme close-up (0.2–0.5m / 8–20in)",
@@ -1907,8 +1907,9 @@
     "Full body (3–5m / 10–16ft)",
     "Long shot (5–10m / 16–33ft)",
     "Wide shot (10–20m / 33–66ft)",
-    "Distant shot (20m+ / 66ft+)",
-    "Aerial/very distant (50m+ / 160ft+)"
+    "Distant shot (20m-50m / 66ft-160ft)",
+    "Aerial shot (50m-100m / 160ft-300ft)",
+    "Landscape shot (100m-300m / 300ft-1000ft), with the subject small and centered, focus on the scenery.)"
   ],
   "fashion_aesthetic_list": [
     "Supermodel",
@@ -2883,7 +2884,7 @@
     "A Mystical, flowing green and gold bodysuit with ornate patterns, magical accessories, and an ethereal aura",
     "A Form-fitting, futuristic white bodysuit with a subtle hexagonal pattern, accented by black panels on shoulders, arms, and legs. Bright orange highlights line seams and functional elements, including a utility belt with hip pouches. The suit has a high collar, integrated gloves, and reinforced sections, blending sleek design with tactical armor for a sci-fi aesthetic",
     "A Sleek, white tactical bodysuit with silver accents, utility belt, and fitted armor panels",
-    "A Metallic blue, red, and gold armored full-body suit with a high collar, matching blue tights integrated into the suit, angular thigh-high red boots integrated into the suit, and the 'S' shield emblem on the chest. The suit features gleaming segmented armor panels for enhanced protection, bold color-blocked design, and a fitted silhouette for agility. The armored legs and thighs are fully covered in matching metallic blue and gold panels, seamlessly connected to the boots for complete protection and mobility. The striking high collar and angular boots add a dynamic, heroic flair, while the prominent shield emblem on the chest symbolizes strength and valor in this futuristic, combat-ready ensemble",
+    "A Metallic blue, red, and gold armored full-body suit with a high collar, matching blue tights integrated into the suit, angular thigh-high red boots integrated into the suit, and the 'E' shield emblem on the chest. The suit features gleaming segmented armor panels for enhanced protection, bold color-blocked design, and a fitted silhouette for agility. The armored legs and thighs are fully covered in matching metallic blue and gold panels, seamlessly connected to the boots for complete protection and mobility. The striking high collar and angular boots add a dynamic, heroic flair, while the prominent shield emblem on the chest symbolizes strength and valor in this futuristic, combat-ready ensemble",
     "A White, form-fitting bodysuit with a chest cutout, blue gloves, and thigh-high boots. The suit features a sleek, modern silhouette that accentuates the figure, with a bold chest cutout for a striking visual detail. Contrasting blue gloves and matching thigh-high boots add vibrant color and style, creating a dynamic, fashion-forward ensemble designed for both elegance and impact",
     "A Sleek, black and red futuristic armored suit with sharp angular lines, glowing red accents, and a high-tech eagle emblem. The suit features advanced segmented armor panels for enhanced protection, a streamlined silhouette for agility, and integrated tech details throughout. The luminous red accents and bold eagle emblem across the chest creates a striking, modern combat-ready appearance designed for both power and style",
     "A Sleek, black tactical bodysuit with reinforced panels, utility belt, wrist gauntlets, and a distinctive red hourglass emblem on the belt. The suit features advanced protective armor, streamlined contours for agility, and integrated tactical accessories. Designed for stealth and combat, the bold red emblem adds a striking visual accent to the modern, high-tech ensemble",
