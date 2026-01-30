@@ -640,7 +640,7 @@ class CharacterPromptBuilderScene:
 
         # Subject
         gender = get("gender")
-        age = int(s.get("age", 30))
+        age = int(s.get("age", 25))
         if gender == "Man":
             subj = "He"
             poss = "his"
@@ -653,7 +653,7 @@ class CharacterPromptBuilderScene:
             poss = "her"
             obj = "her"
             gender_word = "woman"
-            if age <= 25:
+            if age <= 21:
                 gender_word = "girl"
         else:
             subj = "They"
