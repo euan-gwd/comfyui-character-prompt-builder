@@ -468,9 +468,9 @@ class CharacterPromptBuilderScene:
             _list = data.get(key, ["-"]).copy()
             if '-' not in _list:
                 _list.insert(0, '-')
-            # Always set default to "Photorealistic" for artistic_style_list
+            # Always set default to "professional photography" for artistic_style_list
             if key == "artistic_style_list":
-                default = "Photorealistic"
+                default = "professional photography"
             return (_list, {"default": default} if default else {})
 
         def weight(default=0):
@@ -481,7 +481,7 @@ class CharacterPromptBuilderScene:
             "required": {
                 "num_people": (["1", "2", "3", "4"], {"default": "1"}),
                 "settings1": ("PM_SETTINGS",),
-                "artistic_style": combo("artistic_style_list", "Photorealistic"),
+                "artistic_style": combo("artistic_style_list", "professional photography"),
                 "camera_lens": combo("camera_lens_specs"),
                 "field_of_view": combo("field_of_view_list"),
                 "camera_horizontal_angle": combo("camera_horizontal_angle_list"),
@@ -1245,7 +1245,7 @@ class CharacterPromptBuilderScene:
         # Camera distance
         camera_distance_phrase = ""
         if get("camera_distance") != "-":
-            camera_distance_phrase = f"the camera is positioned for a {get('camera_distance').lower()}"
+            camera_distance_phrase = f"the camera is positioned at {get('camera_distance').lower()} from the subject"
         camera_lens_phrase = ""
         if get("camera_lens") != "-":
             camera_lens_phrase = f"the camera lens is a {get('camera_lens').lower()}"
