@@ -81,6 +81,7 @@ def _get_default_character_data():
         "camera_horizontal_angle_list": ["camera 0° horizontal angle, straight on view"],
         "camera_vertical_angle_list": ["camera 0° vertical angle, looking straight on"],
         "camera_distance_list": ["Full body (3–5m / 10–16ft)"],
+        "camera_model_list": ["Canon EOS 5D Mark IV"],
         "field_of_view_list": ["Normal (40°–50°)"],
         "light_type_list": ["Natural sunlight", "Studio lighting", "Soft ambient light"],
         "light_quality_list": ["soft diffused", "hard dramatic", "even balanced", "high contrast", "low key", "high key", "chiaroscuro", "volumetric", "atmospheric"],
@@ -482,6 +483,7 @@ class CharacterPromptBuilderScene:
                 "num_people": (["1", "2", "3", "4"], {"default": "1"}),
                 "settings1": ("PM_SETTINGS",),
                 "artistic_style": combo("artistic_style_list", "professional photography"),
+                "camera_model": combo("camera_model_list"),
                 "camera_lens": combo("camera_lens_specs"),
                 "field_of_view": combo("field_of_view_list"),
                 "camera_horizontal_angle": combo("camera_horizontal_angle_list"),
@@ -511,7 +513,7 @@ class CharacterPromptBuilderScene:
     FUNCTION = "generate"
     CATEGORY = "CharacterPromptBuilder"
 
-    def generate(self, num_people, settings1, artistic_style="-",
+    def generate(self, num_people, settings1, artistic_style="-", camera_model="-",
                  field_of_view="-", camera_vertical_angle="-",camera_horizontal_angle="-", camera_distance="-", camera_lens="-",
                  light_type="-", light_quality="-", light_weight=0,
                  preset_location="-", location="", time_of_day="-", weather="-", season="-",
@@ -551,6 +553,7 @@ class CharacterPromptBuilderScene:
             "camera_vertical_angle": camera_vertical_angle,
             "camera_distance": camera_distance,
             "camera_lens": camera_lens,
+            "camera_model": camera_model,
             "location": scene_location, "time_of_day": time_of_day, "weather": weather, "season": season,
             "light_type": light_type, "light_quality": light_quality, "light_weight": light_weight,
         }
@@ -1249,6 +1252,9 @@ class CharacterPromptBuilderScene:
         camera_lens_phrase = ""
         if get("camera_lens") != "-":
             camera_lens_phrase = f"the camera lens is a {get('camera_lens').lower()}"
+        camera_model_phrase = ""
+        if get("camera_model") != "-":
+            camera_model_phrase = f"the camera is a {get('camera_model').lower()}"
 
         # Location
         location = get("location", "")
@@ -1351,10 +1357,11 @@ class CharacterPromptBuilderScene:
         # Insert style_prefix first if present
         phrases = [
             style_prefix if style_prefix else None,
-            camera_distance_phrase,
+            camera_model_phrase,
+            camera_lens_phrase,
             camera_combined_angle_phrase if camera_combined_angle_phrase else camera_horizontal_angle_phrase,
             camera_vertical_angle_phrase if not camera_combined_angle_phrase else "",
-            camera_lens_phrase,
+            camera_distance_phrase,
             subject_sentence,
             body_type_phrase,
             fashion_phrase,

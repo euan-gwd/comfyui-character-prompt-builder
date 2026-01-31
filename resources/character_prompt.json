@@ -1911,6 +1911,28 @@
     "50m",
     "100m"
   ],
+  "camera_model_list": [
+    "Canon EOS 5D Mark IV",
+    "Canon EOS R5",
+    "Nikon D850",
+    "Nikon Z6 II",
+    "Sony Alpha a7 III",
+    "Sony Alpha a7R IV",
+    "Fujifilm X-T4",
+    "Fujifilm X100V",
+    "Panasonic Lumix GH5",
+    "Olympus OM-D E-M1 Mark III",
+    "Leica Q2",
+    "GoPro HERO12 Black",
+    "DJI Osmo Pocket 3",
+    "Pentax K-1 Mark II",
+    "Hasselblad X1D II 50C",
+    "Ricoh GR III",
+    "Canon EOS Rebel T7i",
+    "Nikon Z9",
+    "Sony ZV-1",
+    "Polaroid Now+"
+  ],
   "fashion_aesthetic_list": [
     "Supermodel",
     "Instagram Model",
