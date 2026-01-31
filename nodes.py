@@ -96,7 +96,7 @@ def _get_default_character_data():
         "breast_shape_list": ["Round", "Teardrop", "Asymmetrical", "East West", "Side Set", "Bell Shape", "Slender", "Relaxed", "Athletic", "Conical"],
         "bust_measurement_list": ["28", "30", "32", "34", "36", "38", "40", "42", "44", "46", "48", "50", "52", "54", "56", "58", "60"],
         "skin_details_list": ["subtle skin texture", "noticeable skin texture", "highly detailed skin texture"],
-        "skin_pores_list": ["barely visible pores","visible pores","prominent pores"],
+        # "skin_pores_list": ["barely visible pores","visible pores","prominent pores"],
         "freckles_list":["a few freckles", "noticeable freckles","prominent freckles"],
         "dimples_list":["subtle dimples","noticeable dimples","deep dimples"],
         "moles_list":["a few moles", "several moles","many moles"],
@@ -159,7 +159,7 @@ class CharacterPromptBuilderPerson:
                 # === SKIN ===
                 "skin_tone": combo("skin_tone_list"),
                 "skin_details": combo("skin_details_list"),
-                "skin_pores": combo("skin_pores_list"),
+                # "skin_pores": combo("skin_pores_list"),
                 "dimples": combo("dimples_list"),
                 "freckles": combo("freckles_list"),
                 "moles": combo("moles_list"),
@@ -196,7 +196,8 @@ class CharacterPromptBuilderPerson:
             makeup="-",
             hair_style="-", hair_length="-",
             hair_color="-",
-            skin_details="-", skin_tone="-", skin_pores="-", dimples="-", freckles="-", moles="-",
+            skin_details="-", skin_tone="-", dimples="-", freckles="-", moles="-",
+            # skin_pores="-",
             skin_imperfections="-", skin_acne="-", tanned_skin="-",
             eyes_details="-", iris_details="-", circular_iris="-", circular_pupil="-",
             nipple_appearance="-",
@@ -225,7 +226,8 @@ class CharacterPromptBuilderPerson:
             "hair_style": hair_style,
             "hair_length": hair_length,
             "hair_color": hair_color,
-            "skin_details": skin_details, "skin_tone": skin_tone, "skin_pores": skin_pores, "dimples": dimples,
+            "skin_details": skin_details, "skin_tone": skin_tone, "dimples": dimples,
+            # "skin_pores": skin_pores,
             "eyes_details": eyes_details,"iris_details": iris_details,
             "freckles": freckles, "moles": moles, "skin_imperfections": skin_imperfections,
             "skin_acne": skin_acne, "tanned_skin": tanned_skin,
@@ -390,7 +392,7 @@ class CharacterPromptBuilderActions:
                 "kneeling_pose": combo("kneeling_pose_list"),
                 "sitting_pose": combo("sitting_pose_list"),
                 "laying_down_pose": combo("laying_down_pose_list"),
-                "nsfw_pose": combo("nsfw_pose_list"),
+                # "nsfw_pose": combo("nsfw_pose_list"),
                 "props": combo("props_list"),
                 "props_color": combo_color("props_color_list"),
                 "settings_in": ("PM_SETTINGS",),
@@ -417,7 +419,7 @@ class CharacterPromptBuilderActions:
             kneeling_pose="-",
             sitting_pose="-",
             laying_down_pose="-",
-            nsfw_pose="-",
+            # nsfw_pose="-",
             props="-",
             props_color="-",
             settings_in=None,
@@ -430,7 +432,7 @@ class CharacterPromptBuilderActions:
             ("kneeling_pose", kneeling_pose),
             ("sitting_pose", sitting_pose),
             ("laying_down_pose", laying_down_pose),
-            ("nsfw_pose", nsfw_pose),
+            # ("nsfw_pose", nsfw_pose),
         ]
         selected_pose = "-"
         selected_index = -1
@@ -1184,7 +1186,7 @@ class CharacterPromptBuilderScene:
             ("kneeling_pose", s.get("kneeling_pose", "-")),
             ("sitting_pose", s.get("sitting_pose", "-")),
             ("laying_down_pose", s.get("laying_down_pose", "-")),
-            ("nsfw_pose", s.get("nsfw_pose", "-")),
+            # ("nsfw_pose", s.get("nsfw_pose", "-")),
         ]
         selected_pose = next((val for key, val in pose_fields if val and val != "-"), None)
         pose_phrase = ""
@@ -1280,9 +1282,9 @@ class CharacterPromptBuilderScene:
         skin_details_val = s.get("skin_details", "-")
         if skin_details_val and skin_details_val != "-":
             skin_features.append(skin_details_val)
-        skin_pores_val = s.get("skin_pores", "-")
-        if skin_pores_val and skin_pores_val != "-":
-            skin_features.append(skin_pores_val)
+        # skin_pores_val = s.get("skin_pores", "-")
+        # if skin_pores_val and skin_pores_val != "-":
+        #     skin_features.append(skin_pores_val)
         freckles_val = s.get("freckles", "-")
         if freckles_val and freckles_val != "-":
             skin_features.append(freckles_val)
@@ -1362,6 +1364,7 @@ class CharacterPromptBuilderScene:
             camera_lens_phrase,
             camera_combined_angle_phrase if camera_combined_angle_phrase else camera_horizontal_angle_phrase,
             camera_vertical_angle_phrase if not camera_combined_angle_phrase else "",
+            field_of_view_phrase,
             subject_sentence,
             body_type_phrase,
             pose_phrase,
@@ -1386,7 +1389,6 @@ class CharacterPromptBuilderScene:
         tail_phrases = [
             environment_phrase,
             lighting_phrase,
-            field_of_view_phrase,
         ]
 
         # Remove empty phrases and strip
