@@ -80,7 +80,7 @@ def _get_default_character_data():
         "model_pose_list": ["Standing", "Sitting", "Walking", "Leaning"],
         "camera_horizontal_angle_list": ["camera 0° horizontal angle, straight on view"],
         "camera_vertical_angle_list": ["camera 0° vertical angle, looking straight on"],
-        "camera_distance_list": ["Full body (3–5m / 10–16ft)"],
+        "camera_shot_list": ["Full body (3–5m / 10–16ft)"],
         "camera_model_list": ["Canon EOS 5D Mark IV"],
         "field_of_view_list": ["Normal (40°–50°)"],
         "light_type_list": ["Natural sunlight", "Studio lighting", "Soft ambient light"],
@@ -488,7 +488,7 @@ class CharacterPromptBuilderScene:
                 "field_of_view": combo("field_of_view_list"),
                 "camera_horizontal_angle": combo("camera_horizontal_angle_list"),
                 "camera_vertical_angle": combo("camera_vertical_angle_list"),
-                "camera_distance": combo("camera_distance_list"),
+                "camera_distance": combo("camera_shot_list"),
                 "preset_location": combo("location_list"),
                 "location": ("STRING", {"multiline": True, "default": "", "placeholder": "Add a custom location description in here"}),
                 "time_of_day": (["-", "Dawn", "Morning", "Midday", "Afternoon", "Golden Hour", "Sunset", "Dusk", "Evening", "Night", "Midnight", "Blue Hour"],),
@@ -641,7 +641,7 @@ class CharacterPromptBuilderScene:
             # Use the style directly, optionally add "style" if not present
             if not style_clean.lower().endswith("style"):
                 style_clean += " style"
-            style_prefix = f"In a {style_clean}"
+            style_prefix = f"in a {style_clean}"
 
         # Subject
         gender = get("gender")
@@ -1248,7 +1248,7 @@ class CharacterPromptBuilderScene:
         # Camera distance
         camera_distance_phrase = ""
         if get("camera_distance") != "-":
-            camera_distance_phrase = f"the camera is positioned at {get('camera_distance').lower()} from"
+            camera_distance_phrase = f"A {get('camera_distance').lower()} shot"
         camera_lens_phrase = ""
         if get("camera_lens") != "-":
             camera_lens_phrase = f"the camera lens is a {get('camera_lens').lower()}"
@@ -1356,15 +1356,14 @@ class CharacterPromptBuilderScene:
         # Compose into a single natural language paragraph
         # Insert style_prefix first if present
         phrases = [
+            camera_distance_phrase,
             style_prefix if style_prefix else None,
             camera_model_phrase,
             camera_lens_phrase,
             camera_combined_angle_phrase if camera_combined_angle_phrase else camera_horizontal_angle_phrase,
             camera_vertical_angle_phrase if not camera_combined_angle_phrase else "",
-            camera_distance_phrase,
             subject_sentence,
             body_type_phrase,
-            fashion_phrase,
             pose_phrase,
             custom_action_phrase,
             props_phrase,
@@ -1373,14 +1372,15 @@ class CharacterPromptBuilderScene:
             lips_phrase,
             hair_phrase,
             makeup_phrase,
+            expression_phrase,
             clothing_phrase,
             body_features_phrase,
             shoes_phrase,
             jewelry_phrase,
             fingernail_phrase,
             skin_phrase,
-            expression_phrase,
             tattoo_phrase,
+            fashion_phrase,
         ]
         # Action/pose/location/etc. are better as separate sentences
         tail_phrases = [
