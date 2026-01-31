@@ -1250,7 +1250,7 @@ class CharacterPromptBuilderScene:
         # Camera distance
         camera_distance_phrase = ""
         if get("camera_distance") != "-":
-            camera_distance_phrase = f"A {get('camera_distance').lower()} of a"
+            camera_distance_phrase = f"A {get('camera_distance').lower()}"
         camera_lens_phrase = ""
         if get("camera_lens") != "-":
             camera_lens_phrase = f"the camera lens is a {get('camera_lens').lower()}"
