@@ -505,6 +505,16 @@ class CharacterPromptBuilderScene:
             else:
                 hair_phrase = f"{poss} hair is {hair_desc}"
 
+        # Facial hair (for men)
+        facial_hair_phrase = ""
+        facial_hair = s.get("facial_hair", "-")
+        if facial_hair and facial_hair != "-" and gender == "Man":
+            facial_hair_lower = facial_hair.lower()
+            if facial_hair_lower == "clean shaven":
+                facial_hair_phrase = f"{subj} is clean shaven"
+            else:
+                facial_hair_phrase = f"{subj} has a {facial_hair_lower}"
+
         # Fashion aesthetic
         fashion_phrase = ""
         # Only check for not "-" (no weight)
@@ -515,115 +525,170 @@ class CharacterPromptBuilderScene:
         clothing = []
         clothing_phrase = ""
         underwear_phrase = ""
-        # LEGS
-        if get("legs") != "-":
-                legs = get("legs").lower()
-                legs_color = get("legs_color").lower()
-                if legs_color != "-" and legs_color != "":
-                    legs = f"{legs_color} {legs}"
-                clothing.append(legs)
-        # DRESSES
-        if get("dresses") != "-" :
-            dress = get("dresses").lower()
-            dress_color = get("dresses_color").lower()
-            dress_material = s.get("dresses_material", "-").lower()
-            if dress_color != "-" and dress_color != "":
-                dress = f"{dress_color} {dress}"
-            if dress_material and dress_material != "-":
-                dress = f"{dress} made of {dress_material} material"
-            clothing.append(dress)
-            # Check for sheer/see-through/thin dress material
-            if dress_material and ("sheer" in dress_material or "see-through" in dress_material or "see through" in dress_material or "thin" in dress_material) and (get("underwear") == "-"):
-                nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else "nipples"
-                areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else "areolae"
-                clothing.append(f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the dress")
-        # TOPS
-        if get("tops") != "-" :
-            top = get("tops").lower()
-            top_color = get("tops_color").lower()
-            top_material = s.get("tops_material", "-").lower()
-            if top_color != "-" and top_color != "":
-                top = f"{top_color} {top}"
-            if top_material and top_material != "-":
-                top = f"{top} made of {top_material} material"
-            clothing.append(top)
-            # Check for sheer/see-through/thin top material
-            if top_material and ("sheer" in top_material or "see-through" in top_material or "see through" in top_material or "thin" in top_material) and (get("underwear") == "-"):
-                nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else "nipples"
-                areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else "areolae"
-                clothing.append(f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the top")
-        # PANTS
-        if get("pants") != "-":
-                pants = get("pants").lower()
-                pants_color = get("pants_color").lower()
-                pants_material = s.get("pants_material", "-")
-                if pants_color != "-" and pants_color != "":
-                    pants = f"{pants_color} {pants}"
-                if pants_material and pants_material != "-":
-                    pants = f"{pants} made of {pants_material.lower()} material"
-                clothing.append(pants)
-        # UNDERWEAR (always first, and only mention if visible)
-        if get("underwear") != "-" :
-            uw = get('underwear').lower()
-            uw_color = get("underwear_color").lower()
-            uw_material = s.get("underwear_material", "-").lower()
-            if uw_color != "-" and uw_color != "":
-                uw = f"{uw_color} {uw}"
-            if uw_material and uw_material != "-":
-                uw = f"{uw} made of {uw_material} material"
-            # If a dress or top is present, underwear is only slightly visible
-            # Check for sheer/see-through underwear
-            if uw_material and ("sheer" in uw_material or "see-through" in uw_material or "see through" in uw_material) and (get("dresses") == "-" or get("tops") == "-"):
-                nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else "nipples"
-                areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else "areolae"
-                underwear_phrase = f"{poss} {uw}, revealing {poss} only slightly visible {nipple_desc} nipples and {areola_desc} areolae beneath them"
-            elif (get("dresses") != "-" or get("tops") != "-"):
-                garment = "dress" if get("dresses") != "-" else "top" if get("tops") != "-" else None
-                underwear_phrase = f"{poss} {uw} is only slightly visible beneath {poss} {garment}"
-            else:
-                underwear_phrase = f"{poss} {uw}"
-            clothing.append(underwear_phrase)
-        # CAPES
-        if get("capes") != "-":
-                cape = get("capes").lower()
-                cape_color = get("capes_color").lower()
-                cape_material = s.get("capes_material", "-")
-                if cape_color != "-" and cape_color != "":
-                    cape = f"{cape_color} {cape}"
-                if cape_material and cape_material != "-":
-                    cape = f"{cape} made of {cape_material.lower()}"
-                clothing.append(cape)
-        # HATS
-        if get("hats") != "-":
-                hat = get("hats").lower()
-                hat_color = get("hats_color").lower()
-                if hat_color != "-" and hat_color != "":
-                    hat = f"{hat_color} {hat}"
-                clothing.append(hat)
-        #GLOVES
-        if s.get("womens_gloves", "-") != "-" and s.get("gender", "-") == "Woman" :
-                gloves = s.get("womens_gloves").lower()
-                gloves_color = s.get("womens_gloves_color", "-").lower()
-                # --- Add gloves material ---
-                gloves_material = s.get("womens_gloves_material", "-").lower()
-                if gloves_color != "-" and gloves_color != "":
-                    gloves = f"{gloves_color} {gloves}"
-                if gloves_material != "-" and gloves_material != "":
-                    gloves = f"{gloves} made of {gloves_material}"
-                clothing.append(gloves)
-        suit = None
-        helmet = None
         gender = s.get("gender", "-")
+
+        # === FEMALE-SPECIFIC CLOTHING ===
         if gender == "Woman":
-                if s.get("womens_suits", "-") != "-":
+            # LEGS (female only)
+            if get("legs") != "-":
+                    legs = get("legs").lower()
+                    legs_color = get("legs_color").lower()
+                    if legs_color != "-" and legs_color != "":
+                        legs = f"{legs_color} {legs}"
+                    clothing.append(legs)
+            # DRESSES (female only)
+            if get("dresses") != "-":
+                dress = get("dresses").lower()
+                dress_color = get("dresses_color").lower()
+                dress_material = s.get("dresses_material", "-").lower()
+                if dress_color != "-" and dress_color != "":
+                    dress = f"{dress_color} {dress}"
+                if dress_material and dress_material != "-":
+                    dress = f"{dress} made of {dress_material} material"
+                clothing.append(dress)
+                # Check for sheer/see-through/thin dress material
+                if dress_material and ("sheer" in dress_material or "see-through" in dress_material or "see through" in dress_material or "thin" in dress_material) and (get("underwear") == "-"):
+                    nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else "nipples"
+                    areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else "areolae"
+                    clothing.append(f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the dress")
+            # TOPS (female)
+            if get("tops") != "-":
+                top = get("tops").lower()
+                top_color = get("tops_color").lower()
+                top_material = s.get("tops_material", "-").lower()
+                if top_color != "-" and top_color != "":
+                    top = f"{top_color} {top}"
+                if top_material and top_material != "-":
+                    top = f"{top} made of {top_material} material"
+                clothing.append(top)
+                # Check for sheer/see-through/thin top material
+                if top_material and ("sheer" in top_material or "see-through" in top_material or "see through" in top_material or "thin" in top_material) and (get("underwear") == "-"):
+                    nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else "nipples"
+                    areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else "areolae"
+                    clothing.append(f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the top")
+            # PANTS (female)
+            if get("pants") != "-":
+                    pants = get("pants").lower()
+                    pants_color = get("pants_color").lower()
+                    pants_material = s.get("pants_material", "-")
+                    if pants_color != "-" and pants_color != "":
+                        pants = f"{pants_color} {pants}"
+                    if pants_material and pants_material != "-":
+                        pants = f"{pants} made of {pants_material.lower()} material"
+                    clothing.append(pants)
+            # UNDERWEAR (female only)
+            if get("underwear") != "-":
+                uw = get('underwear').lower()
+                uw_color = get("underwear_color").lower()
+                uw_material = s.get("underwear_material", "-").lower()
+                if uw_color != "-" and uw_color != "":
+                    uw = f"{uw_color} {uw}"
+                if uw_material and uw_material != "-":
+                    uw = f"{uw} made of {uw_material} material"
+                # If a dress or top is present, underwear is only slightly visible
+                # Check for sheer/see-through underwear
+                if uw_material and ("sheer" in uw_material or "see-through" in uw_material or "see through" in uw_material) and (get("dresses") == "-" or get("tops") == "-"):
+                    nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else "nipples"
+                    areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else "areolae"
+                    underwear_phrase = f"{poss} {uw}, revealing {poss} only slightly visible {nipple_desc} nipples and {areola_desc} areolae beneath them"
+                elif (get("dresses") != "-" or get("tops") != "-"):
+                    garment = "dress" if get("dresses") != "-" else "top" if get("tops") != "-" else None
+                    underwear_phrase = f"{poss} {uw} is only slightly visible beneath {poss} {garment}"
+                else:
+                    underwear_phrase = f"{poss} {uw}"
+                clothing.append(underwear_phrase)
+            # CAPES (female)
+            if get("capes") != "-":
+                    cape = get("capes").lower()
+                    cape_color = get("capes_color").lower()
+                    cape_material = s.get("capes_material", "-")
+                    if cape_color != "-" and cape_color != "":
+                        cape = f"{cape_color} {cape}"
+                    if cape_material and cape_material != "-":
+                        cape = f"{cape} made of {cape_material.lower()}"
+                    clothing.append(cape)
+            # HATS (female)
+            if get("hats") != "-":
+                    hat = get("hats").lower()
+                    hat_color = get("hats_color").lower()
+                    if hat_color != "-" and hat_color != "":
+                        hat = f"{hat_color} {hat}"
+                    clothing.append(hat)
+            # GLOVES (female)
+            if s.get("womens_gloves", "-") != "-":
+                    gloves = s.get("womens_gloves").lower()
+                    gloves_color = s.get("womens_gloves_color", "-").lower()
+                    gloves_material = s.get("womens_gloves_material", "-").lower()
+                    if gloves_color != "-" and gloves_color != "":
+                        gloves = f"{gloves_color} {gloves}"
+                    if gloves_material != "-" and gloves_material != "":
+                        gloves = f"{gloves} made of {gloves_material}"
+                    clothing.append(gloves)
+            # SUITS (female)
+            if s.get("womens_suits", "-") != "-":
                     suit = s.get("womens_suits").lower()
                     helmet = s.get("womens_suits_helmet", "-")
-        if suit:
-                if helmet and helmet != "-":
-                    suit = f"{suit} ({helmet.lower()})"
-                clothing.append(suit)
+                    if helmet and helmet != "-":
+                        suit = f"{suit} ({helmet.lower()})"
+                    clothing.append(suit)
+
+        # === MALE-SPECIFIC CLOTHING ===
+        if gender == "Man":
+            # TOPS (male)
+            if get("tops") != "-":
+                top = get("tops").lower()
+                top_color = get("tops_color").lower()
+                top_material = s.get("tops_material", "-").lower()
+                if top_color != "-" and top_color != "":
+                    top = f"{top_color} {top}"
+                if top_material and top_material != "-":
+                    top = f"{top} made of {top_material} material"
+                clothing.append(top)
+            # PANTS (male)
+            if get("pants") != "-":
+                    pants = get("pants").lower()
+                    pants_color = get("pants_color").lower()
+                    pants_material = s.get("pants_material", "-")
+                    if pants_color != "-" and pants_color != "":
+                        pants = f"{pants_color} {pants}"
+                    if pants_material and pants_material != "-":
+                        pants = f"{pants} made of {pants_material.lower()} material"
+                    clothing.append(pants)
+            # CAPES (male)
+            if get("capes") != "-":
+                    cape = get("capes").lower()
+                    cape_color = get("capes_color").lower()
+                    cape_material = s.get("capes_material", "-")
+                    if cape_color != "-" and cape_color != "":
+                        cape = f"{cape_color} {cape}"
+                    if cape_material and cape_material != "-":
+                        cape = f"{cape} made of {cape_material.lower()}"
+                    clothing.append(cape)
+            # HATS (male)
+            if get("hats") != "-":
+                    hat = get("hats").lower()
+                    hat_color = get("hats_color").lower()
+                    if hat_color != "-" and hat_color != "":
+                        hat = f"{hat_color} {hat}"
+                    clothing.append(hat)
+            # GLOVES (male)
+            if s.get("mens_gloves", "-") != "-":
+                    gloves = s.get("mens_gloves").lower()
+                    gloves_color = s.get("mens_gloves_color", "-").lower()
+                    gloves_material = s.get("mens_gloves_material", "-").lower()
+                    if gloves_color != "-" and gloves_color != "":
+                        gloves = f"{gloves_color} {gloves}"
+                    if gloves_material != "-" and gloves_material != "":
+                        gloves = f"{gloves} made of {gloves_material}"
+                    clothing.append(gloves)
+            # SUITS (male)
+            if s.get("mens_suits", "-") != "-":
+                    suit = s.get("mens_suits").lower()
+                    clothing.append(suit)
+
+        # CUSTOM CLOTHING (both genders)
         custom_clothing = s.get("custom_clothing", "")
-        if custom_clothing and custom_clothing.strip() :
+        if custom_clothing and custom_clothing.strip():
                 clothing.append(custom_clothing.strip())
 
         # Breasts and bum (for women)
@@ -736,24 +801,29 @@ class CharacterPromptBuilderScene:
                 clothing_phrase += f" covering {covering_features}"
             body_features_phrase = ""
         else:
-            # Display the selected breast/nipple/areola details if no clothing is present
-            nipple_desc = ""
-            if get("nipple_appearance") != "-":
-                nipple_desc = get("nipple_appearance").lower()
-            areola_desc = ""
-            if get("areola_appearance") != "-":
-                areola_desc = get("areola_appearance").lower()
-            details = []
-            if nipple_desc:
-                details.append(f"{nipple_desc} nipples")
-            if areola_desc:
-                details.append(f"and {poss} {areola_desc} areolae")
-            if details:
-                details_str = ", ".join(details)
+            # No clothing present - nude handling
+            if gender == "Woman":
+                # Display the selected breast/nipple/areola details if no clothing is present
+                nipple_desc = ""
+                if get("nipple_appearance") != "-":
+                    nipple_desc = get("nipple_appearance").lower()
+                areola_desc = ""
+                if get("areola_appearance") != "-":
+                    areola_desc = get("areola_appearance").lower()
+                details = []
+                if nipple_desc:
+                    details.append(f"{nipple_desc} nipples")
+                if areola_desc:
+                    details.append(f"and {poss} {areola_desc} areolae")
+                if details:
+                    details_str = ", ".join(details)
+                else:
+                    details_str = "breasts and nipples"
+                clothing_phrase = f"{subj} is completely nude and {poss} {details_str} are visible"
+            elif gender == "Man":
+                clothing_phrase = f"{subj} is shirtless" if not clothing else ""
             else:
-                details_str = "breasts and nipples"
-
-            clothing_phrase = f"{subj} is completely nude and {poss} {details_str} are visible"
+                clothing_phrase = ""
 
         # Accessories
         # Only check for not "-" (no weight) for all female fashion fields
@@ -836,6 +906,15 @@ class CharacterPromptBuilderScene:
             if get("womens_shoe_color") != "-":
                 shoe_desc = f"{get('womens_shoe_color').lower()} {shoe_desc}"
             shoe_material = s.get("womens_shoe_material", "-")
+            if shoe_material and shoe_material != "-":
+                shoe_desc = f"{shoe_desc} made of {shoe_material.lower()}"
+            shoes_phrase = f"{subj} is wearing {shoe_desc}"
+        # MENS SHOES
+        if s.get("mens_shoes", "-") != "-" and gender == "Man":
+            shoe_desc = s.get("mens_shoes").lower()
+            if s.get("mens_shoe_color", "-") != "-":
+                shoe_desc = f"{s.get('mens_shoe_color').lower()} {shoe_desc}"
+            shoe_material = s.get("mens_shoe_material", "-")
             if shoe_material and shoe_material != "-":
                 shoe_desc = f"{shoe_desc} made of {shoe_material.lower()}"
             shoes_phrase = f"{subj} is wearing {shoe_desc}"
@@ -1034,6 +1113,7 @@ class CharacterPromptBuilderScene:
             face_features_phrase,
             lips_phrase,
             hair_phrase,
+            facial_hair_phrase,
             makeup_phrase,
             expression_phrase,
             clothing_phrase,
