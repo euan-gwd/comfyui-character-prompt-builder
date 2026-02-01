@@ -222,18 +222,47 @@ class CharacterPromptBuilderScene:
 
         # Generate prose for each person
         person_prompts = []
+        is_multi_person = num_people != "1"
+
         for idx, person_settings in enumerate(settings_list):
             s = person_settings.copy() if person_settings else {}
             # Merge scene-level settings for each person (for pose, shot, etc.)
             s.update(scene_settings)
-            # For clarity, add a label for each person if more than one
-            prompt, _ = self._generate_natural_language(s, "")
-            if num_people != "1":
+            # For multi-person, exclude location/environment/lighting from individual prompts
+            prompt, _ = self._generate_natural_language(s, "", include_scene_tail=not is_multi_person)
+            if is_multi_person:
                 prompt = f"Person {idx+1}: {prompt}"
             person_prompts.append(prompt)
 
         # Combine all person prompts
         prompt = " ".join(person_prompts)
+
+        # For multi-person scenes, add location/environment/lighting once at the end
+        if is_multi_person:
+            tail_parts = []
+            # Location
+            if scene_location:
+                tail_parts.append(f"The scene takes place {scene_location}")
+            # Environment
+            if time_of_day != "-":
+                tail_parts.append(f"It is {time_of_day.lower()}")
+            if weather != "-":
+                tail_parts.append(f"The weather is {weather.lower()}")
+            if season != "-":
+                tail_parts.append(f"It is {season.lower()} season")
+            # Lighting
+            if light_type != "-" and light_weight > 0:
+                light_desc = ""
+                if light_quality != "-":
+                    light_desc += light_quality.lower() + " "
+                light_desc += light_type.lower()
+                tail_parts.append(f"The scene is lit by {light_desc} ({light_weight}% intensity)")
+
+            if tail_parts:
+                prompt = prompt.rstrip(".")
+                if not prompt.endswith("."):
+                    prompt += "."
+                prompt = prompt + " " + ". ".join(tail_parts)
 
         # Compose final prompt with prefix/suffix
         parts = []
@@ -253,7 +282,7 @@ class CharacterPromptBuilderScene:
 
         return (final_prompt.strip(), neg)
 
-    def _generate_natural_language(self, s, negative_prompt):
+    def _generate_natural_language(self, s, negative_prompt, include_scene_tail=True):
         def get_eye_mood(expression):
             expression_lower = expression.lower() if expression and expression != "-" else ""
             if expression_lower in ["happy", "excited", "amused", "in love", "surprised and amused", "smiling", "silly"]:
@@ -1109,7 +1138,6 @@ class CharacterPromptBuilderScene:
             pose_phrase,
             custom_action_phrase,
             props_phrase,
-            location_phrase,
             face_features_phrase,
             lips_phrase,
             hair_phrase,
@@ -1126,10 +1154,15 @@ class CharacterPromptBuilderScene:
             fashion_phrase,
         ]
         # Action/pose/location/etc. are better as separate sentences
-        tail_phrases = [
-            environment_phrase,
-            lighting_phrase,
-        ]
+        # For multi-person (include_scene_tail=False), exclude location/environment/lighting
+        if include_scene_tail:
+            tail_phrases = [
+                location_phrase,
+                environment_phrase,
+                lighting_phrase,
+            ]
+        else:
+            tail_phrases = []
 
         # Remove empty phrases and strip
         phrases = [p.strip() for p in phrases if p and p.strip()]
