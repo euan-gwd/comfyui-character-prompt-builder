@@ -42,7 +42,7 @@ class CharacterPromptBuilderMaleFashion:
 
         return {
             "required": {
-                "fashion_aesthetic": combo("fashion_aesthetic_list"),
+                "fashion_aesthetic": combo("mens_fashion_aesthetic_list"),
                 "tops": combo("tops_list"),
                 "tops_color": combo("tops_color_list"),
                 "tops_material": combo("tops_material_list"),
