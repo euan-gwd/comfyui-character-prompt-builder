@@ -8,8 +8,10 @@ import os
 from urllib.request import urlopen
 
 # Import node mappings from separate files
-from .node_defs.person import NODE_CLASS_MAPPINGS as PERSON_CLASS_MAPPINGS
-from .node_defs.person import NODE_DISPLAY_NAME_MAPPINGS as PERSON_DISPLAY_NAME_MAPPINGS
+from .node_defs.female_person import NODE_CLASS_MAPPINGS as FEMALE_PERSON_CLASS_MAPPINGS
+from .node_defs.female_person import NODE_DISPLAY_NAME_MAPPINGS as FEMALE_PERSON_DISPLAY_NAME_MAPPINGS
+from .node_defs.male_person import NODE_CLASS_MAPPINGS as MALE_PERSON_CLASS_MAPPINGS
+from .node_defs.male_person import NODE_DISPLAY_NAME_MAPPINGS as MALE_PERSON_DISPLAY_NAME_MAPPINGS
 from .node_defs.female_fashion import NODE_CLASS_MAPPINGS as FASHION_CLASS_MAPPINGS
 from .node_defs.female_fashion import NODE_DISPLAY_NAME_MAPPINGS as FASHION_DISPLAY_NAME_MAPPINGS
 from .node_defs.male_fashion import NODE_CLASS_MAPPINGS as MALE_FASHION_CLASS_MAPPINGS
@@ -1077,7 +1079,8 @@ class CharacterPromptBuilderScene:
 
 # Node mappings - merge from individual node files
 NODE_CLASS_MAPPINGS = {
-    **PERSON_CLASS_MAPPINGS,
+    **FEMALE_PERSON_CLASS_MAPPINGS,
+    **MALE_PERSON_CLASS_MAPPINGS,
     **FASHION_CLASS_MAPPINGS,
     **MALE_FASHION_CLASS_MAPPINGS,
     **ACTIONS_CLASS_MAPPINGS,
@@ -1085,7 +1088,8 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    **PERSON_DISPLAY_NAME_MAPPINGS,
+    **FEMALE_PERSON_DISPLAY_NAME_MAPPINGS,
+    **MALE_PERSON_DISPLAY_NAME_MAPPINGS,
     **FASHION_DISPLAY_NAME_MAPPINGS,
     **MALE_FASHION_DISPLAY_NAME_MAPPINGS,
     **ACTIONS_DISPLAY_NAME_MAPPINGS,
