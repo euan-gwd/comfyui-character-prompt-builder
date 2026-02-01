@@ -76,18 +76,28 @@ Controls clothing and accessories for male subjects:
 
 | Category | Options |
 |----------|---------|
-| **Style** | Fashion aesthetic (Casual, Formal, Streetwear, etc.) |
-| **Outfit** | Suits, shirts, jackets, pants, revealing outfits |
+| **Style** | Fashion aesthetic (Gentleman, Military, Biker, Knight, etc.) |
+| **Outfit** | Suits, shirts, jackets, pants |
 | **Shoes** | Men's shoes, colors |
-| **Accessories** | Watches, ties, hats, belts |
+| **Accessories** | Watches, necklaces, bracelets, rings, hats |
 
-### 🏃 Character Prompt Builder - Action
-Controls pose, action, and gesture:
+### 💃 Character Prompt Builder - Female Actions
+Controls pose, action, and props for female subjects:
 
 | Category | Options |
 |----------|---------|
-| **Pose** | Standing, sitting, walking, dynamic poses, etc. |
-| **Action** | Gestures, activities, interactions |
+| **Pose** | Standing, kneeling, sitting, laying down poses |
+| **Props** | Phones, bags, flowers, cameras, etc. |
+| **Custom** | Free-text action description |
+
+### 🏃 Character Prompt Builder - Male Actions
+Controls pose, action, and props for male subjects:
+
+| Category | Options |
+|----------|---------|
+| **Pose** | Masculine standing, kneeling, sitting, laying poses |
+| **Props** | Swords, guns, sports equipment, tools, etc. |
+| **Custom** | Free-text action description |
 | **Expression** | Additional facial/body expressions |
 
 ### 📸 Character Prompt Builder - Scene & Generate
@@ -111,7 +121,7 @@ Controls the shot setup and generates the final prompt:
       ↓
 [Character Prompt Builder - Female Fashion] or [Character Prompt Builder - Male Fashion]
       ↓
-[Character Prompt Builder - Action]
+[Character Prompt Builder - Female Actions] or [Character Prompt Builder - Male Actions]
       ↓
 [Character Prompt Builder - Scene & Generate]
       ↓

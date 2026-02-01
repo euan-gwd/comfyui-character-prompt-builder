@@ -16,8 +16,10 @@ from .node_defs.female_fashion import NODE_CLASS_MAPPINGS as FASHION_CLASS_MAPPI
 from .node_defs.female_fashion import NODE_DISPLAY_NAME_MAPPINGS as FASHION_DISPLAY_NAME_MAPPINGS
 from .node_defs.male_fashion import NODE_CLASS_MAPPINGS as MALE_FASHION_CLASS_MAPPINGS
 from .node_defs.male_fashion import NODE_DISPLAY_NAME_MAPPINGS as MALE_FASHION_DISPLAY_NAME_MAPPINGS
-from .node_defs.actions import NODE_CLASS_MAPPINGS as ACTIONS_CLASS_MAPPINGS
-from .node_defs.actions import NODE_DISPLAY_NAME_MAPPINGS as ACTIONS_DISPLAY_NAME_MAPPINGS
+from .node_defs.female_poses import NODE_CLASS_MAPPINGS as FEMALE_POSES_CLASS_MAPPINGS
+from .node_defs.female_poses import NODE_DISPLAY_NAME_MAPPINGS as FEMALE_POSES_DISPLAY_NAME_MAPPINGS
+from .node_defs.male_poses import NODE_CLASS_MAPPINGS as MALE_POSES_CLASS_MAPPINGS
+from .node_defs.male_poses import NODE_DISPLAY_NAME_MAPPINGS as MALE_POSES_DISPLAY_NAME_MAPPINGS
 
 # Get the directory where this file is located
 RESOURCES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "resources")
@@ -1083,7 +1085,8 @@ NODE_CLASS_MAPPINGS = {
     **MALE_PERSON_CLASS_MAPPINGS,
     **FASHION_CLASS_MAPPINGS,
     **MALE_FASHION_CLASS_MAPPINGS,
-    **ACTIONS_CLASS_MAPPINGS,
+    **FEMALE_POSES_CLASS_MAPPINGS,
+    **MALE_POSES_CLASS_MAPPINGS,
     "Character Prompt Builder Scene": CharacterPromptBuilderScene,
 }
 
@@ -1092,6 +1095,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     **MALE_PERSON_DISPLAY_NAME_MAPPINGS,
     **FASHION_DISPLAY_NAME_MAPPINGS,
     **MALE_FASHION_DISPLAY_NAME_MAPPINGS,
-    **ACTIONS_DISPLAY_NAME_MAPPINGS,
+    **FEMALE_POSES_DISPLAY_NAME_MAPPINGS,
+    **MALE_POSES_DISPLAY_NAME_MAPPINGS,
     "Character Prompt Builder Scene": "Character Prompt Builder - Scene & Generate",
 }

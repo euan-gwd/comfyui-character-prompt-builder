@@ -24,18 +24,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `mens_ring_list` - 12 masculine ring types
   - `mens_watches_list` - 13 masculine watch styles
   - `mens_suits_list` - 43 suit and superhero costume options
+  - `mens_standing_pose_list` - 25 masculine standing poses
+  - `mens_kneeling_pose_list` - 10 masculine kneeling poses
+  - `mens_sitting_pose_list` - 15 masculine sitting poses
+  - `mens_laying_down_pose_list` - 10 masculine lying poses
+  - `mens_props_list` - 35 masculine props (sword, gun, briefcase, sports equipment, etc.)
+- **Separate Male and Female Actions Nodes**
+  - `Character Prompt Builder - Female Actions` for female poses and props
+  - `Character Prompt Builder - Male Actions` for male poses and props
 - **Refactored Node Architecture**
   - Nodes split into separate files under `node_defs/` folder
   - Improved code organization and maintainability
 
 ### Changed
 - Renamed `person.py` to `female_person.py` for clarity
+- Renamed `actions.py` to `female_actions.py` for clarity
 - Male Fashion node now uses all male-specific lists
 - Female Fashion node retains original female-focused lists
 - Superhero suits now have gender-specific versions
 
 ### Removed
 - Generic `Character Prompt Builder - Person` node (replaced by gender-specific nodes)
+- Generic `Character Prompt Builder - Actions` node (replaced by gender-specific nodes)
 - Feminine items from male lists (Buxom, Curvy, Voluptuous, etc.)
 
 ## [1.1.0] - 2026-01-XX
