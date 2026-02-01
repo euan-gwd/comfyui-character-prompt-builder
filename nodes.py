@@ -12,6 +12,8 @@ from .node_defs.person import NODE_CLASS_MAPPINGS as PERSON_CLASS_MAPPINGS
 from .node_defs.person import NODE_DISPLAY_NAME_MAPPINGS as PERSON_DISPLAY_NAME_MAPPINGS
 from .node_defs.female_fashion import NODE_CLASS_MAPPINGS as FASHION_CLASS_MAPPINGS
 from .node_defs.female_fashion import NODE_DISPLAY_NAME_MAPPINGS as FASHION_DISPLAY_NAME_MAPPINGS
+from .node_defs.male_fashion import NODE_CLASS_MAPPINGS as MALE_FASHION_CLASS_MAPPINGS
+from .node_defs.male_fashion import NODE_DISPLAY_NAME_MAPPINGS as MALE_FASHION_DISPLAY_NAME_MAPPINGS
 from .node_defs.actions import NODE_CLASS_MAPPINGS as ACTIONS_CLASS_MAPPINGS
 from .node_defs.actions import NODE_DISPLAY_NAME_MAPPINGS as ACTIONS_DISPLAY_NAME_MAPPINGS
 
@@ -1077,6 +1079,7 @@ class CharacterPromptBuilderScene:
 NODE_CLASS_MAPPINGS = {
     **PERSON_CLASS_MAPPINGS,
     **FASHION_CLASS_MAPPINGS,
+    **MALE_FASHION_CLASS_MAPPINGS,
     **ACTIONS_CLASS_MAPPINGS,
     "Character Prompt Builder Scene": CharacterPromptBuilderScene,
 }
@@ -1084,6 +1087,7 @@ NODE_CLASS_MAPPINGS = {
 NODE_DISPLAY_NAME_MAPPINGS = {
     **PERSON_DISPLAY_NAME_MAPPINGS,
     **FASHION_DISPLAY_NAME_MAPPINGS,
+    **MALE_FASHION_DISPLAY_NAME_MAPPINGS,
     **ACTIONS_DISPLAY_NAME_MAPPINGS,
     "Character Prompt Builder Scene": "Character Prompt Builder - Scene & Generate",
 }
