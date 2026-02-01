@@ -48,7 +48,7 @@ class CharacterPromptBuilderMalePerson:
                 "nationality_1": combo("nationality_list", "British"),
                 "nationality_2": combo("nationality_list"),
                 "nationality_mix": ("INT", {"default": 0, "step": 1, "min": 0, "max": 100, "display": "slider"}),
-                "body_type": combo("body_type_list"),
+                "body_type": combo("mens_body_type_list"),
                 "height": combo("height_list"),
                 "body_weight": combo("body_weight_list"),
             },
