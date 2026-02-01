@@ -12,6 +12,8 @@ from .node_defs.person import NODE_CLASS_MAPPINGS as PERSON_CLASS_MAPPINGS
 from .node_defs.person import NODE_DISPLAY_NAME_MAPPINGS as PERSON_DISPLAY_NAME_MAPPINGS
 from .node_defs.female_fashion import NODE_CLASS_MAPPINGS as FASHION_CLASS_MAPPINGS
 from .node_defs.female_fashion import NODE_DISPLAY_NAME_MAPPINGS as FASHION_DISPLAY_NAME_MAPPINGS
+from .node_defs.actions import NODE_CLASS_MAPPINGS as ACTIONS_CLASS_MAPPINGS
+from .node_defs.actions import NODE_DISPLAY_NAME_MAPPINGS as ACTIONS_DISPLAY_NAME_MAPPINGS
 
 # Get the directory where this file is located
 RESOURCES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "resources")
@@ -110,99 +112,6 @@ def _get_default_character_data():
         "skin_acne_list":["a few blemishes","some acne","pronounced acne"],
         "skin_imperfections_list":["minor imperfections","natural imperfections","pronounced imperfections"]
     }
-
-
-# Character Prompt Builder - Actions Node (Pose/Action)
-class CharacterPromptBuilderActions:
-    @classmethod
-    def INPUT_TYPES(s):
-        data = _load_character_data()
-
-        def combo(list_key):
-            _list = data.get(list_key, ["-"]).copy()
-            if '-' not in _list:
-                _list.insert(0, '-')
-            return (_list,)
-
-        # --- Add props_color combo box ---
-        def combo_color(list_key):
-            _list = data.get(list_key, ["-"]).copy()
-            if '-' not in _list:
-                _list.insert(0, '-')
-            return (_list,)
-
-        return {
-            "required": {
-                "standing_pose": combo("standing_pose_list"),
-                "kneeling_pose": combo("kneeling_pose_list"),
-                "sitting_pose": combo("sitting_pose_list"),
-                "laying_down_pose": combo("laying_down_pose_list"),
-                # "nsfw_pose": combo("nsfw_pose_list"),
-                "props": combo("props_list"),
-                "props_color": combo_color("props_color_list"),
-                "settings_in": ("PM_SETTINGS",),
-            },
-            "optional": {
-                "custom_action": (
-                    "STRING",
-                    {
-                        "multiline": True,
-                        "default": "",
-                        "placeholder": "Enter custom action or pose description"
-                    }
-                ),
-            }
-        }
-
-    RETURN_TYPES = ("PM_SETTINGS",)
-    RETURN_NAMES = ("settings",)
-    FUNCTION = "run"
-    CATEGORY = "CharacterPromptBuilder"
-
-    def run(self,
-            standing_pose="-",
-            kneeling_pose="-",
-            sitting_pose="-",
-            laying_down_pose="-",
-            # nsfw_pose="-",
-            props="-",
-            props_color="-",
-            settings_in=None,
-            custom_action=""):
-        settings = settings_in.copy() if settings_in else {}
-
-        # Only one pose can be active at a time: pick the first non-"-"
-        pose_fields = [
-            ("standing_pose", standing_pose),
-            ("kneeling_pose", kneeling_pose),
-            ("sitting_pose", sitting_pose),
-            ("laying_down_pose", laying_down_pose),
-            # ("nsfw_pose", nsfw_pose),
-        ]
-        selected_pose = "-"
-        selected_index = -1
-        for idx, (key, val) in enumerate(pose_fields):
-            if val != "-":
-                selected_pose = val
-                selected_index = idx
-                break
-
-        # Reset all other poses to "-" except the selected one
-        pose_out = {}
-        for idx, (key, val) in enumerate(pose_fields):
-            if idx == selected_index:
-                pose_out[key] = val
-            else:
-                pose_out[key] = "-"
-
-        settings.update({
-            "model_pose": selected_pose,
-            **pose_out,
-            "props": props,
-            "props_color": props_color,
-            "custom_action": custom_action.strip() if custom_action else "",
-        })
-        return (settings,)
 
 
 # Character Prompt Builder - Scene Node (Camera + Location + Generate)
@@ -1168,13 +1077,13 @@ class CharacterPromptBuilderScene:
 NODE_CLASS_MAPPINGS = {
     **PERSON_CLASS_MAPPINGS,
     **FASHION_CLASS_MAPPINGS,
-    "Character Prompt Builder Actions": CharacterPromptBuilderActions,
+    **ACTIONS_CLASS_MAPPINGS,
     "Character Prompt Builder Scene": CharacterPromptBuilderScene,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     **PERSON_DISPLAY_NAME_MAPPINGS,
     **FASHION_DISPLAY_NAME_MAPPINGS,
-    "Character Prompt Builder Actions": "Character Prompt Builder - Actions",
+    **ACTIONS_DISPLAY_NAME_MAPPINGS,
     "Character Prompt Builder Scene": "Character Prompt Builder - Scene & Generate",
 }
