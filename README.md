@@ -37,16 +37,27 @@ git clone https://github.com/yourusername/comfyui-character-prompt-builder.git
 
 ## Nodes
 
-### 🧑 Character Prompt Builder - Person
-Controls physical appearance including:
+### 👩 Character Prompt Builder - Female Person
+Controls physical appearance for female characters:
+
+| Category | Options |
+|----------|---------||
+| **Subject** | Gender (Woman/Girl), age (18-90), nationality, body type |
+| **Body** | Breast size/shape, bum size (with weights) |
+| **Face** | Face shape, eye color, expression, lips, makeup |
+| **Hair** | Style, length, color |
+| **Skin** | Details, freckles, dimples, moles, tan, acne |
+| **Eyes** | Detail level, iris patterns, pupil shape |
+
+### 👨 Character Prompt Builder - Male Person
+Controls physical appearance for male characters:
 
 | Category | Options |
 |----------|---------|
-| **Subject** | Gender, age (18-90), nationality, body type |
-| **Body** | Breast size, bum size (with weights) |
-| **Face** | Face shape, eye color, expression, lips, makeup |
-| **Hair** | Style, length, color, disheveled level, beard |
-| **Skin** | Details, pores, freckles, dimples, moles, tan, acne |
+| **Subject** | Gender (Man/Boy), age (18-90), nationality, body type |
+| **Face** | Face shape, eye color, expression, facial hair |
+| **Hair** | Male hairstyles, length, color |
+| **Skin** | Details, freckles, dimples, moles, tan, acne |
 | **Eyes** | Detail level, iris patterns, pupil shape |
 
 ### 👗 Character Prompt Builder - Female Fashion
@@ -96,7 +107,7 @@ Controls the shot setup and generates the final prompt:
 ### Basic Workflow
 
 ```
-[Character Prompt Builder - Person]
+[Character Prompt Builder - Female Person] or [Character Prompt Builder - Male Person]
       ↓
 [Character Prompt Builder - Female Fashion] or [Character Prompt Builder - Male Fashion]
       ↓
@@ -107,8 +118,9 @@ Controls the shot setup and generates the final prompt:
 (positive, negative)
 ```
 
-- Choose either the **Female Fashion** or **Male Fashion** node after the Person node, depending on subject gender.
-- The **Action** node is now a separate step for poses and actions.
+- Choose **Female Person** or **Male Person** node based on your character
+- Match with the corresponding **Fashion** node (Female Fashion or Male Fashion)
+- The **Action** node is shared for both genders
 
 ### Minimal Workflow
 
@@ -131,8 +143,8 @@ or
 ```
 
 ### Connection Guide
-1. Add **Character Prompt Builder - Person** node
-2. Connect `settings` output to **Character Prompt Builder - Female Fashion** or **Male Fashion** `settings_in`
+1. Add **Character Prompt Builder - Female Person** or **Male Person** node
+2. Connect `settings` output to matching **Fashion** node's `settings_in`
 3. Connect Fashion node's `settings` output to **Character Prompt Builder - Action** `settings_in`
 4. Connect Action node's `settings` output to **Character Prompt Builder - Scene & Generate** `settings` input
 5. Connect `positive` and `negative` outputs to your sampler/CLIP nodes
@@ -200,6 +212,14 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 5. Open a Pull Request
 
 ## Changelog
+
+### v2.0.0
+- **Separate Male and Female Person Nodes** - Gender-specific nodes with tailored options
+- **Male-Specific Options** - Body types, hairstyles, facial hair, fashion aesthetics, clothing
+- **Facial Hair Support** - 23 beard and mustache styles for male characters
+- **Male Superhero Suits** - Iron Man, Batman, Superman, Captain America, and more
+- **Refactored Architecture** - Nodes split into separate files for better maintainability
+- **Gender Options** - Woman/Girl for females, Man/Boy for males
 
 ### v1.1.0
 - Split Fashion node into separate Female and Male nodes
