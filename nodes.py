@@ -7,6 +7,20 @@ import json
 import os
 from urllib.request import urlopen
 
+# Import node mappings from separate files
+from .node_defs.female_person import NODE_CLASS_MAPPINGS as FEMALE_PERSON_CLASS_MAPPINGS
+from .node_defs.female_person import NODE_DISPLAY_NAME_MAPPINGS as FEMALE_PERSON_DISPLAY_NAME_MAPPINGS
+from .node_defs.male_person import NODE_CLASS_MAPPINGS as MALE_PERSON_CLASS_MAPPINGS
+from .node_defs.male_person import NODE_DISPLAY_NAME_MAPPINGS as MALE_PERSON_DISPLAY_NAME_MAPPINGS
+from .node_defs.female_fashion import NODE_CLASS_MAPPINGS as FASHION_CLASS_MAPPINGS
+from .node_defs.female_fashion import NODE_DISPLAY_NAME_MAPPINGS as FASHION_DISPLAY_NAME_MAPPINGS
+from .node_defs.male_fashion import NODE_CLASS_MAPPINGS as MALE_FASHION_CLASS_MAPPINGS
+from .node_defs.male_fashion import NODE_DISPLAY_NAME_MAPPINGS as MALE_FASHION_DISPLAY_NAME_MAPPINGS
+from .node_defs.female_poses import NODE_CLASS_MAPPINGS as FEMALE_POSES_CLASS_MAPPINGS
+from .node_defs.female_poses import NODE_DISPLAY_NAME_MAPPINGS as FEMALE_POSES_DISPLAY_NAME_MAPPINGS
+from .node_defs.male_poses import NODE_CLASS_MAPPINGS as MALE_POSES_CLASS_MAPPINGS
+from .node_defs.male_poses import NODE_DISPLAY_NAME_MAPPINGS as MALE_POSES_DISPLAY_NAME_MAPPINGS
+
 # Get the directory where this file is located
 RESOURCES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "resources")
 
@@ -104,360 +118,6 @@ def _get_default_character_data():
         "skin_acne_list":["a few blemishes","some acne","pronounced acne"],
         "skin_imperfections_list":["minor imperfections","natural imperfections","pronounced imperfections"]
     }
-
-
-# Character Prompt Builder - Person Node (Subject + Face + Hair + Skin)
-class CharacterPromptBuilderPerson:
-    @classmethod
-    def INPUT_TYPES(s):
-        data = _load_character_data()
-        max_float_value = 1.95
-
-
-        def combo(key, default=None):
-            _list = data.get(key, ["-"]).copy()
-            if '-' not in _list:
-                _list.insert(0, '-')
-            return (_list, {"default": default} if default else {})
-
-        def weight(default=0):
-            return ("INT", {"default": int(default * 100) if isinstance(default, float) else default, "step": 1, "min": 0, "max": 100, "display": "slider"})
-
-        return {
-            "required": {
-                # === SUBJECT ===
-                "gender": combo("gender_list", "Woman"),
-                "age": ("INT", {"default": 25, "min": 18, "max": 90, "step": 1, "display": "slider"}),
-                "nationality_1": combo("nationality_list", "British"),
-                "nationality_2": combo("nationality_list"),
-                "nationality_mix": weight(0),
-                "body_type": combo("body_type_list"),
-                "height": combo("height_list"),
-                "body_weight": combo("body_weight_list"),
-                # "breast_cup_size": combo("breast_cup_size_list"),
-                # "bust_measurement": combo("bust_measurement_list"),
-                "breast_shape": combo("breast_shape_list"),
-                "breast_size": combo("breast_size_list"),
-                "breast_size_weight": weight(),
-                "bum_size": combo("bum_size_list"),
-            },
-            "optional": {
-                # === FACE ===
-                "face_shape": combo("face_shape_list"),
-                "eyes_color": combo("eyes_color_list"),
-                "eye_shape": combo("eye_shape_list"),
-                "nose_shape": combo("nose_shape_list"),
-                "nose_size": combo("nose_size_list"),
-                "lip_shape": combo("lip_shape_list"),
-                "lip_color": combo("lip_color_list"),
-                "makeup": combo("makeup_list"),
-                "facial_expression": combo("face_expression_list"),
-                # === HAIR ===
-                "hair_style": combo("hair_style_list"),
-                "hair_length": combo("hair_length_list"),
-                "hair_color": combo("hair_color_list"),
-                # === SKIN ===
-                "skin_tone": combo("skin_tone_list"),
-                "skin_details": combo("skin_details_list"),
-                # "skin_pores": combo("skin_pores_list"),
-                "dimples": combo("dimples_list"),
-                "freckles": combo("freckles_list"),
-                "moles": combo("moles_list"),
-                "skin_imperfections": combo("skin_imperfections_list"),
-                "skin_acne": combo("skin_acne_list"),
-                "tanned_skin": combo("tanned_skin_list"),
-                "eyes_details": combo("eyes_details_list"),
-                "iris_details": combo("iris_details_list"),
-                "circular_iris": combo("circular_iris_list"),
-                "circular_pupil": combo("circular_pupil_list"),
-                # === NIPPLES & AREOLA ===
-                "nipple_appearance": combo("nipple_appearance_list"),
-                "areola_appearance": combo("areola_appearance_list"),
-                # === TATTOOS ===
-                "tattoo": combo("tattoo_list"),
-                # === CHAIN ===
-                "settings_in": ("PM_SETTINGS",),
-            }
-        }
-
-    RETURN_TYPES = ("PM_SETTINGS",)
-    RETURN_NAMES = ("settings",)
-    FUNCTION = "run"
-    CATEGORY = "CharacterPromptBuilder"
-
-    def run(self, gender="woman", age=20, nationality_1="-", nationality_2="-", nationality_mix=0,
-            body_type="-", height="-", body_weight="-", breast_cup_size="-", bust_measurement="-", breast_shape="-",
-            breast_size="-", breast_size_weight=0,
-            bum_size="-",
-            face_shape="-", nose_shape="-", nose_size="-", eyes_color="-", eye_shape="-",
-            facial_expression="-",
-            lip_shape="-",
-            lip_color="-",
-            makeup="-",
-            hair_style="-", hair_length="-",
-            hair_color="-",
-            skin_details="-", skin_tone="-", dimples="-", freckles="-", moles="-",
-            # skin_pores="-",
-            skin_imperfections="-", skin_acne="-", tanned_skin="-",
-            eyes_details="-", iris_details="-", circular_iris="-", circular_pupil="-",
-            nipple_appearance="-",
-            areola_appearance="-",
-            tattoo="-",
-            settings_in=None):
-        settings = settings_in.copy() if settings_in else {}
-        settings.update({
-            "gender": gender, "age": age, "nationality_1": nationality_1,
-            "nationality_2": nationality_2, "nationality_mix": nationality_mix,
-            "body_type": body_type,
-            "height": height, "body_weight": body_weight,
-            # "breast_cup_size": breast_cup_size, "bust_measurement": bust_measurement,
-            "breast_shape": breast_shape,
-            "breast_size": breast_size, "breast_size_weight": breast_size_weight,
-            "bum_size": bum_size,
-            "face_shape": face_shape,
-            "eyes_color": eyes_color,
-            "eye_shape": eye_shape,
-            "nose_shape": nose_shape,
-            "nose_size": nose_size,
-            "lip_shape": lip_shape,
-            "lip_color": lip_color,
-            "makeup": makeup,
-            "facial_expression": facial_expression,
-            "hair_style": hair_style,
-            "hair_length": hair_length,
-            "hair_color": hair_color,
-            "skin_details": skin_details, "skin_tone": skin_tone, "dimples": dimples,
-            # "skin_pores": skin_pores,
-            "eyes_details": eyes_details,"iris_details": iris_details,
-            "freckles": freckles, "moles": moles, "skin_imperfections": skin_imperfections,
-            "skin_acne": skin_acne, "tanned_skin": tanned_skin,
-            "nipple_appearance": nipple_appearance,
-            "areola_appearance": areola_appearance,
-            "tattoo": tattoo,
-        })
-        return (settings,)
-
-
-# Character Prompt Builder - Female Fashion Node (Style + Outfit + Accessories)
-class CharacterPromptBuilderFemaleFashion:
-    @classmethod
-    def INPUT_TYPES(s):
-        data = _load_character_data()
-
-        def combo(key, default=None):
-            _list = data.get(key, ["-"]).copy()
-            if '-' not in _list:
-                _list.insert(0, '-')
-            return (_list, {"default": default} if default else {})
-
-        return {
-            "required": {
-                "fashion_aesthetic": combo("fashion_aesthetic_list"),
-                "tops": combo("tops_list"),
-                "tops_color": combo("tops_color_list"),
-                "tops_material": combo("tops_material_list"),
-                "pants": combo("pants_list"),
-                "pants_color": combo("pants_color_list"),
-                "pants_material": combo("pants_material_list"),
-                "dresses": combo("dresses_list"),
-                "dresses_color": combo("dresses_color_list"),
-                "dresses_material": combo("dresses_material_list"),
-                "legs": combo("legs_list"),
-                "legs_color": combo("legs_color_list"),
-                "underwear": combo("underwear_list"),
-                "underwear_color": combo("underwear_color_list"),
-                "underwear_material": combo("underwear_material_list"),
-                "capes": combo("capes_list"),
-                "capes_color": combo("capes_color_list"),
-                "capes_material": combo("capes_material_list"),
-                "hats": combo("hats_list"),
-                "hats_color": combo("hats_color_list"),
-                "womens_suits": combo("womens_suits_list"),
-                "womens_suits_helmet": combo("womens_suits_helmet_list"),
-            },
-            "optional": {
-                "womens_shoes": combo("womens_shoes_list"),
-                "womens_shoe_color": combo("womens_shoe_color_list"),
-                "womens_shoe_material": combo("womens_shoe_material_list"),
-                "womens_gloves": combo("womens_gloves_list"),
-                "womens_gloves_color": combo("womens_gloves_color_list"),
-                "womens_gloves_material": combo("womens_gloves_material_list"),
-                "necklace": combo("necklace_list"),
-                "earrings": combo("earrings_list"),
-                "bracelet": combo("bracelet_list"),
-                "watches": combo("watches_list"),
-                "watches_color": combo("watches_color_list"),
-                "ring": combo("ring_list"),
-                "fingernail_style": combo("fingernail_style_list"),
-                "nail_color": combo("nail_color_list"),
-                "settings_in": ("PM_SETTINGS",),
-                "womens_glasses": combo("womens_glasses_list"),
-                "womens_glasses_color": combo("womens_glasses_color_list"),
-                "stretched_material": (
-                    "BOOLEAN",
-                    {
-                        "default": False,
-                        "label": "Show subtle outline"
-                    }
-                 ),
-                "custom_clothing": (
-                    "STRING",
-                    {
-                        "multiline": True,
-                        "default": "",
-                        "placeholder": "Enter custom outfit"
-                    }
-                ),
-            }
-        }
-
-    RETURN_TYPES = ("PM_SETTINGS",)
-    RETURN_NAMES = ("settings",)
-    FUNCTION = "run"
-    CATEGORY = "CharacterPromptBuilder"
-
-    def run(self,
-            fashion_aesthetic="-",
-            tops="-", tops_color="-", tops_material="-",
-            pants="-", pants_color="-", pants_material="-",
-            dresses="-", dresses_color="-", dresses_material="-",
-            legs="-", legs_color="-",
-            underwear="-", underwear_color="-", underwear_material="-",
-            capes="-", capes_color="-", capes_material="-",
-            hats="-", hats_color="-",
-            womens_suits="-", womens_suits_helmet="-",
-            womens_shoes="-", womens_shoe_color="-", womens_shoe_material="-",
-            womens_gloves="-", womens_gloves_color="-",
-            womens_gloves_material="-",
-            necklace="-", earrings="-", bracelet="-", ring="-",
-            watches="-", watches_color="-",
-            fingernail_style="-", nail_color="-",
-            settings_in=None,
-            womens_glasses="-", womens_glasses_color="-",
-            stretched_material=False,
-            custom_clothing="",
-    ):
-        settings = settings_in.copy() if settings_in else {}
-        settings.update({
-            "fashion_aesthetic": fashion_aesthetic,
-            "tops": tops, "tops_color": tops_color, "tops_material": tops_material,
-            "pants": pants, "pants_color": pants_color, "pants_material": pants_material,
-            "dresses": dresses, "dresses_color": dresses_color, "dresses_material": dresses_material,
-            "legs": legs, "legs_color": legs_color,
-            "underwear": underwear, "underwear_color": underwear_color, "underwear_material": underwear_material,
-            "capes": capes, "capes_color": capes_color, "capes_material": capes_material,
-            "hats": hats, "hats_color": hats_color,
-            "womens_suits": womens_suits,
-            "womens_suits_helmet": womens_suits_helmet,
-            "womens_shoes": womens_shoes, "womens_shoe_color": womens_shoe_color, "womens_shoe_material": womens_shoe_material,
-            "womens_gloves": womens_gloves, "womens_gloves_color": womens_gloves_color,
-            "womens_gloves_material": womens_gloves_material,
-            "necklace": necklace,
-            "earrings": earrings,
-            "bracelet": bracelet,
-            "watches": watches,
-            "watches_color": watches_color,
-            "ring": ring,
-            "fingernail_style": fingernail_style, "nail_color": nail_color,
-            "womens_glasses": womens_glasses,
-            "womens_glasses_color": womens_glasses_color,
-            "stretched_material": stretched_material,
-            "custom_clothing": custom_clothing,
-        })
-        return (settings,)
-
-
-# Character Prompt Builder - Actions Node (Pose/Action)
-class CharacterPromptBuilderActions:
-    @classmethod
-    def INPUT_TYPES(s):
-        data = _load_character_data()
-
-        def combo(list_key):
-            _list = data.get(list_key, ["-"]).copy()
-            if '-' not in _list:
-                _list.insert(0, '-')
-            return (_list,)
-
-        # --- Add props_color combo box ---
-        def combo_color(list_key):
-            _list = data.get(list_key, ["-"]).copy()
-            if '-' not in _list:
-                _list.insert(0, '-')
-            return (_list,)
-
-        return {
-            "required": {
-                "standing_pose": combo("standing_pose_list"),
-                "kneeling_pose": combo("kneeling_pose_list"),
-                "sitting_pose": combo("sitting_pose_list"),
-                "laying_down_pose": combo("laying_down_pose_list"),
-                # "nsfw_pose": combo("nsfw_pose_list"),
-                "props": combo("props_list"),
-                "props_color": combo_color("props_color_list"),
-                "settings_in": ("PM_SETTINGS",),
-            },
-            "optional": {
-                "custom_action": (
-                    "STRING",
-                    {
-                        "multiline": True,
-                        "default": "",
-                        "placeholder": "Enter custom action or pose description"
-                    }
-                ),
-            }
-        }
-
-    RETURN_TYPES = ("PM_SETTINGS",)
-    RETURN_NAMES = ("settings",)
-    FUNCTION = "run"
-    CATEGORY = "CharacterPromptBuilder"
-
-    def run(self,
-            standing_pose="-",
-            kneeling_pose="-",
-            sitting_pose="-",
-            laying_down_pose="-",
-            # nsfw_pose="-",
-            props="-",
-            props_color="-",
-            settings_in=None,
-            custom_action=""):
-        settings = settings_in.copy() if settings_in else {}
-
-        # Only one pose can be active at a time: pick the first non-"-"
-        pose_fields = [
-            ("standing_pose", standing_pose),
-            ("kneeling_pose", kneeling_pose),
-            ("sitting_pose", sitting_pose),
-            ("laying_down_pose", laying_down_pose),
-            # ("nsfw_pose", nsfw_pose),
-        ]
-        selected_pose = "-"
-        selected_index = -1
-        for idx, (key, val) in enumerate(pose_fields):
-            if val != "-":
-                selected_pose = val
-                selected_index = idx
-                break
-
-        # Reset all other poses to "-" except the selected one
-        pose_out = {}
-        for idx, (key, val) in enumerate(pose_fields):
-            if idx == selected_index:
-                pose_out[key] = val
-            else:
-                pose_out[key] = "-"
-
-        settings.update({
-            "model_pose": selected_pose,
-            **pose_out,
-            "props": props,
-            "props_color": props_color,
-            "custom_action": custom_action.strip() if custom_action else "",
-        })
-        return (settings,)
 
 
 # Character Prompt Builder - Scene Node (Camera + Location + Generate)
@@ -562,18 +222,47 @@ class CharacterPromptBuilderScene:
 
         # Generate prose for each person
         person_prompts = []
+        is_multi_person = num_people != "1"
+
         for idx, person_settings in enumerate(settings_list):
             s = person_settings.copy() if person_settings else {}
             # Merge scene-level settings for each person (for pose, shot, etc.)
             s.update(scene_settings)
-            # For clarity, add a label for each person if more than one
-            prompt, _ = self._generate_natural_language(s, "")
-            if num_people != "1":
+            # For multi-person, exclude location/environment/lighting from individual prompts
+            prompt, _ = self._generate_natural_language(s, "", include_scene_tail=not is_multi_person)
+            if is_multi_person:
                 prompt = f"Person {idx+1}: {prompt}"
             person_prompts.append(prompt)
 
         # Combine all person prompts
         prompt = " ".join(person_prompts)
+
+        # For multi-person scenes, add location/environment/lighting once at the end
+        if is_multi_person:
+            tail_parts = []
+            # Location
+            if scene_location:
+                tail_parts.append(f"The scene takes place {scene_location}")
+            # Environment
+            if time_of_day != "-":
+                tail_parts.append(f"It is {time_of_day.lower()}")
+            if weather != "-":
+                tail_parts.append(f"The weather is {weather.lower()}")
+            if season != "-":
+                tail_parts.append(f"It is {season.lower()} season")
+            # Lighting
+            if light_type != "-" and light_weight > 0:
+                light_desc = ""
+                if light_quality != "-":
+                    light_desc += light_quality.lower() + " "
+                light_desc += light_type.lower()
+                tail_parts.append(f"The scene is lit by {light_desc} ({light_weight}% intensity)")
+
+            if tail_parts:
+                prompt = prompt.rstrip(".")
+                if not prompt.endswith("."):
+                    prompt += "."
+                prompt = prompt + " " + ". ".join(tail_parts)
 
         # Compose final prompt with prefix/suffix
         parts = []
@@ -593,7 +282,7 @@ class CharacterPromptBuilderScene:
 
         return (final_prompt.strip(), neg)
 
-    def _generate_natural_language(self, s, negative_prompt):
+    def _generate_natural_language(self, s, negative_prompt, include_scene_tail=True):
         def get_eye_mood(expression):
             expression_lower = expression.lower() if expression and expression != "-" else ""
             if expression_lower in ["happy", "excited", "amused", "in love", "surprised and amused", "smiling", "silly"]:
@@ -845,6 +534,16 @@ class CharacterPromptBuilderScene:
             else:
                 hair_phrase = f"{poss} hair is {hair_desc}"
 
+        # Facial hair (for men)
+        facial_hair_phrase = ""
+        facial_hair = s.get("facial_hair", "-")
+        if facial_hair and facial_hair != "-" and gender == "Man":
+            facial_hair_lower = facial_hair.lower()
+            if facial_hair_lower == "clean shaven":
+                facial_hair_phrase = f"{subj} is clean shaven"
+            else:
+                facial_hair_phrase = f"{subj} has a {facial_hair_lower}"
+
         # Fashion aesthetic
         fashion_phrase = ""
         # Only check for not "-" (no weight)
@@ -855,115 +554,170 @@ class CharacterPromptBuilderScene:
         clothing = []
         clothing_phrase = ""
         underwear_phrase = ""
-        # LEGS
-        if get("legs") != "-":
-                legs = get("legs").lower()
-                legs_color = get("legs_color").lower()
-                if legs_color != "-" and legs_color != "":
-                    legs = f"{legs_color} {legs}"
-                clothing.append(legs)
-        # DRESSES
-        if get("dresses") != "-" :
-            dress = get("dresses").lower()
-            dress_color = get("dresses_color").lower()
-            dress_material = s.get("dresses_material", "-").lower()
-            if dress_color != "-" and dress_color != "":
-                dress = f"{dress_color} {dress}"
-            if dress_material and dress_material != "-":
-                dress = f"{dress} made of {dress_material} material"
-            clothing.append(dress)
-            # Check for sheer/see-through/thin dress material
-            if dress_material and ("sheer" in dress_material or "see-through" in dress_material or "see through" in dress_material or "thin" in dress_material) and (get("underwear") == "-"):
-                nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else "nipples"
-                areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else "areolae"
-                clothing.append(f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the dress")
-        # TOPS
-        if get("tops") != "-" :
-            top = get("tops").lower()
-            top_color = get("tops_color").lower()
-            top_material = s.get("tops_material", "-").lower()
-            if top_color != "-" and top_color != "":
-                top = f"{top_color} {top}"
-            if top_material and top_material != "-":
-                top = f"{top} made of {top_material} material"
-            clothing.append(top)
-            # Check for sheer/see-through/thin top material
-            if top_material and ("sheer" in top_material or "see-through" in top_material or "see through" in top_material or "thin" in top_material) and (get("underwear") == "-"):
-                nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else "nipples"
-                areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else "areolae"
-                clothing.append(f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the top")
-        # PANTS
-        if get("pants") != "-":
-                pants = get("pants").lower()
-                pants_color = get("pants_color").lower()
-                pants_material = s.get("pants_material", "-")
-                if pants_color != "-" and pants_color != "":
-                    pants = f"{pants_color} {pants}"
-                if pants_material and pants_material != "-":
-                    pants = f"{pants} made of {pants_material.lower()} material"
-                clothing.append(pants)
-        # UNDERWEAR (always first, and only mention if visible)
-        if get("underwear") != "-" :
-            uw = get('underwear').lower()
-            uw_color = get("underwear_color").lower()
-            uw_material = s.get("underwear_material", "-").lower()
-            if uw_color != "-" and uw_color != "":
-                uw = f"{uw_color} {uw}"
-            if uw_material and uw_material != "-":
-                uw = f"{uw} made of {uw_material} material"
-            # If a dress or top is present, underwear is only slightly visible
-            # Check for sheer/see-through underwear
-            if uw_material and ("sheer" in uw_material or "see-through" in uw_material or "see through" in uw_material) and (get("dresses") == "-" or get("tops") == "-"):
-                nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else "nipples"
-                areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else "areolae"
-                underwear_phrase = f"{poss} {uw}, revealing {poss} only slightly visible {nipple_desc} nipples and {areola_desc} areolae beneath them"
-            elif (get("dresses") != "-" or get("tops") != "-"):
-                garment = "dress" if get("dresses") != "-" else "top" if get("tops") != "-" else None
-                underwear_phrase = f"{poss} {uw} is only slightly visible beneath {poss} {garment}"
-            else:
-                underwear_phrase = f"{poss} {uw}"
-            clothing.append(underwear_phrase)
-        # CAPES
-        if get("capes") != "-":
-                cape = get("capes").lower()
-                cape_color = get("capes_color").lower()
-                cape_material = s.get("capes_material", "-")
-                if cape_color != "-" and cape_color != "":
-                    cape = f"{cape_color} {cape}"
-                if cape_material and cape_material != "-":
-                    cape = f"{cape} made of {cape_material.lower()}"
-                clothing.append(cape)
-        # HATS
-        if get("hats") != "-":
-                hat = get("hats").lower()
-                hat_color = get("hats_color").lower()
-                if hat_color != "-" and hat_color != "":
-                    hat = f"{hat_color} {hat}"
-                clothing.append(hat)
-        #GLOVES
-        if s.get("womens_gloves", "-") != "-" and s.get("gender", "-") == "Woman" :
-                gloves = s.get("womens_gloves").lower()
-                gloves_color = s.get("womens_gloves_color", "-").lower()
-                # --- Add gloves material ---
-                gloves_material = s.get("womens_gloves_material", "-").lower()
-                if gloves_color != "-" and gloves_color != "":
-                    gloves = f"{gloves_color} {gloves}"
-                if gloves_material != "-" and gloves_material != "":
-                    gloves = f"{gloves} made of {gloves_material}"
-                clothing.append(gloves)
-        suit = None
-        helmet = None
         gender = s.get("gender", "-")
+
+        # === FEMALE-SPECIFIC CLOTHING ===
         if gender == "Woman":
-                if s.get("womens_suits", "-") != "-":
+            # LEGS (female only)
+            if get("legs") != "-":
+                    legs = get("legs").lower()
+                    legs_color = get("legs_color").lower()
+                    if legs_color != "-" and legs_color != "":
+                        legs = f"{legs_color} {legs}"
+                    clothing.append(legs)
+            # DRESSES (female only)
+            if get("dresses") != "-":
+                dress = get("dresses").lower()
+                dress_color = get("dresses_color").lower()
+                dress_material = s.get("dresses_material", "-").lower()
+                if dress_color != "-" and dress_color != "":
+                    dress = f"{dress_color} {dress}"
+                if dress_material and dress_material != "-":
+                    dress = f"{dress} made of {dress_material} material"
+                clothing.append(dress)
+                # Check for sheer/see-through/thin dress material
+                if dress_material and ("sheer" in dress_material or "see-through" in dress_material or "see through" in dress_material or "thin" in dress_material) and (get("underwear") == "-"):
+                    nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else "nipples"
+                    areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else "areolae"
+                    clothing.append(f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the dress")
+            # TOPS (female)
+            if get("tops") != "-":
+                top = get("tops").lower()
+                top_color = get("tops_color").lower()
+                top_material = s.get("tops_material", "-").lower()
+                if top_color != "-" and top_color != "":
+                    top = f"{top_color} {top}"
+                if top_material and top_material != "-":
+                    top = f"{top} made of {top_material} material"
+                clothing.append(top)
+                # Check for sheer/see-through/thin top material
+                if top_material and ("sheer" in top_material or "see-through" in top_material or "see through" in top_material or "thin" in top_material) and (get("underwear") == "-"):
+                    nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else "nipples"
+                    areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else "areolae"
+                    clothing.append(f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the top")
+            # PANTS (female)
+            if get("pants") != "-":
+                    pants = get("pants").lower()
+                    pants_color = get("pants_color").lower()
+                    pants_material = s.get("pants_material", "-")
+                    if pants_color != "-" and pants_color != "":
+                        pants = f"{pants_color} {pants}"
+                    if pants_material and pants_material != "-":
+                        pants = f"{pants} made of {pants_material.lower()} material"
+                    clothing.append(pants)
+            # UNDERWEAR (female only)
+            if get("underwear") != "-":
+                uw = get('underwear').lower()
+                uw_color = get("underwear_color").lower()
+                uw_material = s.get("underwear_material", "-").lower()
+                if uw_color != "-" and uw_color != "":
+                    uw = f"{uw_color} {uw}"
+                if uw_material and uw_material != "-":
+                    uw = f"{uw} made of {uw_material} material"
+                # If a dress or top is present, underwear is only slightly visible
+                # Check for sheer/see-through underwear
+                if uw_material and ("sheer" in uw_material or "see-through" in uw_material or "see through" in uw_material) and (get("dresses") == "-" or get("tops") == "-"):
+                    nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else "nipples"
+                    areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else "areolae"
+                    underwear_phrase = f"{poss} {uw}, revealing {poss} only slightly visible {nipple_desc} nipples and {areola_desc} areolae beneath them"
+                elif (get("dresses") != "-" or get("tops") != "-"):
+                    garment = "dress" if get("dresses") != "-" else "top" if get("tops") != "-" else None
+                    underwear_phrase = f"{poss} {uw} is only slightly visible beneath {poss} {garment}"
+                else:
+                    underwear_phrase = f"{poss} {uw}"
+                clothing.append(underwear_phrase)
+            # CAPES (female)
+            if get("capes") != "-":
+                    cape = get("capes").lower()
+                    cape_color = get("capes_color").lower()
+                    cape_material = s.get("capes_material", "-")
+                    if cape_color != "-" and cape_color != "":
+                        cape = f"{cape_color} {cape}"
+                    if cape_material and cape_material != "-":
+                        cape = f"{cape} made of {cape_material.lower()}"
+                    clothing.append(cape)
+            # HATS (female)
+            if get("hats") != "-":
+                    hat = get("hats").lower()
+                    hat_color = get("hats_color").lower()
+                    if hat_color != "-" and hat_color != "":
+                        hat = f"{hat_color} {hat}"
+                    clothing.append(hat)
+            # GLOVES (female)
+            if s.get("womens_gloves", "-") != "-":
+                    gloves = s.get("womens_gloves").lower()
+                    gloves_color = s.get("womens_gloves_color", "-").lower()
+                    gloves_material = s.get("womens_gloves_material", "-").lower()
+                    if gloves_color != "-" and gloves_color != "":
+                        gloves = f"{gloves_color} {gloves}"
+                    if gloves_material != "-" and gloves_material != "":
+                        gloves = f"{gloves} made of {gloves_material}"
+                    clothing.append(gloves)
+            # SUITS (female)
+            if s.get("womens_suits", "-") != "-":
                     suit = s.get("womens_suits").lower()
                     helmet = s.get("womens_suits_helmet", "-")
-        if suit:
-                if helmet and helmet != "-":
-                    suit = f"{suit} ({helmet.lower()})"
-                clothing.append(suit)
+                    if helmet and helmet != "-":
+                        suit = f"{suit} ({helmet.lower()})"
+                    clothing.append(suit)
+
+        # === MALE-SPECIFIC CLOTHING ===
+        if gender == "Man":
+            # TOPS (male)
+            if get("tops") != "-":
+                top = get("tops").lower()
+                top_color = get("tops_color").lower()
+                top_material = s.get("tops_material", "-").lower()
+                if top_color != "-" and top_color != "":
+                    top = f"{top_color} {top}"
+                if top_material and top_material != "-":
+                    top = f"{top} made of {top_material} material"
+                clothing.append(top)
+            # PANTS (male)
+            if get("pants") != "-":
+                    pants = get("pants").lower()
+                    pants_color = get("pants_color").lower()
+                    pants_material = s.get("pants_material", "-")
+                    if pants_color != "-" and pants_color != "":
+                        pants = f"{pants_color} {pants}"
+                    if pants_material and pants_material != "-":
+                        pants = f"{pants} made of {pants_material.lower()} material"
+                    clothing.append(pants)
+            # CAPES (male)
+            if get("capes") != "-":
+                    cape = get("capes").lower()
+                    cape_color = get("capes_color").lower()
+                    cape_material = s.get("capes_material", "-")
+                    if cape_color != "-" and cape_color != "":
+                        cape = f"{cape_color} {cape}"
+                    if cape_material and cape_material != "-":
+                        cape = f"{cape} made of {cape_material.lower()}"
+                    clothing.append(cape)
+            # HATS (male)
+            if get("hats") != "-":
+                    hat = get("hats").lower()
+                    hat_color = get("hats_color").lower()
+                    if hat_color != "-" and hat_color != "":
+                        hat = f"{hat_color} {hat}"
+                    clothing.append(hat)
+            # GLOVES (male)
+            if s.get("mens_gloves", "-") != "-":
+                    gloves = s.get("mens_gloves").lower()
+                    gloves_color = s.get("mens_gloves_color", "-").lower()
+                    gloves_material = s.get("mens_gloves_material", "-").lower()
+                    if gloves_color != "-" and gloves_color != "":
+                        gloves = f"{gloves_color} {gloves}"
+                    if gloves_material != "-" and gloves_material != "":
+                        gloves = f"{gloves} made of {gloves_material}"
+                    clothing.append(gloves)
+            # SUITS (male)
+            if s.get("mens_suits", "-") != "-":
+                    suit = s.get("mens_suits").lower()
+                    clothing.append(suit)
+
+        # CUSTOM CLOTHING (both genders)
         custom_clothing = s.get("custom_clothing", "")
-        if custom_clothing and custom_clothing.strip() :
+        if custom_clothing and custom_clothing.strip():
                 clothing.append(custom_clothing.strip())
 
         # Breasts and bum (for women)
@@ -1076,24 +830,29 @@ class CharacterPromptBuilderScene:
                 clothing_phrase += f" covering {covering_features}"
             body_features_phrase = ""
         else:
-            # Display the selected breast/nipple/areola details if no clothing is present
-            nipple_desc = ""
-            if get("nipple_appearance") != "-":
-                nipple_desc = get("nipple_appearance").lower()
-            areola_desc = ""
-            if get("areola_appearance") != "-":
-                areola_desc = get("areola_appearance").lower()
-            details = []
-            if nipple_desc:
-                details.append(f"{nipple_desc} nipples")
-            if areola_desc:
-                details.append(f"and {poss} {areola_desc} areolae")
-            if details:
-                details_str = ", ".join(details)
+            # No clothing present - nude handling
+            if gender == "Woman":
+                # Display the selected breast/nipple/areola details if no clothing is present
+                nipple_desc = ""
+                if get("nipple_appearance") != "-":
+                    nipple_desc = get("nipple_appearance").lower()
+                areola_desc = ""
+                if get("areola_appearance") != "-":
+                    areola_desc = get("areola_appearance").lower()
+                details = []
+                if nipple_desc:
+                    details.append(f"{nipple_desc} nipples")
+                if areola_desc:
+                    details.append(f"and {poss} {areola_desc} areolae")
+                if details:
+                    details_str = ", ".join(details)
+                else:
+                    details_str = "breasts and nipples"
+                clothing_phrase = f"{subj} is completely nude and {poss} {details_str} are visible"
+            elif gender == "Man":
+                clothing_phrase = f"{subj} is shirtless" if not clothing else ""
             else:
-                details_str = "breasts and nipples"
-
-            clothing_phrase = f"{subj} is completely nude and {poss} {details_str} are visible"
+                clothing_phrase = ""
 
         # Accessories
         # Only check for not "-" (no weight) for all female fashion fields
@@ -1176,6 +935,15 @@ class CharacterPromptBuilderScene:
             if get("womens_shoe_color") != "-":
                 shoe_desc = f"{get('womens_shoe_color').lower()} {shoe_desc}"
             shoe_material = s.get("womens_shoe_material", "-")
+            if shoe_material and shoe_material != "-":
+                shoe_desc = f"{shoe_desc} made of {shoe_material.lower()}"
+            shoes_phrase = f"{subj} is wearing {shoe_desc}"
+        # MENS SHOES
+        if s.get("mens_shoes", "-") != "-" and gender == "Man":
+            shoe_desc = s.get("mens_shoes").lower()
+            if s.get("mens_shoe_color", "-") != "-":
+                shoe_desc = f"{s.get('mens_shoe_color').lower()} {shoe_desc}"
+            shoe_material = s.get("mens_shoe_material", "-")
             if shoe_material and shoe_material != "-":
                 shoe_desc = f"{shoe_desc} made of {shoe_material.lower()}"
             shoes_phrase = f"{subj} is wearing {shoe_desc}"
@@ -1370,10 +1138,10 @@ class CharacterPromptBuilderScene:
             pose_phrase,
             custom_action_phrase,
             props_phrase,
-            location_phrase,
             face_features_phrase,
             lips_phrase,
             hair_phrase,
+            facial_hair_phrase,
             makeup_phrase,
             expression_phrase,
             clothing_phrase,
@@ -1386,10 +1154,15 @@ class CharacterPromptBuilderScene:
             fashion_phrase,
         ]
         # Action/pose/location/etc. are better as separate sentences
-        tail_phrases = [
-            environment_phrase,
-            lighting_phrase,
-        ]
+        # For multi-person (include_scene_tail=False), exclude location/environment/lighting
+        if include_scene_tail:
+            tail_phrases = [
+                location_phrase,
+                environment_phrase,
+                lighting_phrase,
+            ]
+        else:
+            tail_phrases = []
 
         # Remove empty phrases and strip
         phrases = [p.strip() for p in phrases if p and p.strip()]
@@ -1419,17 +1192,23 @@ class CharacterPromptBuilderScene:
         return (prompt.strip(), negative_prompt)
 
 
-# Node mappings
+# Node mappings - merge from individual node files
 NODE_CLASS_MAPPINGS = {
-    "Character Prompt Builder Person": CharacterPromptBuilderPerson,
-    "Character Prompt Builder Female Fashion": CharacterPromptBuilderFemaleFashion,
-    "Character Prompt Builder Actions": CharacterPromptBuilderActions,
+    **FEMALE_PERSON_CLASS_MAPPINGS,
+    **MALE_PERSON_CLASS_MAPPINGS,
+    **FASHION_CLASS_MAPPINGS,
+    **MALE_FASHION_CLASS_MAPPINGS,
+    **FEMALE_POSES_CLASS_MAPPINGS,
+    **MALE_POSES_CLASS_MAPPINGS,
     "Character Prompt Builder Scene": CharacterPromptBuilderScene,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "Character Prompt Builder Person": "Character Prompt Builder - Person",
-    "Character Prompt Builder Female Fashion": "Character Prompt Builder - Female Fashion",
-    "Character Prompt Builder Actions": "Character Prompt Builder - Actions",
+    **FEMALE_PERSON_DISPLAY_NAME_MAPPINGS,
+    **MALE_PERSON_DISPLAY_NAME_MAPPINGS,
+    **FASHION_DISPLAY_NAME_MAPPINGS,
+    **MALE_FASHION_DISPLAY_NAME_MAPPINGS,
+    **FEMALE_POSES_DISPLAY_NAME_MAPPINGS,
+    **MALE_POSES_DISPLAY_NAME_MAPPINGS,
     "Character Prompt Builder Scene": "Character Prompt Builder - Scene & Generate",
 }
