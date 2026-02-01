@@ -1112,7 +1112,15 @@
     "Ruched crop top",
     "Ribbed crop top",
     "Long sleeve crop top",
-    "Athletic crop top"
+    "Athletic crop top",
+    "Catsuit top (long sleeve, front zipper, form-fitting)",
+    "Catsuit top (long sleeve, high collar, form-fitting)",
+    "Catsuit top (long sleeve, deep V-neck, form-fitting)",
+    "Bodysuit top (long sleeve, front zipper)",
+    "Bodysuit top (long sleeve, mock neck)",
+    "Unitard top (sleeveless, form-fitting)",
+    "Zentai top (long sleeve, second-skin fit)",
+    "Wetsuit-style top (long sleeve, form-fitting)"
   ],
   "tops_color_list": [
     "Black",
@@ -1398,7 +1406,14 @@
     "Form-fitting black pants with glowing neon blue circuit patterns",
     "Sleek, form-fitted, black and red armored pants with N7 insignia",
     "Sleek, white and black armored pants with blue accents, advanced tech panels, and streamlined plating",
-    "Futuristic, form-fitting red and silver exosuit pants with mechanical wing details and glowing accents"
+    "Futuristic, form-fitting red and silver exosuit pants with mechanical wing details and glowing accents",
+    "Catsuit pants (skin-tight, high-waisted)",
+    "Catsuit pants (form-fitting, seamless)",
+    "Bodysuit pants (second-skin fit)",
+    "Zentai pants (ultra-tight, form-fitting)",
+    "Wetsuit-style pants (form-fitting, high-waisted)",
+    "Shiny leggings (glossy, form-fitting)",
+    "Liquid leggings (wet-look, skin-tight)"
   ],
   "pants_color_list": [
     "Black",
