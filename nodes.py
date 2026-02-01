@@ -984,8 +984,8 @@ class CharacterPromptBuilderScene:
                 else:
                     props_phrase = f"{subj.lower()} is {props.lower()}"
 
-        # Custom action
-        custom_action = s.get("custom_action", "")
+        # Custom action/pose
+        custom_action = s.get("custom_action", "") or s.get("custom_pose", "")
         custom_action_phrase = ""
         if custom_action and custom_action.strip():
             custom_action_phrase = custom_action.strip()
