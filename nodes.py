@@ -653,6 +653,10 @@ class CharacterPromptBuilderScene:
                     if gloves_material != "-" and gloves_material != "":
                         gloves = f"{gloves} made of {gloves_material}"
                     clothing.append(gloves)
+            # BELT (female)
+            if s.get("womens_belt", "-") != "-":
+                    belt = s.get("womens_belt").lower()
+                    clothing.append(belt)
             # SUITS (female)
             if s.get("womens_suits", "-") != "-":
                     suit = s.get("womens_suits").lower()
@@ -710,6 +714,10 @@ class CharacterPromptBuilderScene:
                     if gloves_material != "-" and gloves_material != "":
                         gloves = f"{gloves} made of {gloves_material}"
                     clothing.append(gloves)
+            # BELT (male)
+            if s.get("mens_belt", "-") != "-":
+                    belt = s.get("mens_belt").lower()
+                    clothing.append(belt)
             # SUITS (male)
             if s.get("mens_suits", "-") != "-":
                     suit = s.get("mens_suits").lower()
