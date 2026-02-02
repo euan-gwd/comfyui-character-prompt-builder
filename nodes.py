@@ -336,21 +336,24 @@ class CharacterPromptBuilderScene:
 
         # Subject
         gender = get("gender")
-        age = int(s.get("age", 25))
-        if gender == "Man":
+        age = max(int(s.get("age", 25)), 18)  # Enforce minimum age of 18
+
+        if gender in ["Man", "Young Man"]:
             subj = "He"
             poss = "his"
             obj = "him"
-            gender_word = "man"
-            if age <= 25:
-                gender_word = "boy"
-        elif gender == "Woman":
+            if gender == "Young Man" or age <= 25:
+                gender_word = "young man"
+            else:
+                gender_word = "man"
+        elif gender in ["Woman", "Young Woman"]:
             subj = "She"
             poss = "her"
             obj = "her"
-            gender_word = "woman"
-            if age <= 21:
-                gender_word = "girl"
+            if gender == "Young Woman" or age <= 25:
+                gender_word = "young woman"
+            else:
+                gender_word = "woman"
         else:
             subj = "They"
             poss = "their"
@@ -394,7 +397,7 @@ class CharacterPromptBuilderScene:
         if gender_word:
             subject_parts.append(gender_word)
         subject_phrase = " ".join(subject_parts)
-        # Add age if present
+        # Add numeric age
         if age and int(age) > 0:
             subject_phrase += f", {age} years old"
         # Add skin tone as "(skin tone)" if present

@@ -48,7 +48,7 @@ class CharacterPromptBuilderFemalePerson:
         return {
             "required": {
                 # === SUBJECT ===
-                "gender": (["Woman", "Girl"], {"default": "Woman"}),
+                "gender": (["Woman", "Young Woman"], {"default": "Woman"}),
                 "age": ("INT", {"default": 25, "min": 18, "max": 90, "step": 1, "display": "slider"}),
                 "nationality_1": combo("nationality_list", "British"),
                 "nationality_2": combo("nationality_list"),

@@ -118,7 +118,6 @@
     "Small",
     "Medium",
     "Large",
-    "Huge",
     "Gigantic"
   ],
   "breast_cup_size_list": [
@@ -499,7 +498,9 @@
   ],
   "gender_list": [
     "Man",
-    "Woman"
+    "Young Man",
+    "Woman",
+    "Young Woman"
   ],
   "hair_color_list": [
     "Black",
