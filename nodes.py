@@ -656,6 +656,12 @@ class CharacterPromptBuilderScene:
             # BELT (female)
             if s.get("womens_belt", "-") != "-":
                     belt = s.get("womens_belt").lower()
+                    belt_color = s.get("womens_belt_color", "-").lower()
+                    belt_material = s.get("womens_belt_material", "-").lower()
+                    if belt_color != "-" and belt_color != "":
+                        belt = f"{belt_color} {belt}"
+                    if belt_material != "-" and belt_material != "":
+                        belt = f"{belt} made of {belt_material}"
                     clothing.append(belt)
             # SUITS (female)
             if s.get("womens_suits", "-") != "-":
@@ -717,6 +723,12 @@ class CharacterPromptBuilderScene:
             # BELT (male)
             if s.get("mens_belt", "-") != "-":
                     belt = s.get("mens_belt").lower()
+                    belt_color = s.get("mens_belt_color", "-").lower()
+                    belt_material = s.get("mens_belt_material", "-").lower()
+                    if belt_color != "-" and belt_color != "":
+                        belt = f"{belt_color} {belt}"
+                    if belt_material != "-" and belt_material != "":
+                        belt = f"{belt} made of {belt_material}"
                     clothing.append(belt)
             # SUITS (male)
             if s.get("mens_suits", "-") != "-":
