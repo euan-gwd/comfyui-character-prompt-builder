@@ -2,12 +2,11 @@
 ComfyUI CharacterPromptBuilder
 A standalone, modular portrait prompt generator for ComfyUI
 
-Forked from comfyui-easy-use
-Original Portrait Master by AI Wiz Art (Stefano Flore)
+Inspired by the original Portrait Master by AI Wiz Art (Stefano Flore)
 """
 
-__version__ = "1.0.0"
-__author__ = "Forked from AI Wiz Art (Stefano Flore)"
+__version__ = "2.0.0"
+__author__ = "Euan Greenwood"
 
 from .nodes import NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
 
