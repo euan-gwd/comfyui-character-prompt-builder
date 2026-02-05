@@ -574,23 +574,23 @@ class CharacterPromptBuilderScene:
                 clothing.append(dress)
                 # Check for sheer/see-through/thin dress material
                 if dress_material and ("sheer" in dress_material or "see-through" in dress_material or "see through" in dress_material or "thin" in dress_material) and (get("underwear") == "-"):
-                    nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else "nipples"
-                    areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else "areolae"
+                    nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else ""
+                    areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else ""
                     clothing.append(f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the dress")
             # TOPS (female)
             if get("tops") != "-":
                 top = get("tops").lower()
                 top_color = get("tops_color").lower()
-                top_material = s.get("tops_material", "-").lower()
-                if top_color != "-" and top_color != "":
+                top_material = s.get("tops_material", "-").lower()  
+                if top_color != "-" and top_color != "": 
                     top = f"{top_color} {top}"
                 if top_material and top_material != "-":
                     top = f"{top} made of {top_material} material"
                 clothing.append(top)
                 # Check for sheer/see-through/thin top material
                 if top_material and ("sheer" in top_material or "see-through" in top_material or "see through" in top_material or "thin" in top_material) and (get("underwear") == "-"):
-                    nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else "nipples"
-                    areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else "areolae"
+                    nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else ""
+                    areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else ""
                     clothing.append(f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the top")
             # PANTS (female)
             if get("pants") != "-":
@@ -614,8 +614,8 @@ class CharacterPromptBuilderScene:
                 # If a dress or top is present, underwear is only slightly visible
                 # Check for sheer/see-through underwear
                 if uw_material and ("sheer" in uw_material or "see-through" in uw_material or "see through" in uw_material) and (get("dresses") == "-" or get("tops") == "-"):
-                    nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else "nipples"
-                    areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else "areolae"
+                    nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else ""
+                    areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else ""
                     underwear_phrase = f"{poss} {uw}, revealing {poss} only slightly visible {nipple_desc} nipples and {areola_desc} areolae beneath them"
                 elif (get("dresses") != "-" or get("tops") != "-"):
                     garment = "dress" if get("dresses") != "-" else "top" if get("tops") != "-" else None
@@ -740,13 +740,19 @@ class CharacterPromptBuilderScene:
         # Breasts and bum (for women)
         body_features = []
 
-        if get("breast_cup_size") != "-" and gender == "Woman" :
+        if (get("breast_size") != "-" or get("breast_cup_size") != "-") and gender == "Woman" :
+            breast_size = get('breast_size')
             breast_cup_size = get('breast_cup_size')
             breast_shape = get("breast_shape")
+            breast_desc = ""
+            if breast_size != "-":
+                breast_desc += f"{breast_size.lower()} "
+            if breast_cup_size != "-":
+                breast_desc += f"{breast_cup_size} cup "
             if breast_shape != "-":
-                breast_shape = f"{breast_shape.lower()}-shaped"
-            breast_desc = f"{breast_cup_size} cup"
-            body_features.append(f"{breast_desc} {breast_shape} breasts" if breast_shape else f"{breast_desc} breasts")
+                breast_desc += f"{breast_shape.lower()}-shaped "
+            breast_desc = breast_desc.strip()
+            body_features.append(f"{breast_desc} breasts")
 
 
         if get("bum_size") != "-":
