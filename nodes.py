@@ -338,22 +338,16 @@ class CharacterPromptBuilderScene:
         gender = get("gender")
         age = max(int(s.get("age", 25)), 18)  # Enforce minimum age of 18
 
-        if gender in ["Man", "Young Man"]:
+        if gender == "Man":
             subj = "He"
             poss = "his"
             obj = "him"
-            if gender == "Young Man" or age <= 25:
-                gender_word = "young man"
-            else:
-                gender_word = "man"
-        elif gender in ["Woman", "Young Woman"]:
+            gender_word = "man"
+        elif gender == "Woman":
             subj = "She"
             poss = "her"
             obj = "her"
-            if gender == "Young Woman" or age <= 25:
-                gender_word = "young woman"
-            else:
-                gender_word = "woman"
+            gender_word = "woman"
         else:
             subj = "They"
             poss = "their"
@@ -745,43 +739,14 @@ class CharacterPromptBuilderScene:
 
         # Breasts and bum (for women)
         body_features = []
-        # if gender == "Woman":
-            # cup = get("breast_cup_size")
-            # shape = get("breast_shape")
-            # bust = get("bust_measurement")
-            # breast_parts = []
-            # if cup != "-":
-            #     breast_parts.append(f"{cup} cup")
-            # if bust != "-":
-            #     breast_parts.append(f"{bust} inch bust")
-            # if shape != "-":
-            #     breast_parts.append(f"{shape.lower()} shaped")
-            # if breast_parts and get("breast_size") != "-" and getf("breast_size_weight") > 0:
-            #     body_features.append("/".join(breast_parts))
-            # else :
-            #     body_features.append("/".join(breast_parts) + " breasts")
 
-
-        if get("breast_size") != "-" and getf("breast_size_weight") > 0 and gender == "Woman" :
-            breast_size = get('breast_size').lower()
-            breast_size_weight_val = int(getf("breast_size_weight", 0))  # Now expects 0-100
+        if get("breast_cup_size") != "-" and gender == "Woman" :
+            breast_cup_size = get('breast_cup_size')
             breast_shape = get("breast_shape")
             if breast_shape != "-":
                 breast_shape = f"{breast_shape.lower()}-shaped"
-
-            # Emphasize breast size based on weight (percentage)
-            if breast_size_weight_val >= 90:
-                breast_desc = f"strikingly {breast_size}"
-            elif breast_size_weight_val >= 65:
-                breast_desc = f"noticeably {breast_size}"
-            elif breast_size_weight_val >= 35:
-                breast_desc = f"slightly {breast_size}"
-            else:
-                breast_desc = f"{breast_size}"
-            if "breast" in breast_size or "bust" in breast_size:
-                body_features.append(f"{breast_desc}, {breast_shape}")
-            else:
-                body_features.append(f"{breast_desc} {breast_shape} breasts")
+            breast_desc = f"{breast_cup_size} cup"
+            body_features.append(f"{breast_desc} {breast_shape} breasts" if breast_shape else f"{breast_desc} breasts")
 
 
         if get("bum_size") != "-":

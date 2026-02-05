@@ -48,7 +48,7 @@ class CharacterPromptBuilderFemalePerson:
         return {
             "required": {
                 # === SUBJECT ===
-                "gender": (["Woman", "Young Woman"], {"default": "Woman"}),
+                "gender": (["Woman"], {"default": "Woman"}),
                 "age": ("INT", {"default": 25, "min": 18, "max": 90, "step": 1, "display": "slider"}),
                 "nationality_1": combo("nationality_list", "British"),
                 "nationality_2": combo("nationality_list"),
@@ -58,7 +58,7 @@ class CharacterPromptBuilderFemalePerson:
                 "body_weight": combo("body_weight_list"),
                 "breast_shape": combo("breast_shape_list"),
                 "breast_size": combo("breast_size_list"),
-                "breast_size_weight": weight(),
+                "breast_cup_size": combo("breast_cup_size_list"),
                 "bum_size": combo("bum_size_list"),
             },
             "optional": {
@@ -106,7 +106,7 @@ class CharacterPromptBuilderFemalePerson:
 
     def run(self, gender="Woman", age=25, nationality_1="-", nationality_2="-", nationality_mix=0,
             body_type="-", height="-", body_weight="-", breast_shape="-",
-            breast_size="-", breast_size_weight=0,
+            breast_size="-", breast_cup_size="-",
             bum_size="-",
             face_shape="-", nose_shape="-", nose_size="-", eyes_color="-", eye_shape="-",
             facial_expression="-",
@@ -129,7 +129,7 @@ class CharacterPromptBuilderFemalePerson:
             "body_type": body_type,
             "height": height, "body_weight": body_weight,
             "breast_shape": breast_shape,
-            "breast_size": breast_size, "breast_size_weight": breast_size_weight,
+            "breast_size": breast_size, "breast_cup_size": breast_cup_size,
             "bum_size": bum_size,
             "face_shape": face_shape,
             "eyes_color": eyes_color,

@@ -43,7 +43,7 @@ class CharacterPromptBuilderMalePerson:
         return {
             "required": {
                 # === SUBJECT ===
-                "gender": (["Man", "Young Man"], {"default": "Man"}),
+                "gender": (["Man"], {"default": "Man"}),
                 "age": ("INT", {"default": 30, "min": 18, "max": 90, "step": 1, "display": "slider"}),
                 "nationality_1": combo("nationality_list", "British"),
                 "nationality_2": combo("nationality_list"),
