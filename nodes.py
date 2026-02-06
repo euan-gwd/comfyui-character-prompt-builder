@@ -158,7 +158,6 @@ class CharacterPromptBuilderScene:
                 "season": (["-", "Spring", "Summer", "Autumn", "Winter"],),
                 "light_type": combo("light_type_list"),
                 "light_quality": combo("light_quality_list"),
-                "light_weight": weight(0),
                 "prompt_prefix": ("STRING", {"multiline": True, "default": "", "placeholder": "Added before the generated prompt"}),
                 "prompt_suffix": ("STRING", {"multiline": True, "default": "", "placeholder": "Added after the generated prompt"}),
                 "enforce_subjects_only": ("BOOLEAN", {"default": False, "label": "Enforce Only Described Subjects"})
@@ -177,7 +176,7 @@ class CharacterPromptBuilderScene:
 
     def generate(self, num_people, settings1, artistic_style="-", camera_model="-",
                  field_of_view="-", camera_vertical_angle="-",camera_horizontal_angle="-", camera_distance="-", camera_lens="-",
-                 light_type="-", light_quality="-", light_weight=0,
+                 light_type="-", light_quality="-",
                  preset_location="-", location="", time_of_day="-", weather="-", season="-",
                  prompt_prefix="", prompt_suffix="",
                  enforce_subjects_only=False,
@@ -218,7 +217,7 @@ class CharacterPromptBuilderScene:
             "camera_lens": camera_lens,
             "camera_model": camera_model,
             "location": scene_location, "time_of_day": time_of_day, "weather": weather, "season": season,
-            "light_type": light_type, "light_quality": light_quality, "light_weight": light_weight,
+            "light_type": light_type, "light_quality": light_quality,
         }
 
         # Generate prose for each person
@@ -252,12 +251,12 @@ class CharacterPromptBuilderScene:
             if season != "-":
                 tail_parts.append(f"It is {season.lower()} season")
             # Lighting
-            if light_type != "-" and light_weight > 0:
+            if light_type != "-":
                 light_desc = ""
                 if light_quality != "-":
                     light_desc += light_quality.lower() + " "
                 light_desc += light_type.lower()
-                tail_parts.append(f"The scene is lit by {light_desc} ({light_weight}% intensity)")
+                tail_parts.append(f"The scene is lit by {light_desc}")
 
             if tail_parts:
                 prompt += "\n\n" + ". ".join(tail_parts)
@@ -1102,17 +1101,15 @@ class CharacterPromptBuilderScene:
 
         # Lighting
         lighting_phrase = ""
-        if get("light_type") != '-' and getf("light_weight") > 0:
-            light_weight_val = int(getf("light_weight", 0))
-            if light_weight_val > 0:
-                light_desc = ""
-                if s.get("light_quality", '-') != '-':
-                    light_desc += s.get("light_quality").lower()
-                if get("light_type") != '-':
-                    if light_desc:
-                        light_desc += " "
-                    light_desc += get("light_type").lower()
-                lighting_phrase = f"The scene is lit by {light_desc} ({light_weight_val}% intensity)"
+        if get("light_type") != '-':
+            light_desc = ""
+            if s.get("light_quality", '-') != '-':
+                light_desc += s.get("light_quality").lower()
+            if get("light_type") != '-':
+                if light_desc:
+                    light_desc += " "
+                light_desc += get("light_type").lower()
+            lighting_phrase = f"The scene is lit by {light_desc}"
 
 
         # Compose into a single natural language paragraph
