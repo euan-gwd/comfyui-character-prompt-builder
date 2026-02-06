@@ -570,7 +570,7 @@ class CharacterPromptBuilderScene:
                     dress = f"{dress} made of {dress_material} material"
                 clothing.append(dress)
                 # Check for sheer/see-through/thin dress material
-                if dress_material and ("sheer" in dress_material or "see-through" in dress_material or "see through" in dress_material or "thin" in dress_material) and (get("underwear") == "-"):
+                if dress_material and ("sheer" in dress_material or "see-through" in dress_material) and (get("underwear") == "-"):
                     nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else ""
                     areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else ""
                     clothing.append(f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the dress")
@@ -585,7 +585,7 @@ class CharacterPromptBuilderScene:
                     top = f"{top} made of {top_material} material"
                 clothing.append(top)
                 # Check for sheer/see-through/thin top material
-                if top_material and ("sheer" in top_material or "see-through" in top_material or "see through" in top_material or "thin" in top_material) and (get("underwear") == "-"):
+                if top_material and ("sheer" in top_material or "see-through" in top_material) and (get("underwear") == "-"):
                     nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else ""
                     areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else ""
                     clothing.append(f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the top")
@@ -610,7 +610,7 @@ class CharacterPromptBuilderScene:
                     uw = f"{uw} made of {uw_material} material"
                 # If a dress or top is present, underwear is only slightly visible
                 # Check for sheer/see-through underwear
-                if uw_material and ("sheer" in uw_material or "see-through" in uw_material or "see through" in uw_material) and (get("dresses") == "-" or get("tops") == "-"):
+                if uw_material and ("sheer" in uw_material or "see-through" in uw_material) and (get("dresses") == "-" or get("tops") == "-"):
                     nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else ""
                     areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else ""
                     underwear_phrase = f"{poss} {uw}, revealing {poss} only slightly visible {nipple_desc} nipples and {areola_desc} areolae beneath them"

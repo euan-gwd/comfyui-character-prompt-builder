@@ -1100,7 +1100,7 @@
     "Satin blouse",
     "Crop hoodie",
     "Bustier",
-    "See-through top",
+    "see-through top",
     "Open front cardigan",
     "Cropped tank top",
     "Cropped T-shirt",
@@ -1210,7 +1210,7 @@
     "Crochet",
     "Sheer",
     "Wet",
-    "See-through"
+    "see-through"
   ],
   "dresses_list": [
     "A-line dress",
@@ -1258,7 +1258,7 @@
     "T-shirt dress",
     "Tea dress",
     "Wrap dress",
-    "See-through dress",
+    "see-through dress",
     "Cut-out dress",
     "Backless dress",
     "Plunging neckline dress",
@@ -1352,10 +1352,8 @@
     "Knitted",
     "Crochet",
     "Sheer",
-    "Thin",
-    "Transparent",
     "Wet",
-    "See-through"
+    "see-through"
   ],
   "pants_list": [
     "Jeans",
@@ -1662,7 +1660,7 @@
     "Garter belt and stockings",
     "Crotchless bodysuit",
     "Cage bra and panties",
-    "See-through bra and panties",
+    "see-through bra and panties",
     "Leather bra and thong",
     "Latex bra and panties",
     "Latex bodysuit",
