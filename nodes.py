@@ -161,7 +161,7 @@ class CharacterPromptBuilderScene:
                 "light_weight": weight(0),
                 "prompt_prefix": ("STRING", {"multiline": True, "default": "", "placeholder": "Added before the generated prompt"}),
                 "prompt_suffix": ("STRING", {"multiline": True, "default": "", "placeholder": "Added after the generated prompt"}),
-                "negative_prompt": ("STRING", {"multiline": True, "default": "","placeholder": "Negative prompt"})
+                "enforce_subjects_only": ("BOOLEAN", {"default": False, "label": "Enforce Only Described Subjects"})
             },
             "optional": {
                 "settings2": ("PM_SETTINGS",),
@@ -170,8 +170,8 @@ class CharacterPromptBuilderScene:
             }
         }
 
-    RETURN_TYPES = ("STRING", "STRING",)
-    RETURN_NAMES = ("positive", "negative",)
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("positive",)
     FUNCTION = "generate"
     CATEGORY = "CharacterPromptBuilder"
 
@@ -179,7 +179,8 @@ class CharacterPromptBuilderScene:
                  field_of_view="-", camera_vertical_angle="-",camera_horizontal_angle="-", camera_distance="-", camera_lens="-",
                  light_type="-", light_quality="-", light_weight=0,
                  preset_location="-", location="", time_of_day="-", weather="-", season="-",
-                 prompt_prefix="", prompt_suffix="", negative_prompt="",
+                 prompt_prefix="", prompt_suffix="",
+                 enforce_subjects_only=False,
                  settings2=None, settings3=None, settings4=None):
 
         # Collect settings for each person
@@ -229,13 +230,13 @@ class CharacterPromptBuilderScene:
             # Merge scene-level settings for each person (for pose, shot, etc.)
             s.update(scene_settings)
             # For multi-person, exclude location/environment/lighting from individual prompts
-            prompt, _ = self._generate_natural_language(s, "", include_scene_tail=not is_multi_person)
+            prompt = self._generate_natural_language(s, include_scene_tail=not is_multi_person)
             if is_multi_person:
                 prompt = f"Person {idx+1}: {prompt}"
             person_prompts.append(prompt)
 
         # Combine all person prompts
-        prompt = " ".join(person_prompts)
+        prompt = "\n\n".join(person_prompts)
 
         # For multi-person scenes, add location/environment/lighting once at the end
         if is_multi_person:
@@ -259,10 +260,7 @@ class CharacterPromptBuilderScene:
                 tail_parts.append(f"The scene is lit by {light_desc} ({light_weight}% intensity)")
 
             if tail_parts:
-                prompt = prompt.rstrip(".")
-                if not prompt.endswith("."):
-                    prompt += "."
-                prompt = prompt + " " + ". ".join(tail_parts)
+                prompt += "\n\n" + ". ".join(tail_parts)
 
         # Compose final prompt with prefix/suffix
         parts = []
@@ -277,12 +275,12 @@ class CharacterPromptBuilderScene:
         final_prompt = final_prompt.replace(" natural language", "").replace("natural language ", "").replace("natural language", "")
         final_prompt = final_prompt.replace(" prose", "").replace("prose ", "")
 
-        # Negative prompt logic (combine for all people, but only scene-level negative_prompt is used)
-        neg = negative_prompt.strip() if negative_prompt else ""
+        if enforce_subjects_only:
+            final_prompt += "\n\nONLY SHOW THE DESCRIBED SUBJECTS, NO EXTRA PEOPLE OR CHARACTERS"
 
-        return (final_prompt.strip(), neg)
+        return (final_prompt.strip(),)
 
-    def _generate_natural_language(self, s, negative_prompt, include_scene_tail=True):
+    def _generate_natural_language(self, s, include_scene_tail=True):
         def get_eye_mood(expression):
             expression_lower = expression.lower() if expression and expression != "-" else ""
             if expression_lower in ["happy", "excited", "amused", "in love", "surprised and amused", "smiling", "silly"]:
@@ -1183,7 +1181,7 @@ class CharacterPromptBuilderScene:
             if prompt and not prompt.endswith("."):
                 prompt += "."
 
-        return (prompt.strip(), negative_prompt)
+        return prompt.strip()
 
 
 # Node mappings - merge from individual node files

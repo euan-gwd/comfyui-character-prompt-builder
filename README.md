@@ -20,17 +20,20 @@ A standalone, modular character prompt generator for ComfyUI. Generate detailed,
 ## Installation
 
 ### Method 1: ComfyUI Manager (Recommended)
+
 1. Open ComfyUI Manager
 2. Search for "Character Prompt Builder"
 3. Click Install
 
 ### Method 2: Git Clone
+
 ```bash
 cd ComfyUI/custom_nodes
 git clone https://github.com/yourusername/comfyui-character-prompt-builder.git
 ```
 
 ### Method 3: Manual Download
+
 1. Download the latest release
 2. Extract to `ComfyUI/custom_nodes/comfyui-character-prompt-builder`
 3. Restart ComfyUI
@@ -38,6 +41,7 @@ git clone https://github.com/yourusername/comfyui-character-prompt-builder.git
 ## Nodes
 
 ### 👩 Character Prompt Builder - Female Person
+
 Controls physical appearance for female characters:
 
 | Category | Options |
@@ -50,67 +54,73 @@ Controls physical appearance for female characters:
 | **Eyes** | Detail level, iris patterns, pupil shape |
 
 ### 👨 Character Prompt Builder - Male Person
+
 Controls physical appearance for male characters:
 
-| Category | Options |
-|----------|---------|
+| Category    | Options                                               |
+| ----------- | ----------------------------------------------------- |
 | **Subject** | Gender (Man/Boy), age (18-90), nationality, body type |
-| **Face** | Face shape, eye color, expression, facial hair |
-| **Hair** | Male hairstyles, length, color |
-| **Skin** | Details, freckles, dimples, moles, tan, acne |
-| **Eyes** | Detail level, iris patterns, pupil shape |
+| **Face**    | Face shape, eye color, expression, facial hair        |
+| **Hair**    | Male hairstyles, length, color                        |
+| **Skin**    | Details, freckles, dimples, moles, tan, acne          |
+| **Eyes**    | Detail level, iris patterns, pupil shape              |
 
 ### 👗 Character Prompt Builder - Female Fashion
+
 Controls clothing and accessories for female subjects:
 
-| Category | Options |
-|----------|---------|
-| **Style** | Fashion aesthetic (Gothic, Bohemian, Y2K, etc.) |
-| **Outfit** | Dresses, skirts, tops, revealing outfits |
-| **Shoes** | Women's shoes, colors |
-| **Jewelry** | Necklaces, earrings, bracelets, rings |
-| **Nails** | Style, color |
+| Category    | Options                                         |
+| ----------- | ----------------------------------------------- |
+| **Style**   | Fashion aesthetic (Gothic, Bohemian, Y2K, etc.) |
+| **Outfit**  | Dresses, skirts, tops, revealing outfits        |
+| **Shoes**   | Women's shoes, colors                           |
+| **Jewelry** | Necklaces, earrings, bracelets, rings           |
+| **Nails**   | Style, color                                    |
 
 ### 🧥 Character Prompt Builder - Male Fashion
+
 Controls clothing and accessories for male subjects:
 
-| Category | Options |
-|----------|---------|
-| **Style** | Fashion aesthetic (Gentleman, Military, Biker, Knight, etc.) |
-| **Outfit** | Suits, shirts, jackets, pants |
-| **Shoes** | Men's shoes, colors |
-| **Accessories** | Watches, necklaces, bracelets, rings, hats |
+| Category        | Options                                                      |
+| --------------- | ------------------------------------------------------------ |
+| **Style**       | Fashion aesthetic (Gentleman, Military, Biker, Knight, etc.) |
+| **Outfit**      | Suits, shirts, jackets, pants                                |
+| **Shoes**       | Men's shoes, colors                                          |
+| **Accessories** | Watches, necklaces, bracelets, rings, hats                   |
 
 ### 💃 Character Prompt Builder - Female Actions
+
 Controls pose, action, and props for female subjects:
 
-| Category | Options |
-|----------|---------|
-| **Pose** | Standing, kneeling, sitting, laying down poses |
-| **Props** | Phones, bags, flowers, cameras, etc. |
-| **Custom** | Free-text action description |
+| Category   | Options                                        |
+| ---------- | ---------------------------------------------- |
+| **Pose**   | Standing, kneeling, sitting, laying down poses |
+| **Props**  | Phones, bags, flowers, cameras, etc.           |
+| **Custom** | Free-text action description                   |
 
 ### 🏃 Character Prompt Builder - Male Actions
+
 Controls pose, action, and props for male subjects:
 
-| Category | Options |
-|----------|---------|
-| **Pose** | Masculine standing, kneeling, sitting, laying poses |
-| **Props** | Swords, guns, sports equipment, tools, etc. |
-| **Custom** | Free-text action description |
-| **Expression** | Additional facial/body expressions |
+| Category       | Options                                             |
+| -------------- | --------------------------------------------------- |
+| **Pose**       | Masculine standing, kneeling, sitting, laying poses |
+| **Props**      | Swords, guns, sports equipment, tools, etc.         |
+| **Custom**     | Free-text action description                        |
+| **Expression** | Additional facial/body expressions                  |
 
 ### 📸 Character Prompt Builder - Scene & Generate
+
 Controls the shot setup and generates the final prompt:
 
-| Category | Options |
-|----------|---------|
-| **Camera** | Shot type, angle |
-| **Lighting** | Light type, direction, intensity |
-| **Location** | Free-text location description |
-| **Environment** | Time of day, weather, season |
-| **Prompts** | Prefix, suffix, negative prompt |
-| **Output** | Natural language or weighted prompt mode |
+| Category        | Options                                  |
+| --------------- | ---------------------------------------- |
+| **Camera**      | Shot type, angle                         |
+| **Lighting**    | Light type, direction, intensity         |
+| **Location**    | Free-text location description           |
+| **Environment** | Time of day, weather, season             |
+| **Prompts**     | Prefix, suffix, enforce subjects only    |
+| **Output**      | Natural language or weighted prompt mode |
 
 ## Usage
 
@@ -125,7 +135,7 @@ Controls the shot setup and generates the final prompt:
       ↓
 [Character Prompt Builder - Scene & Generate]
       ↓
-(positive, negative)
+(positive)
 ```
 
 - Choose **Female Person** or **Male Person** node based on your character
@@ -153,16 +163,19 @@ or
 ```
 
 ### Connection Guide
+
 1. Add **Character Prompt Builder - Female Person** or **Male Person** node
 2. Connect `settings` output to matching **Fashion** node's `settings_in`
 3. Connect Fashion node's `settings` output to **Character Prompt Builder - Action** `settings_in`
 4. Connect Action node's `settings` output to **Character Prompt Builder - Scene & Generate** `settings` input
-5. Connect `positive` and `negative` outputs to your sampler/CLIP nodes
+5. Connect `positive` output to your sampler/CLIP nodes
 
 ## Output Modes
 
 ### Natural Language
+
 Generates flowing, descriptive sentences:
+
 ```
 A 25-year-old British woman. She has a slim build. Her face features bright blue eyes
 and an oval-shaped face. Her hair is blonde, long, wavy. She wears a red silk slip dress.
@@ -172,6 +185,7 @@ Captured as a portrait. The scene is lit by golden hour light from the left.
 ## Examples
 
 ### Portrait Photography
+
 ```
 Person: Woman, 28, Japanese, Slim
 Fashion: Minimalist aesthetic, White blouse
@@ -180,6 +194,7 @@ Scene: Close-up portrait, Natural sunlight, Golden hour
 ```
 
 ### Editorial Fashion
+
 ```
 Person: Man, 22, Brazilian, Athletic
 Fashion: High Fashion aesthetic, Designer suit, Statement watch
@@ -190,12 +205,15 @@ Scene: Full body, Studio lighting, Fashion editorial pose
 ## Troubleshooting
 
 ### Nodes not appearing
+
 1. Restart ComfyUI completely
 2. Check the console for error messages
 3. Ensure the folder is in `ComfyUI/custom_nodes/`
 
 ### Missing options in dropdowns
+
 The node will auto-download `portrait_prompt.json` on first use. If this fails:
+
 1. Check your internet connection
 2. The file will be created in the `resources` folder
 3. Default options will be used as fallback
@@ -205,6 +223,7 @@ The node will auto-download `portrait_prompt.json` on first use. If this fails:
 This project is forked from [comfyui-easy-use](https://github.com/yolain/ComfyUI-Easy-Use).
 
 Original Portrait Master created by:
+
 - **AI Wiz Art (Stefano Flore)** - [stefanoflore.it](https://stefanoflore.it) | [ai-wiz.art](https://ai-wiz.art)
 
 ## License
@@ -224,14 +243,17 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## Changelog
 
 ### v2.0.0
+
 - **Separate Male and Female Person Nodes** - Gender-specific nodes with tailored options
 - **Male-Specific Options** - Body types, hairstyles, facial hair, fashion aesthetics, clothing
 - **Facial Hair Support** - 23 beard and mustache styles for male characters
 - **Male Superhero Suits** - Iron Man, Batman, Superman, Captain America, and more
 - **Refactored Architecture** - Nodes split into separate files for better maintainability
 - **Gender Options** - Woman/Girl for females, Man/Boy for males
+- **Enforce Only Described Subjects** - Option to prevent hallucination of extra characters
 
 ### v1.1.0
+
 - Split Fashion node into separate Female and Male nodes
 - Added Action node for poses and actions
 - Updated workflow: Person → Female/Male Fashion → Action → Scene & Generate
@@ -239,6 +261,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 - **Removed weighted prompt output; only natural language prompts are now generated**
 
 ### v1.0.0
+
 - Initial release
 - Three modular nodes: Person, Fashion, Scene
 - Natural language prompt output mode

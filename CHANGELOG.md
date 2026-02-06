@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0] - 2026-02-01
 
 ### Added
+
 - **Separate Male and Female Person Nodes**
   - `Character Prompt Builder - Female Person` with gender options: Woman, Girl
   - `Character Prompt Builder - Male Person` with gender options: Man, Boy
@@ -35,8 +36,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Refactored Node Architecture**
   - Nodes split into separate files under `node_defs/` folder
   - Improved code organization and maintainability
+- **Enforce Only Described Subjects** option in Scene & Generate node
+  - Boolean toggle to prevent model hallucination of extra characters
 
 ### Changed
+
 - Renamed `person.py` to `female_person.py` for clarity
 - Renamed `actions.py` to `female_actions.py` for clarity
 - Male Fashion node now uses all male-specific lists
@@ -44,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Superhero suits now have gender-specific versions
 
 ### Removed
+
 - Generic `Character Prompt Builder - Person` node (replaced by gender-specific nodes)
 - Generic `Character Prompt Builder - Actions` node (replaced by gender-specific nodes)
 - Feminine items from male lists (Buxom, Curvy, Voluptuous, etc.)
@@ -51,6 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2026-01-XX
 
 ### Added
+
 - Initial release
 - **Character Prompt Builder - Person** node
   - Gender, age, nationality options
@@ -83,7 +89,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Free-text location description
   - Time of day, weather, season
   - Prompt prefix and suffix
-  - Negative prompt
   - Natural language output mode
   - Weighted prompt output mode
   - Photorealism improvement option
@@ -92,5 +97,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fallback default data if download fails
 
 ### Credits
+
 - Forked from [comfyui-easy-use](https://github.com/yolain/ComfyUI-Easy-Use)
 - Original Portrait Master by AI Wiz Art (Stefano Flore)
