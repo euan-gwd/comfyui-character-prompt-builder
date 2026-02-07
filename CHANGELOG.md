@@ -53,6 +53,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Generic `Character Prompt Builder - Actions` node (replaced by gender-specific nodes)
 - Feminine items from male lists (Buxom, Curvy, Voluptuous, etc.)
 
+## [2.1.0] - 2026-02-07
+
+### Added
+
+- New node for advanced facial expressions (e.g., "ecstatic", "melancholic") in `node_defs/facial_expression.py`
+- Updated `character_prompt.json` with additional eye colors and hair styles
+- Improved settings merging logic in Scene node for better prompt flow
+
+### Changed
+
+- Refactored combo inputs to use updated JSON data loading
+- Enhanced natural language generation in Scene node to handle new settings keys
+
+### Fixed
+
+- Resolved issue with default values in dropdowns not resetting properly
+- Fixed typo in "facial_expression" key usage
+
 ## [1.1.0] - 2026-01-XX
 
 ### Added

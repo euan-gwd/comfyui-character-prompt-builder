@@ -242,6 +242,16 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Changelog
 
+### v2.1.0
+
+- Added new node for advanced facial expressions (e.g., "ecstatic", "melancholic")
+- Updated `character_prompt.json` with additional eye colors and hair styles
+- Improved settings merging logic in Scene node for better prompt flow
+- Refactored combo inputs to use updated JSON data loading
+- Enhanced natural language generation in Scene node to handle new settings keys
+- Fixed issue with default values in dropdowns not resetting properly
+- Fixed typo in "facial_expression" key usage
+
 ### v2.0.0
 
 - **Separate Male and Female Person Nodes** - Gender-specific nodes with tailored options

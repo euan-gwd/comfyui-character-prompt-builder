@@ -96,7 +96,6 @@ def _get_default_character_data():
         "camera_vertical_angle_list": ["camera 0° vertical angle, looking straight on"],
         "camera_shot_list": ["Full body (3–5m / 10–16ft)"],
         "camera_model_list": ["Canon EOS 5D Mark IV"],
-        "field_of_view_list": ["Normal (40°–50°)"],
         "light_type_list": ["Natural sunlight", "Studio lighting", "Soft ambient light"],
         "light_quality_list": ["soft diffused", "hard dramatic", "even balanced", "high contrast", "low key", "high key", "chiaroscuro", "volumetric", "atmospheric"],
         "artistic_style_list": ["Photorealistic", "Impressionistic", "Cubist", "Surrealistic", "Abstract"],
@@ -125,7 +124,6 @@ class CharacterPromptBuilderScene:
     @classmethod
     def INPUT_TYPES(s):
         data = _load_character_data()
-        max_float_value = 1.95
 
         def combo(key, default=None):
             _list = data.get(key, ["-"]).copy()
@@ -136,21 +134,19 @@ class CharacterPromptBuilderScene:
                 default = "professional photography"
             return (_list, {"default": default} if default else {})
 
-        def weight(default=0):
-            return ("INT", {"default": int(default * 100) if isinstance(default, float) else default, "step": 1, "min": 0, "max": 100, "display": "slider"})
-
         # Add preset_location combo box
         return {
             "required": {
                 "num_people": (["1", "2", "3", "4"], {"default": "1"}),
                 "settings1": ("PM_SETTINGS",),
                 "artistic_style": combo("artistic_style_list", "professional photography"),
+                "character_sheet_render_style": (["comic", "photorealistic"], {"default": "comic", "display": "dropdown", "visible": "artistic_style == '4-panel character sheet'"}),
                 "camera_model": combo("camera_model_list"),
                 "camera_lens": combo("camera_lens_specs"),
-                "field_of_view": combo("field_of_view_list"),
                 "camera_horizontal_angle": combo("camera_horizontal_angle_list"),
                 "camera_vertical_angle": combo("camera_vertical_angle_list"),
-                "camera_distance": combo("camera_shot_list"),
+                "camera_shot": combo("camera_shot_list"),
+                "camera_view": combo("camera_view_list"),
                 "preset_location": combo("location_list"),
                 "location": ("STRING", {"multiline": True, "default": "", "placeholder": "Add a custom location description in here"}),
                 "time_of_day": (["-", "Dawn", "Morning", "Midday", "Afternoon", "Golden Hour", "Sunset", "Dusk", "Evening", "Night", "Midnight", "Blue Hour"],),
@@ -170,17 +166,18 @@ class CharacterPromptBuilderScene:
         }
 
     RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("positive",)
+    RETURN_NAMES = ("prompt",)
     FUNCTION = "generate"
     CATEGORY = "CharacterPromptBuilder"
 
     def generate(self, num_people, settings1, artistic_style="-", camera_model="-",
-                 field_of_view="-", camera_vertical_angle="-",camera_horizontal_angle="-", camera_distance="-", camera_lens="-",
+                 camera_vertical_angle="-",camera_horizontal_angle="-", camera_shot="-", camera_view="-", camera_lens="-",
                  light_type="-", light_quality="-",
                  preset_location="-", location="", time_of_day="-", weather="-", season="-",
                  prompt_prefix="", prompt_suffix="",
                  enforce_subjects_only=False,
-                 settings2=None, settings3=None, settings4=None):
+                 settings2=None, settings3=None, settings4=None,
+                 character_sheet_render_style="comic"):
 
         # Collect settings for each person
         settings_list = [settings1]
@@ -210,10 +207,10 @@ class CharacterPromptBuilderScene:
 
         scene_settings = {
             "artistic_style": artistic_style,
-            "field_of_view": field_of_view,
             "camera_horizontal_angle": camera_horizontal_angle,
             "camera_vertical_angle": camera_vertical_angle,
-            "camera_distance": camera_distance,
+            "camera_shot": camera_shot,
+            "camera_view": camera_view,
             "camera_lens": camera_lens,
             "camera_model": camera_model,
             "location": scene_location, "time_of_day": time_of_day, "weather": weather, "season": season,
@@ -229,7 +226,11 @@ class CharacterPromptBuilderScene:
             # Merge scene-level settings for each person (for pose, shot, etc.)
             s.update(scene_settings)
             # For multi-person, exclude location/environment/lighting from individual prompts
-            prompt = self._generate_natural_language(s, include_scene_tail=not is_multi_person)
+            prompt = self._generate_natural_language(
+                s,
+                include_scene_tail=not is_multi_person,
+                character_sheet_render_style=character_sheet_render_style
+            )
             if is_multi_person:
                 prompt = f"Person {idx+1}: {prompt}"
             person_prompts.append(prompt)
@@ -279,18 +280,18 @@ class CharacterPromptBuilderScene:
 
         return (final_prompt.strip(),)
 
-    def _generate_natural_language(self, s, include_scene_tail=True):
+    def _generate_natural_language(self, s, include_scene_tail=True, character_sheet_render_style="comic"):
         def get_eye_mood(expression):
             expression_lower = expression.lower() if expression and expression != "-" else ""
             if expression_lower in ["happy", "excited", "amused", "in love", "surprised and amused", "smiling", "silly"]:
                 return ("bright", "sparkling with life", "a warm, lively gleam")
-            elif expression_lower in ["angry", "serious", "proud", "prideful", "sarcastic", "contemptuous", "mischievous"]:
+            elif expression_lower in ["angry", "serious", "proud", "prideful", "sarcastic", "contemptuous"]:
                 return ("piercing", "intense and focused", "a sharp, penetrating gaze")
             elif expression_lower in ["sad", "disappointed", "fearful", "anxious", "nervous"]:
                 return ("glistening", "deep with emotion", "a soft, vulnerable depth")
             elif expression_lower in ["serene", "peaceful", "calm", "content", "relieved", "pensive"]:
                 return ("soft", "calm and soulful", "a gentle, peaceful quality")
-            elif expression_lower in ["sexually aroused", "ahegao", "in love"]:
+            elif expression_lower in ["sexually aroused", "ahegao", "in love","mischievous", "flirty", "seductive"]:
                 return ("smoldering", "heavy-lidded and alluring", "a sultry, magnetic intensity")
             elif expression_lower in ["curious", "surprised", "confused"]:
                 return ("wide", "alert and engaging", "a curious, captivating spark")
@@ -317,6 +318,12 @@ class CharacterPromptBuilderScene:
             if not word:
                 return "a"
             return "an" if word[0].lower() in 'aeiou' else "a"
+
+        def get_verb(subj):
+            return "is" if subj in ["She", "He"] else "are"
+
+        def get_verb(subj):
+            return "is" if subj in ["She", "He"] else "are"
 
         # --- Begin natural language prose generation ---
         prose = []
@@ -506,7 +513,7 @@ class CharacterPromptBuilderScene:
         # Makeup
         makeup_phrase = ""
         if get("makeup") != "-" and gender == "Woman":
-            makeup_phrase = f"{subj} is wearing {get('makeup').lower().replace(' makeup', '')} makeup"
+            makeup_phrase = f"{subj} {get_verb(subj)} wearing {get('makeup').lower().replace(' makeup', '')} makeup"
 
         # Hair
         hair_parts = []
@@ -578,8 +585,8 @@ class CharacterPromptBuilderScene:
             if get("tops") != "-":
                 top = get("tops").lower()
                 top_color = get("tops_color").lower()
-                top_material = s.get("tops_material", "-").lower()  
-                if top_color != "-" and top_color != "": 
+                top_material = s.get("tops_material", "-").lower()
+                if top_color != "-" and top_color != "":
                     top = f"{top_color} {top}"
                 if top_material and top_material != "-":
                     top = f"{top} made of {top_material} material"
@@ -660,9 +667,6 @@ class CharacterPromptBuilderScene:
             # SUITS (female)
             if s.get("womens_suits", "-") != "-":
                     suit = s.get("womens_suits").lower()
-                    helmet = s.get("womens_suits_helmet", "-")
-                    if helmet and helmet != "-":
-                        suit = f"{suit} ({helmet.lower()})"
                     clothing.append(suit)
 
         # === MALE-SPECIFIC CLOTHING ===
@@ -811,9 +815,9 @@ class CharacterPromptBuilderScene:
             else:
                 clothing_str = ", ".join(clothing[:-1]) + f", and {clothing[-1]}"
             if 'extra_clothing_description' in locals():
-                clothing_phrase = f"{subj} is wearing a {clothing_str}, {extra_clothing_description}"
+                clothing_phrase = f"{subj} {get_verb(subj)} wearing a {clothing_str}, {extra_clothing_description}"
             else:
-                clothing_phrase = f"{subj} is wearing a {clothing_str}"
+                clothing_phrase = f"{subj} {get_verb(subj)} wearing a {clothing_str}"
             # If body features exist, append "covering ..." after clothing
             if body_features_phrase:
                 import re
@@ -839,9 +843,9 @@ class CharacterPromptBuilderScene:
                     details_str = ", ".join(details)
                 else:
                     details_str = "breasts and nipples"
-                clothing_phrase = f"{subj} is completely nude and {poss} {details_str} are visible"
+                clothing_phrase = f"{subj} {get_verb(subj)} completely nude and {poss} {details_str} are visible"
             elif gender == "Man":
-                clothing_phrase = f"{subj} is shirtless" if not clothing else ""
+                clothing_phrase = f"{subj} {get_verb(subj)} shirtless" if not clothing else ""
             else:
                 clothing_phrase = ""
 
@@ -879,7 +883,7 @@ class CharacterPromptBuilderScene:
         if glasses and glasses != "-":
             if glasses_color != "-" and glasses_color != "":
                 glasses = f"{glasses_color} {glasses}"
-            accessory_parts.append(f"{glasses} glasses")
+            accessory_parts.append(f"{glasses}")
         jewelry_phrase = ""
         if accessory_parts:
             # Use Oxford comma for last item
@@ -928,7 +932,7 @@ class CharacterPromptBuilderScene:
             shoe_material = s.get("womens_shoe_material", "-")
             if shoe_material and shoe_material != "-":
                 shoe_desc = f"{shoe_desc} made of {shoe_material.lower()}"
-            shoes_phrase = f"{subj} is wearing {shoe_desc}"
+            shoes_phrase = f"{subj} {get_verb(subj)} wearing {shoe_desc}"
         # MENS SHOES
         if s.get("mens_shoes", "-") != "-" and gender == "Man":
             shoe_desc = s.get("mens_shoes").lower()
@@ -937,7 +941,7 @@ class CharacterPromptBuilderScene:
             shoe_material = s.get("mens_shoe_material", "-")
             if shoe_material and shoe_material != "-":
                 shoe_desc = f"{shoe_desc} made of {shoe_material.lower()}"
-            shoes_phrase = f"{subj} is wearing {shoe_desc}"
+            shoes_phrase = f"{subj} {get_verb(subj)} wearing {shoe_desc}"
 
         # Pose
         pose_fields = [
@@ -945,12 +949,16 @@ class CharacterPromptBuilderScene:
             ("kneeling_pose", s.get("kneeling_pose", "-")),
             ("sitting_pose", s.get("sitting_pose", "-")),
             ("laying_down_pose", s.get("laying_down_pose", "-")),
-            # ("nsfw_pose", s.get("nsfw_pose", "-")),
         ]
         selected_pose = next((val for key, val in pose_fields if val and val != "-"), None)
         pose_phrase = ""
         if selected_pose:
-            pose_phrase = f"{subj.lower()} is {selected_pose.lower()}"
+            pose_phrase = f"{subj.lower()} {get_verb(subj)} {selected_pose.lower()}"
+
+        # Interaction
+        interaction_phrase = ""
+        if s.get("interaction", "-") != "-":
+            interaction_phrase = f"{subj.lower()} {get_verb(subj)} {s.get('interaction')}"
 
         # Props
         props = s.get("props", "-")
@@ -965,15 +973,15 @@ class CharacterPromptBuilderScene:
                 article = match.group(2) or ""
                 obj = match.group(3)
                 if props_color and props_color != "-":
-                    props_phrase = f"{subj.lower()} is {verb} {article} {props_color.lower()} {obj}".replace("  ", " ")
+                    props_phrase = f"{subj.lower()} {get_verb(subj)} {verb} {article} {props_color.lower()} {obj}".replace("  ", " ")
                 else:
-                    props_phrase = f"{subj.lower()} is {verb} {article} {obj}".replace("  ", " ")
+                    props_phrase = f"{subj.lower()} {get_verb(subj)} {verb} {article} {obj}".replace("  ", " ")
             else:
                 # fallback: just append color before prop
                 if props_color and props_color != "-":
-                    props_phrase = f"{subj.lower()} is {props_color.lower()} {props.lower()}"
+                    props_phrase = f"{subj.lower()} {get_verb(subj)} {props_color.lower()} {props.lower()}"
                 else:
-                    props_phrase = f"{subj.lower()} is {props.lower()}"
+                    props_phrase = f"{subj.lower()} {get_verb(subj)} {props.lower()}"
 
         # Custom action/pose
         custom_action = s.get("custom_action", "") or s.get("custom_pose", "")
@@ -986,10 +994,6 @@ class CharacterPromptBuilderScene:
         if get("facial_expression") != "-":
             expression_phrase = f"{subj} has a {get('facial_expression').lower()} facial expression"
 
-        # Field of view
-        field_of_view_phrase = ""
-        if get("field_of_view") != "-":
-            field_of_view_phrase = f"Field of view is {get('field_of_view').lower()}"
         # Camera angles
         camera_horizontal_angle_phrase = ""
         camera_horizontal = get("camera_horizontal_angle")
@@ -999,17 +1003,13 @@ class CharacterPromptBuilderScene:
         camera_combined_angle_phrase = ""
         if camera_horizontal != "-" and camera_vertical != "-":
             camera_combined_angle_phrase = (
-                f"the camera is positioned at a {camera_horizontal.lower()} and is set at a {camera_vertical.lower()}"
+                f"set at a {camera_horizontal.lower()} and is set at a {camera_vertical.lower()}"
             )
         else:
             if camera_horizontal != "-":
-                camera_horizontal_angle_phrase = f"the camera is positioned at a {camera_horizontal.lower()}"
+                camera_horizontal_angle_phrase = f"set at a {camera_horizontal.lower()}"
             if camera_vertical != "-":
-                camera_vertical_angle_phrase = f"the camera is set at a {camera_vertical.lower()}"
-        # Camera distance
-        camera_distance_phrase = ""
-        if get("camera_distance") != "-":
-            camera_distance_phrase = f"A {get('camera_distance').lower()} shot"
+                camera_vertical_angle_phrase = f"set at a {camera_vertical.lower()}"
         camera_lens_phrase = ""
         if get("camera_lens") != "-":
             camera_lens_phrase = f"the camera lens is a {get('camera_lens').lower()}"
@@ -1111,20 +1111,30 @@ class CharacterPromptBuilderScene:
                 light_desc += get("light_type").lower()
             lighting_phrase = f"The scene is lit by {light_desc}"
 
+        # Camera shot and view
+        camera_shot_view_phrase = ""
+        if get("camera_shot") != "-" and get("camera_view") != "-":
+            camera_shot_view_phrase = f"{get('camera_shot').lower()}, {get('camera_view').lower()}"
+        elif get("camera_shot") != "-":
+            camera_shot_view_phrase = get("camera_shot").lower()
+        elif get("camera_view") != "-":
+            camera_shot_view_phrase = get("camera_view").lower()
+        if camera_shot_view_phrase:
+            camera_shot_view_phrase = f"Shot from a {camera_shot_view_phrase}"
 
         # Compose into a single natural language paragraph
         # Insert style_prefix first if present
         phrases = [
-            camera_distance_phrase,
+            camera_shot_view_phrase,
             style_prefix if style_prefix else None,
             camera_model_phrase,
             camera_lens_phrase,
             camera_combined_angle_phrase if camera_combined_angle_phrase else camera_horizontal_angle_phrase,
             camera_vertical_angle_phrase if not camera_combined_angle_phrase else "",
-            field_of_view_phrase,
             subject_sentence,
             body_type_phrase,
             pose_phrase,
+            interaction_phrase,
             custom_action_phrase,
             props_phrase,
             face_features_phrase,
@@ -1157,28 +1167,93 @@ class CharacterPromptBuilderScene:
         phrases = [p.strip() for p in phrases if p and p.strip()]
         tail_phrases = [p.strip() for p in tail_phrases if p and p.strip()]
 
-        # Join main description with commas, but avoid double commas after style_prefix
-        if phrases:
-            if style_prefix and len(phrases) > 1:
-                main_desc = phrases[0].rstrip(",") + ", " + ", ".join(phrases[1:])
+        if s.get("artistic_style") == "4-panel character sheet":
+            panels = [
+                ("front view eye-level wide shot", "Panel 1"),
+                ("back view eye-level wide shot", "Panel 2"),
+                ("right side view eye-level wide shot", "Panel 3"),
+                ("left side view eye-level wide shot", "Panel 4")
+            ]
+            panel_prompts = []
+            # Choose style prefix based on character_sheet_render_style
+            if character_sheet_render_style == "photorealistic":
+                style_prefix = "photorealistic"
+            else:
+                style_prefix = "Ink drawn comic book illustration"
+            for angle, panel_name in panels:
+                s_panel = s.copy()
+                s_panel["camera_horizontal_angle"] = angle
+                # Rebuild camera phrases for this panel
+                camera_horizontal = s_panel.get("camera_horizontal_angle")
+                camera_vertical = s_panel.get("camera_vertical_angle")
+                camera_combined_angle_phrase = ""
+                if camera_horizontal != "-" and camera_vertical != "-":
+                    camera_combined_angle_phrase = (
+                        f"{camera_horizontal.lower()} and set at a {camera_vertical.lower()}"
+                    )
+                else:
+                    if camera_horizontal != "-":
+                        camera_combined_angle_phrase = f"{camera_horizontal.lower()}"
+                    if camera_vertical != "-":
+                        if camera_combined_angle_phrase:
+                            camera_combined_angle_phrase += f" and set at a {camera_vertical.lower()}"
+                        else:
+                            camera_combined_angle_phrase = f"{camera_vertical.lower()}"
+                # Update phrases with the new camera phrase
+                panel_phrases = phrases.copy()
+                # Remove any phrase containing "4-panel character sheet style"
+                panel_phrases = [p for p in panel_phrases if not (p and "4-panel character sheet style" in p)]
+                # Insert the camera phrase at the beginning
+                if camera_combined_angle_phrase:
+                    panel_phrases.insert(0, camera_combined_angle_phrase)
+                main_desc_panel = ", ".join(panel_phrases) + "\n"
+                panel_prompts.append(f"{panel_name}: {main_desc_panel}")
+            prompt = f"Generate a 4-panel {style_prefix} character sheet image: \n\n" + "\n".join(panel_prompts)
+            return prompt
+        else:
+            # Add tail if include_scene_tail
+            tail_phrases = []
+            if include_scene_tail:
+                # Location
+                location = s.get("location", "")
+                if location and location.strip():
+                    tail_phrases.append(f"The scene takes place {location.strip()}")
+                elif s.get("preset_location") and s.get("preset_location") != "-":
+                    tail_phrases.append(f"The scene takes place {s.get('preset_location')}")
+                # Environment
+                env_parts = []
+                if s.get("time_of_day") != "-":
+                    env_parts.append(f"It is {s.get('time_of_day').lower()}")
+                if s.get("weather") != "-":
+                    env_parts.append(f"The weather is {s.get('weather').lower()}")
+                if s.get("season") != "-":
+                    env_parts.append(f"It is {s.get('season').lower()} season")
+                if env_parts:
+                    tail_phrases.append(" ".join(env_parts))
+                # Lighting
+                if s.get("light_type") != '-':
+                    light_desc = ""
+                    if s.get("light_quality", '-') != '-':
+                        light_desc += s.get("light_quality").lower()
+                    if s.get("light_type") != '-':
+                        if light_desc:
+                            light_desc += " "
+                        light_desc += s.get("light_type").lower()
+                    tail_phrases.append(f"The scene is lit by {light_desc}")
+
+            tail = ". ".join(tail_phrases)
+            if tail:
+                main_desc = ", ".join(phrases)
+                prompt = main_desc
+                if not prompt.endswith("."):
+                    prompt += "."
+                prompt += " " + tail
             else:
                 main_desc = ", ".join(phrases)
-        else:
-            main_desc = ""
-
-        # Join tail phrases with ". "
-        tail = ". ".join(tail_phrases)
-        if tail:
-            prompt = main_desc
-            if not prompt.endswith("."):
-                prompt += "."
-            prompt += " " + tail
-        else:
-            prompt = main_desc
-            if prompt and not prompt.endswith("."):
-                prompt += "."
-
-        return prompt.strip()
+                prompt = main_desc
+                if prompt and not prompt.endswith("."):
+                    prompt += "."
+            return prompt.strip()
 
 
 # Node mappings - merge from individual node files

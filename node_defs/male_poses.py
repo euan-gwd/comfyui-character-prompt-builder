@@ -46,6 +46,7 @@ class CharacterPromptBuilderMalePoses:
                 "kneeling_pose": combo("mens_kneeling_pose_list"),
                 "sitting_pose": combo("mens_sitting_pose_list"),
                 "laying_down_pose": combo("mens_laying_down_pose_list"),
+                "interaction": combo("interactions_list"),
                 "props": combo("mens_props_list"),
                 "props_color": combo("props_color_list"),
                 "settings_in": ("PM_SETTINGS",),
@@ -72,6 +73,7 @@ class CharacterPromptBuilderMalePoses:
             kneeling_pose="-",
             sitting_pose="-",
             laying_down_pose="-",
+            interaction="-",
             props="-",
             props_color="-",
             settings_in=None,
@@ -106,6 +108,7 @@ class CharacterPromptBuilderMalePoses:
             **pose_out,
             "props": props,
             "props_color": props_color,
+            "interaction": interaction,
             "custom_pose": custom_pose.strip() if custom_pose else "",
         })
         return (settings,)
