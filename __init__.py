@@ -5,7 +5,7 @@ A standalone, modular portrait prompt generator for ComfyUI
 Inspired by the original Portrait Master by AI Wiz Art (Stefano Flore)
 """
 
-__version__ = "2.0.0"
+__version__ = "2.1.0"
 __author__ = "Euan Greenwood"
 
 from .nodes import NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
