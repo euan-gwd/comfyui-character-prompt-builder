@@ -1167,12 +1167,13 @@ class CharacterPromptBuilderScene:
         phrases = [p.strip() for p in phrases if p and p.strip()]
         tail_phrases = [p.strip() for p in tail_phrases if p and p.strip()]
 
-        if s.get("artistic_style") == "4-panel character sheet":
+        if s.get("artistic_style") == "5-panel character sheet":
             panels = [
                 ("front view eye-level wide shot", "Panel 1"),
                 ("back view eye-level wide shot", "Panel 2"),
                 ("right side view eye-level wide shot", "Panel 3"),
-                ("left side view eye-level wide shot", "Panel 4")
+                ("left side view eye-level wide shot", "Panel 4"),
+                ("front view eye-level close-up face shot", "Panel 5"),
             ]
             panel_prompts = []
             # Choose style prefix based on character_sheet_render_style
@@ -1202,13 +1203,13 @@ class CharacterPromptBuilderScene:
                 # Update phrases with the new camera phrase
                 panel_phrases = phrases.copy()
                 # Remove any phrase containing "4-panel character sheet style"
-                panel_phrases = [p for p in panel_phrases if not (p and "4-panel character sheet style" in p)]
+                panel_phrases = [p for p in panel_phrases if not (p and "5-panel character sheet style" in p)]
                 # Insert the camera phrase at the beginning
                 if camera_combined_angle_phrase:
                     panel_phrases.insert(0, camera_combined_angle_phrase)
                 main_desc_panel = ", ".join(panel_phrases) + "\n"
                 panel_prompts.append(f"{panel_name}: {main_desc_panel}")
-            prompt = f"Generate a 4-panel {style_prefix} character sheet image: \n\n" + "\n".join(panel_prompts)
+            prompt = f"Generate a 5-panel {style_prefix} character sheet image: \n\n" + "\n".join(panel_prompts)
             return prompt
         else:
             # Add tail if include_scene_tail
