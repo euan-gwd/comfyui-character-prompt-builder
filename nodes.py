@@ -866,6 +866,17 @@ class CharacterPromptBuilderScene:
         if s.get("womens_glasses", "-") != "-" and s.get("gender", "-") == "Woman":
             glasses = s.get("womens_glasses").lower()
             glasses_color = s.get("womens_glasses_color", "-").lower()
+        mask = ""
+        mask_color = ""
+        mask_material = ""
+        if s.get("mens_mask", "-") != "-" and s.get("gender", "-") == "Man":
+            mask = s.get("mens_mask").lower()
+            mask_color = s.get("mens_mask_color", "-").lower()
+            mask_material = s.get("mens_mask_material", "-").lower()
+        if s.get("womens_mask", "-") != "-" and s.get("gender", "-") == "Woman":
+            mask = s.get("womens_mask").lower()
+            mask_color = s.get("womens_mask_color", "-").lower()
+            mask_material = s.get("womens_mask_material", "-").lower()
         accessory_parts = []
         if necklace != "-" :
             accessory_parts.append(f"{get('necklace').lower()} necklace")
@@ -884,6 +895,13 @@ class CharacterPromptBuilderScene:
             if glasses_color != "-" and glasses_color != "":
                 glasses = f"{glasses_color} {glasses}"
             accessory_parts.append(f"{glasses}")
+        if mask and mask != "-":
+            mask_desc = mask
+            if mask_color != "-" and mask_color != "":
+                mask_desc = f"{mask_color} {mask_desc}"
+            if mask_material != "-" and mask_material != "":
+                mask_desc = f"{mask_desc} made of {mask_material}"
+            accessory_parts.append(f"{mask_desc}")
         jewelry_phrase = ""
         if accessory_parts:
             # Use Oxford comma for last item

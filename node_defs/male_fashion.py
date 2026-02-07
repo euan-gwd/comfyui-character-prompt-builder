@@ -74,6 +74,9 @@ class CharacterPromptBuilderMaleFashion:
                 "settings_in": ("PM_SETTINGS",),
                 "mens_glasses": combo("mens_glasses_list"),
                 "mens_glasses_color": combo("mens_glasses_color_list"),
+                "mens_mask": combo("mens_mask_list"),
+                "mens_mask_color": combo("mens_mask_color_list"),
+                "mens_mask_material": combo("mens_mask_material_list"),
                 "custom_clothing": (
                     "STRING",
                     {
@@ -106,6 +109,7 @@ class CharacterPromptBuilderMaleFashion:
             watches="-", watches_color="-",
             settings_in=None,
             mens_glasses="-", mens_glasses_color="-",
+            mens_mask="-", mens_mask_color="-", mens_mask_material="-",
             custom_clothing="",
     ):
         settings = settings_in.copy() if settings_in else {}
@@ -129,6 +133,9 @@ class CharacterPromptBuilderMaleFashion:
             "ring": ring,
             "mens_glasses": mens_glasses,
             "mens_glasses_color": mens_glasses_color,
+            "mens_mask": mens_mask,
+            "mens_mask_color": mens_mask_color,
+            "mens_mask_material": mens_mask_material,
             "custom_clothing": custom_clothing,
         })
         return (settings,)

@@ -85,6 +85,9 @@ class CharacterPromptBuilderFemaleFashion:
                 "settings_in": ("PM_SETTINGS",),
                 "womens_glasses": combo("womens_glasses_list"),
                 "womens_glasses_color": combo("womens_glasses_color_list"),
+                "womens_mask": combo("womens_mask_list"),
+                "womens_mask_color": combo("womens_mask_color_list"),
+                "womens_mask_material": combo("womens_mask_material_list"),
                 "stretched_material": (
                     "BOOLEAN",
                     {
@@ -129,6 +132,7 @@ class CharacterPromptBuilderFemaleFashion:
             fingernail_style="-", nail_color="-",
             settings_in=None,
             womens_glasses="-", womens_glasses_color="-",
+            womens_mask="-", womens_mask_color="-", womens_mask_material="-",
             stretched_material=False,
             custom_clothing="",
     ):
@@ -158,6 +162,9 @@ class CharacterPromptBuilderFemaleFashion:
             "fingernail_style": fingernail_style, "nail_color": nail_color,
             "womens_glasses": womens_glasses,
             "womens_glasses_color": womens_glasses_color,
+            "womens_mask": womens_mask,
+            "womens_mask_color": womens_mask_color,
+            "womens_mask_material": womens_mask_material,
             "stretched_material": stretched_material,
             "custom_clothing": custom_clothing,
         })
