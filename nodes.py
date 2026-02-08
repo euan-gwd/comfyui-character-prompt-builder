@@ -1132,13 +1132,13 @@ class CharacterPromptBuilderScene:
         # Camera shot and view
         camera_shot_view_phrase = ""
         if get("camera_shot") != "-" and get("camera_view") != "-":
-            camera_shot_view_phrase = f"{get('camera_shot').lower()}, {get('camera_view').lower()}"
+            camera_shot_view_phrase = f"{get('camera_view').lower()}, {get('camera_shot').lower()} shot"
         elif get("camera_shot") != "-":
-            camera_shot_view_phrase = get("camera_shot").lower()
+            camera_shot_view_phrase = f"{get("camera_shot").lower()} shot"
         elif get("camera_view") != "-":
             camera_shot_view_phrase = get("camera_view").lower()
         if camera_shot_view_phrase:
-            camera_shot_view_phrase = f"Shot from a {camera_shot_view_phrase}"
+            camera_shot_view_phrase = f"{camera_shot_view_phrase} shot"
 
         # Compose into a single natural language paragraph
         # Insert style_prefix first if present
