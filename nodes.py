@@ -1190,7 +1190,7 @@ class CharacterPromptBuilderScene:
                 ("front view eye-level wide shot", "Panel 1"),
                 ("back (rear) view eye-level wide shot", "Panel 2"),
                 ("right side view eye-level wide shot", "Panel 3"),
-                ("3/4 view eye-level close up shot", "Panel 4"),
+                ("front view eye-level close up shot", "Panel 4"),
             ]
             panel_prompts = []
             # Choose style prefix based on character_sheet_render_style
@@ -1226,7 +1226,7 @@ class CharacterPromptBuilderScene:
                     panel_phrases.insert(0, camera_combined_angle_phrase)
                 main_desc_panel = ", ".join(panel_phrases) + "\n"
                 panel_prompts.append(f"{panel_name}: {main_desc_panel}")
-            prompt = f"Generate a 4-panel {style_prefix} character sheet image: \n\n" + "\n".join(panel_prompts)
+            prompt = f"Generate a {style_prefix} character model sheet image with 4 evenly spaced vertical column panels: \n\n" + "\n".join(panel_prompts)
             return prompt
         else:
             # Add tail if include_scene_tail
