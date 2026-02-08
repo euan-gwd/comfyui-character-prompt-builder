@@ -1736,9 +1736,14 @@
     "Tulle"
   ],
   "camera_shot_list": [
+    "extreme wide",
     "wide",
+    "full",
     "medium",
+    "medium close up",
     "close-up",
+    "extreme close-up",
+    "cowboy",
     "establishing"
   ],
   "camera_view_list": [

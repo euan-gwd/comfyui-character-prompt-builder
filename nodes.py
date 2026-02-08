@@ -1132,9 +1132,9 @@ class CharacterPromptBuilderScene:
         # Camera shot and view
         camera_shot_view_phrase = ""
         if get("camera_shot") != "-" and get("camera_view") != "-":
-            camera_shot_view_phrase = f"{get('camera_view').lower()}, {get('camera_shot').lower()} shot"
+            camera_shot_view_phrase = f"{get('camera_view').lower()}, {get('camera_shot').lower()}"
         elif get("camera_shot") != "-":
-            camera_shot_view_phrase = f"{get("camera_shot").lower()} shot"
+            camera_shot_view_phrase = f"{get("camera_shot").lower()}"
         elif get("camera_view") != "-":
             camera_shot_view_phrase = get("camera_view").lower()
         if camera_shot_view_phrase:
