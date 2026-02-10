@@ -1,6 +1,6 @@
 """
 Character Prompt Builder Nodes
-Forked from comfyui-easy-use by AI Wiz Art (Stefano Flore)
+original inspiration for this was forked from comfyui-easy-use by AI Wiz Art (Stefano Flore)
 """
 
 import json
