@@ -15,20 +15,21 @@ class RenderPrompt:
     RETURN_TYPES = ("STRING",)
     FUNCTION = "notify"
     OUTPUT_NODE = True
-    OUTPUT_IS_LIST = (True,)
+    OUTPUT_IS_LIST = (False,)
 
     CATEGORY = "CharacterPromptBuilder"
 
     def notify(self, text, unique_id=None, extra_pnginfo=None):
         # Default to the input text
-        current_input = text[0] if text and isinstance(text, list) else ""
+        current_input = text[0] if isinstance(text, list) and len(text) > 0 else (text if text is not None else "")
         text_to_display = current_input
 
         if unique_id is not None and extra_pnginfo is not None:
             if isinstance(extra_pnginfo, list) and extra_pnginfo:
                 workflow = extra_pnginfo[0].get("workflow")
                 if workflow and "nodes" in workflow:
-                    node_id_str = str(unique_id[0])
+                    node_id = unique_id[0] if isinstance(unique_id, list) and len(unique_id) > 0 else unique_id
+                    node_id_str = str(node_id)
                     node = next((x for x in workflow["nodes"] if str(x["id"]) == node_id_str), None)
                     
                     if node:
