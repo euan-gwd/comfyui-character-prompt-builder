@@ -16,7 +16,7 @@ class RenderPrompt:
         }
 
     INPUT_IS_LIST = True
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = ()
     FUNCTION = "notify"
     OUTPUT_NODE = True
     OUTPUT_IS_LIST = (False,)
@@ -104,7 +104,7 @@ class RenderPrompt:
 
         return {
             "ui": {"text": [text_to_display]},
-            "result": (text_to_display,),
+            "result": (),
         }
 
 
