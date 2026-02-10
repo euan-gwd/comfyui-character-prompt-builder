@@ -20,6 +20,8 @@ from .node_defs.female_poses import NODE_CLASS_MAPPINGS as FEMALE_POSES_CLASS_MA
 from .node_defs.female_poses import NODE_DISPLAY_NAME_MAPPINGS as FEMALE_POSES_DISPLAY_NAME_MAPPINGS
 from .node_defs.male_poses import NODE_CLASS_MAPPINGS as MALE_POSES_CLASS_MAPPINGS
 from .node_defs.male_poses import NODE_DISPLAY_NAME_MAPPINGS as MALE_POSES_DISPLAY_NAME_MAPPINGS
+from .render_prompt import NODE_CLASS_MAPPINGS as SHOW_TEXT_CLASS_MAPPINGS
+from .render_prompt import NODE_DISPLAY_NAME_MAPPINGS as SHOW_TEXT_DISPLAY_NAME_MAPPINGS
 
 # Get the directory where this file is located
 RESOURCES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "resources")
@@ -1282,6 +1284,7 @@ NODE_CLASS_MAPPINGS = {
     **MALE_FASHION_CLASS_MAPPINGS,
     **FEMALE_POSES_CLASS_MAPPINGS,
     **MALE_POSES_CLASS_MAPPINGS,
+    **SHOW_TEXT_CLASS_MAPPINGS,
     "Character Prompt Builder Scene": CharacterPromptBuilderScene,
 }
 
@@ -1292,5 +1295,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     **MALE_FASHION_DISPLAY_NAME_MAPPINGS,
     **FEMALE_POSES_DISPLAY_NAME_MAPPINGS,
     **MALE_POSES_DISPLAY_NAME_MAPPINGS,
+    **SHOW_TEXT_DISPLAY_NAME_MAPPINGS,
     "Character Prompt Builder Scene": "Character Prompt Builder - Scene & Generate",
 }

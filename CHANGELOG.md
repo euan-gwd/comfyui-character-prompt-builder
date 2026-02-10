@@ -53,6 +53,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Generic `Character Prompt Builder - Actions` node (replaced by gender-specific nodes)
 - Feminine items from male lists (Buxom, Curvy, Voluptuous, etc.)
 
+## [2.2.0] - 2026-02-10
+
+### Added
+
+- **Render Prompt Node**
+  - New `Character Prompt Builder - Render Prompt` node for displaying and editing generated prompts.
+  - Integrates `simpleShowText` functionality with persistence for manual edits.
+  - Automatically syncs with input changes while preserving user modifications when appropriate.
+  - Added frontend extension for interactive text editing on the node.
+
 ## [2.1.0] - 2026-02-07
 
 ### Added

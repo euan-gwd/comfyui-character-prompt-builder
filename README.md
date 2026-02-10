@@ -122,6 +122,16 @@ Controls the shot setup and generates the final prompt:
 | **Prompts**     | Prefix, suffix, enforce subjects only    |
 | **Output**      | Natural language or weighted prompt mode |
 
+### 📝 Character Prompt Builder - Render Prompt
+
+A utility node that displays the generated prompt and allows for manual edits before passing it to CLIP:
+
+- **Display** - Shows the final generated natural language prompt
+- **Edit** - Allows manual adjustments to the prompt directly on the node
+- **Persistence** - Remembers manual edits across executions
+- **Sync** - Automatically updates when inputs change, but preserves edits otherwise
+
+
 ## Usage
 
 ### Basic Workflow
