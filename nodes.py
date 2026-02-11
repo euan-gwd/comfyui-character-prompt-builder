@@ -5,21 +5,34 @@ original inspiration for this was forked from comfyui-easy-use by AI Wiz Art (St
 
 import json
 import os
+import re
 from urllib.request import urlopen
 
 # Import node mappings from separate files
 from .node_defs.female_person import NODE_CLASS_MAPPINGS as FEMALE_PERSON_CLASS_MAPPINGS
-from .node_defs.female_person import NODE_DISPLAY_NAME_MAPPINGS as FEMALE_PERSON_DISPLAY_NAME_MAPPINGS
+from .node_defs.female_person import (
+    NODE_DISPLAY_NAME_MAPPINGS as FEMALE_PERSON_DISPLAY_NAME_MAPPINGS,
+)
 from .node_defs.male_person import NODE_CLASS_MAPPINGS as MALE_PERSON_CLASS_MAPPINGS
-from .node_defs.male_person import NODE_DISPLAY_NAME_MAPPINGS as MALE_PERSON_DISPLAY_NAME_MAPPINGS
+from .node_defs.male_person import (
+    NODE_DISPLAY_NAME_MAPPINGS as MALE_PERSON_DISPLAY_NAME_MAPPINGS,
+)
 from .node_defs.female_fashion import NODE_CLASS_MAPPINGS as FASHION_CLASS_MAPPINGS
-from .node_defs.female_fashion import NODE_DISPLAY_NAME_MAPPINGS as FASHION_DISPLAY_NAME_MAPPINGS
+from .node_defs.female_fashion import (
+    NODE_DISPLAY_NAME_MAPPINGS as FASHION_DISPLAY_NAME_MAPPINGS,
+)
 from .node_defs.male_fashion import NODE_CLASS_MAPPINGS as MALE_FASHION_CLASS_MAPPINGS
-from .node_defs.male_fashion import NODE_DISPLAY_NAME_MAPPINGS as MALE_FASHION_DISPLAY_NAME_MAPPINGS
+from .node_defs.male_fashion import (
+    NODE_DISPLAY_NAME_MAPPINGS as MALE_FASHION_DISPLAY_NAME_MAPPINGS,
+)
 from .node_defs.female_poses import NODE_CLASS_MAPPINGS as FEMALE_POSES_CLASS_MAPPINGS
-from .node_defs.female_poses import NODE_DISPLAY_NAME_MAPPINGS as FEMALE_POSES_DISPLAY_NAME_MAPPINGS
+from .node_defs.female_poses import (
+    NODE_DISPLAY_NAME_MAPPINGS as FEMALE_POSES_DISPLAY_NAME_MAPPINGS,
+)
 from .node_defs.male_poses import NODE_CLASS_MAPPINGS as MALE_POSES_CLASS_MAPPINGS
-from .node_defs.male_poses import NODE_DISPLAY_NAME_MAPPINGS as MALE_POSES_DISPLAY_NAME_MAPPINGS
+from .node_defs.male_poses import (
+    NODE_DISPLAY_NAME_MAPPINGS as MALE_POSES_DISPLAY_NAME_MAPPINGS,
+)
 from .render_prompt import NODE_CLASS_MAPPINGS as SHOW_TEXT_CLASS_MAPPINGS
 from .render_prompt import NODE_DISPLAY_NAME_MAPPINGS as SHOW_TEXT_DISPLAY_NAME_MAPPINGS
 
@@ -32,21 +45,25 @@ os.makedirs(RESOURCES_DIR, exist_ok=True)
 
 def _load_character_data():
     """Load character prompt data from local file or download if missing."""
-    prompt_path = os.path.join(RESOURCES_DIR, 'character_prompt.json')
+    prompt_path = os.path.join(RESOURCES_DIR, "character_prompt.json")
     if not os.path.exists(prompt_path):
         try:
-            response = urlopen('https://raw.githubusercontent.com/euan-gwd/comfyui-character-prompt-builder/main/resources/character_prompt.json')
+            response = urlopen(
+                "https://raw.githubusercontent.com/euan-gwd/comfyui-character-prompt-builder/main/resources/character_prompt.json"
+            )
             temp_prompt = json.loads(response.read())
             prompt_serialized = json.dumps(temp_prompt, indent=4)
             with open(prompt_path, "w") as f:
                 f.write(prompt_serialized)
             del response, temp_prompt
         except Exception as e:
-            print(f"[CharacterPromptBuilder] Warning: Could not download character data: {e}")
+            print(
+                f"[CharacterPromptBuilder] Warning: Could not download character data: {e}"
+            )
             # Return minimal default data
             return _get_default_character_data()
 
-    with open(prompt_path, 'r') as f:
+    with open(prompt_path, "r") as f:
         return json.load(f)
 
 
@@ -54,34 +71,175 @@ def _get_default_character_data():
     """Return minimal default data if download fails."""
     return {
         "gender_list": ["Man", "Woman"],
-        "nationality_list": ["British", "American", "French", "German", "Italian", "Spanish", "Japanese", "Chinese", "Korean", "Indian"],
-        "body_type_list": ["Slim", "Athletic", "Curvy", "Petite", "Muscular", "Average"],
+        "nationality_list": [
+            "British",
+            "American",
+            "French",
+            "German",
+            "Italian",
+            "Spanish",
+            "Japanese",
+            "Chinese",
+            "Korean",
+            "Indian",
+        ],
+        "body_type_list": [
+            "Slim",
+            "Athletic",
+            "Curvy",
+            "Petite",
+            "Muscular",
+            "Average",
+        ],
         "breast_size_list": ["Small", "Medium", "Large"],
         # --- Height and weight fields ---
         "height_list": [
-            "4ft10", "4ft11", "5ft0", "5ft1", "5ft2", "5ft3", "5ft4", "5ft5", "5ft6", "5ft7", "5ft8", "5ft9", "5ft10", "5ft11", "6ft0", "6ft1", "6ft2", "6ft3", "6ft4", "6ft5", "6ft6", "6ft7", "6ft8", "6ft9", "6ft10", "6ft11", "7ft0"
+            "4ft10",
+            "4ft11",
+            "5ft0",
+            "5ft1",
+            "5ft2",
+            "5ft3",
+            "5ft4",
+            "5ft5",
+            "5ft6",
+            "5ft7",
+            "5ft8",
+            "5ft9",
+            "5ft10",
+            "5ft11",
+            "6ft0",
+            "6ft1",
+            "6ft2",
+            "6ft3",
+            "6ft4",
+            "6ft5",
+            "6ft6",
+            "6ft7",
+            "6ft8",
+            "6ft9",
+            "6ft10",
+            "6ft11",
+            "7ft0",
         ],
         "body_weight_list": [
-            "80lbs", "90lbs", "100lbs", "110lbs", "120lbs", "130lbs", "140lbs", "150lbs", "160lbs", "170lbs", "180lbs", "190lbs", "200lbs", "210lbs", "220lbs", "230lbs", "240lbs", "250lbs", "260lbs", "270lbs", "280lbs", "290lbs", "300lbs"
+            "80lbs",
+            "90lbs",
+            "100lbs",
+            "110lbs",
+            "120lbs",
+            "130lbs",
+            "140lbs",
+            "150lbs",
+            "160lbs",
+            "170lbs",
+            "180lbs",
+            "190lbs",
+            "200lbs",
+            "210lbs",
+            "220lbs",
+            "230lbs",
+            "240lbs",
+            "250lbs",
+            "260lbs",
+            "270lbs",
+            "280lbs",
+            "290lbs",
+            "300lbs",
         ],
-        "breast_cup_size_list": ["AA", "A", "B", "C", "D", "DD", "E", "F", "G", "H", "I", "J", "K"],
-        "bust_measurement_list": ["28", "30", "32", "34", "36", "38", "40", "42", "44", "46", "48", "50", "52", "54", "56", "58", "60"],
-        "breast_shape_list": ["Round", "Teardrop", "Asymmetrical", "East West", "Side Set", "Bell Shape", "Slender", "Relaxed", "Athletic", "Conical"],
+        "breast_cup_size_list": [
+            "AA",
+            "A",
+            "B",
+            "C",
+            "D",
+            "DD",
+            "E",
+            "F",
+            "G",
+            "H",
+            "I",
+            "J",
+            "K",
+        ],
+        "bust_measurement_list": [
+            "28",
+            "30",
+            "32",
+            "34",
+            "36",
+            "38",
+            "40",
+            "42",
+            "44",
+            "46",
+            "48",
+            "50",
+            "52",
+            "54",
+            "56",
+            "58",
+            "60",
+        ],
+        "breast_shape_list": [
+            "Round",
+            "Teardrop",
+            "Asymmetrical",
+            "East West",
+            "Side Set",
+            "Bell Shape",
+            "Slender",
+            "Relaxed",
+            "Athletic",
+            "Conical",
+        ],
         "bum_size_list": ["Small", "Medium", "Large"],
         "face_shape_list": ["Oval", "Round", "Square", "Heart-shaped", "Long"],
         "eyes_color_list": ["Brown", "Blue", "Green", "Hazel", "Gray"],
-        "eye_shape_list": ["Almond", "Round", "Monolid", "Hooded", "Upturned", "Downturned"],
+        "eye_shape_list": [
+            "Almond",
+            "Round",
+            "Monolid",
+            "Hooded",
+            "Upturned",
+            "Downturned",
+        ],
         "nose_shape_list": ["Straight", "Button", "Roman", "Snub", "Hawk"],
         "nose_size_list": ["Small", "Medium", "Large"],
-        "face_expression_list": ["Happy", "Sad", "Serious", "Surprised", "Calm", "Confident"],
+        "face_expression_list": [
+            "Happy",
+            "Sad",
+            "Serious",
+            "Surprised",
+            "Calm",
+            "Confident",
+        ],
         "lip_shape_list": ["Full Lips", "Thin Lips", "Medium Lips"],
         "lip_color_list": ["Natural", "Red", "Pink", "Nude"],
         "makeup_list": ["Natural Makeup", "Glam Makeup", "No Makeup"],
-        "hair_style_list": ["Long straight", "Short", "Curly", "Wavy", "Pixie cut", "Bob cut"],
+        "hair_style_list": [
+            "Long straight",
+            "Short",
+            "Curly",
+            "Wavy",
+            "Pixie cut",
+            "Bob cut",
+        ],
         "hair_length_list": ["Short", "Medium", "Long"],
         "hair_color_list": ["Black", "Brown", "Blonde", "Red", "Gray"],
-        "fashion_aesthetic_list": ["Casual", "Formal", "Streetwear", "Elegant", "Bohemian"],
-        "outfit_list": ["Casual dress", "Business suit", "Jeans and t-shirt", "Evening gown"],
+        "fashion_aesthetic_list": [
+            "Casual",
+            "Formal",
+            "Streetwear",
+            "Elegant",
+            "Bohemian",
+        ],
+        "outfit_list": [
+            "Casual dress",
+            "Business suit",
+            "Jeans and t-shirt",
+            "Evening gown",
+        ],
         "revealing_outfit_list": ["Bikini", "Lingerie", "Crop top"],
         "womens_shoes_list": ["High heels", "Flats", "Sneakers", "Boots"],
         "womens_shoe_color_list": ["Black", "White", "Red", "Nude"],
@@ -94,30 +252,195 @@ def _get_default_character_data():
         "fingernail_style_list": ["Natural Nails", "French Manicure", "Long Nails"],
         "fingernail_color_list": ["Natural", "Red", "Pink", "Black"],
         "model_pose_list": ["Standing", "Sitting", "Walking", "Leaning"],
-        "camera_horizontal_angle_list": ["camera 0° horizontal angle, straight on view"],
+        "camera_horizontal_angle_list": [
+            "camera 0° horizontal angle, straight on view"
+        ],
         "camera_vertical_angle_list": ["camera 0° vertical angle, looking straight on"],
         "camera_shot_list": ["Full body (3–5m / 10–16ft)"],
         "camera_model_list": ["Canon EOS 5D Mark IV"],
-        "light_type_list": ["Natural sunlight", "Studio lighting", "Soft ambient light"],
-        "light_quality_list": ["soft diffused", "hard dramatic", "even balanced", "high contrast", "low key", "high key", "chiaroscuro", "volumetric", "atmospheric"],
-        "artistic_style_list": ["Photorealistic", "Impressionistic", "Cubist", "Surrealistic", "Abstract"],
-        "visual_style_list": ["Cinematic", "Editorial", "Fashion Photography", "Fine Art", "Glamour", "High Fashion", "Vintage Film", "Noir", "Neon Noir", "Cyberpunk", "Vaporwave", "Lo-fi", "Polaroid", "35mm Film", "Medium Format", "Analog", "HDR", "Matte", "Glossy", "Soft Focus", "Bokeh", "Tilt-shift", "Double Exposure", "Light Leaks", "Grain", "Desaturated", "High Contrast", "Low Key", "High Key", "Golden Hour", "Blue Hour", "Moody", "Ethereal", "Dreamy", "Gritty", "Raw", "Clean", "Minimal", "Dramatic"],
-        "location_list": ["New York", "London", "Paris", "Berlin", "Tokyo", "Beijing", "Moscow", "Dubai", "Rio de Janeiro", "Cape Town"],
-        "tattoo_list": ["-", "No tattoos", "Small tattoo", "Arm tattoo", "Leg tattoo", "Back tattoo", "Sleeve tattoo", "Face tattoo", "Chest tattoo", "Shoulder tattoo", "Neck tattoo", "Hand tattoo", "Finger tattoo", "Foot tattoo", "Ankle tattoo", "Thigh tattoo", "Full body tattoo"],
+        "light_type_list": [
+            "Natural sunlight",
+            "Studio lighting",
+            "Soft ambient light",
+        ],
+        "light_quality_list": [
+            "soft diffused",
+            "hard dramatic",
+            "even balanced",
+            "high contrast",
+            "low key",
+            "high key",
+            "chiaroscuro",
+            "volumetric",
+            "atmospheric",
+        ],
+        "artistic_style_list": [
+            "Photorealistic",
+            "Impressionistic",
+            "Cubist",
+            "Surrealistic",
+            "Abstract",
+        ],
+        "visual_style_list": [
+            "Cinematic",
+            "Editorial",
+            "Fashion Photography",
+            "Fine Art",
+            "Glamour",
+            "High Fashion",
+            "Vintage Film",
+            "Noir",
+            "Neon Noir",
+            "Cyberpunk",
+            "Vaporwave",
+            "Lo-fi",
+            "Polaroid",
+            "35mm Film",
+            "Medium Format",
+            "Analog",
+            "HDR",
+            "Matte",
+            "Glossy",
+            "Soft Focus",
+            "Bokeh",
+            "Tilt-shift",
+            "Double Exposure",
+            "Light Leaks",
+            "Grain",
+            "Desaturated",
+            "High Contrast",
+            "Low Key",
+            "High Key",
+            "Golden Hour",
+            "Blue Hour",
+            "Moody",
+            "Ethereal",
+            "Dreamy",
+            "Gritty",
+            "Raw",
+            "Clean",
+            "Minimal",
+            "Dramatic",
+        ],
+        "location_list": [
+            "New York",
+            "London",
+            "Paris",
+            "Berlin",
+            "Tokyo",
+            "Beijing",
+            "Moscow",
+            "Dubai",
+            "Rio de Janeiro",
+            "Cape Town",
+        ],
+        "tattoo_list": [
+            "-",
+            "No tattoos",
+            "Small tattoo",
+            "Arm tattoo",
+            "Leg tattoo",
+            "Back tattoo",
+            "Sleeve tattoo",
+            "Face tattoo",
+            "Chest tattoo",
+            "Shoulder tattoo",
+            "Neck tattoo",
+            "Hand tattoo",
+            "Finger tattoo",
+            "Foot tattoo",
+            "Ankle tattoo",
+            "Thigh tattoo",
+            "Full body tattoo",
+        ],
         # --- Add props_color_list ---
-        "props_color_list": ["-", "Red", "Blue", "Green", "Black", "White", "Yellow", "Pink", "Purple", "Brown", "Gray", "Orange", "Gold", "Silver"],
+        "props_color_list": [
+            "-",
+            "Red",
+            "Blue",
+            "Green",
+            "Black",
+            "White",
+            "Yellow",
+            "Pink",
+            "Purple",
+            "Brown",
+            "Gray",
+            "Orange",
+            "Gold",
+            "Silver",
+        ],
         # --- Breast fields ---
-        "breast_cup_size_list": ["AA", "A", "B", "C", "D", "DD", "E", "F", "G", "H", "I", "J", "K"],
-        "breast_shape_list": ["Round", "Teardrop", "Asymmetrical", "East West", "Side Set", "Bell Shape", "Slender", "Relaxed", "Athletic", "Conical"],
-        "bust_measurement_list": ["28", "30", "32", "34", "36", "38", "40", "42", "44", "46", "48", "50", "52", "54", "56", "58", "60"],
-        "skin_details_list": ["subtle skin texture", "noticeable skin texture", "highly detailed skin texture"],
+        "breast_cup_size_list": [
+            "AA",
+            "A",
+            "B",
+            "C",
+            "D",
+            "DD",
+            "E",
+            "F",
+            "G",
+            "H",
+            "I",
+            "J",
+            "K",
+        ],
+        "breast_shape_list": [
+            "Round",
+            "Teardrop",
+            "Asymmetrical",
+            "East West",
+            "Side Set",
+            "Bell Shape",
+            "Slender",
+            "Relaxed",
+            "Athletic",
+            "Conical",
+        ],
+        "bust_measurement_list": [
+            "28",
+            "30",
+            "32",
+            "34",
+            "36",
+            "38",
+            "40",
+            "42",
+            "44",
+            "46",
+            "48",
+            "50",
+            "52",
+            "54",
+            "56",
+            "58",
+            "60",
+        ],
+        "skin_details_list": [
+            "subtle skin texture",
+            "noticeable skin texture",
+            "highly detailed skin texture",
+        ],
         # "skin_pores_list": ["barely visible pores","visible pores","prominent pores"],
-        "freckles_list":["a few freckles", "noticeable freckles","prominent freckles"],
-        "dimples_list":["subtle dimples","noticeable dimples","deep dimples"],
-        "moles_list":["a few moles", "several moles","many moles"],
-        "tanned_skin_list":["a hint of a tan","a sun-kissed tan","deeply tanned skin"],
-        "skin_acne_list":["a few blemishes","some acne","pronounced acne"],
-        "skin_imperfections_list":["minor imperfections","natural imperfections","pronounced imperfections"]
+        "freckles_list": [
+            "a few freckles",
+            "noticeable freckles",
+            "prominent freckles",
+        ],
+        "dimples_list": ["subtle dimples", "noticeable dimples", "deep dimples"],
+        "moles_list": ["a few moles", "several moles", "many moles"],
+        "tanned_skin_list": [
+            "a hint of a tan",
+            "a sun-kissed tan",
+            "deeply tanned skin",
+        ],
+        "skin_acne_list": ["a few blemishes", "some acne", "pronounced acne"],
+        "skin_imperfections_list": [
+            "minor imperfections",
+            "natural imperfections",
+            "pronounced imperfections",
+        ],
     }
 
 
@@ -129,8 +452,8 @@ class CharacterPromptBuilderScene:
 
         def combo(key, default=None):
             _list = data.get(key, ["-"]).copy()
-            if '-' not in _list:
-                _list.insert(0, '-')
+            if "-" not in _list:
+                _list.insert(0, "-")
             # Always set default to "professional photography" for artistic_style_list
             if key == "artistic_style_list":
                 default = "professional photography"
@@ -141,8 +464,17 @@ class CharacterPromptBuilderScene:
             "required": {
                 "num_people": (["1", "2", "3", "4"], {"default": "1"}),
                 "settings1": ("PM_SETTINGS",),
-                "artistic_style": combo("artistic_style_list", "professional photography"),
-                "character_sheet_render_style": (["comic", "photorealistic"], {"default": "comic", "display": "dropdown", "visible": "artistic_style == '4-panel character sheet'"}),
+                "artistic_style": combo(
+                    "artistic_style_list", "professional photography"
+                ),
+                "character_sheet_render_style": (
+                    ["comic", "photorealistic"],
+                    {
+                        "default": "comic",
+                        "display": "dropdown",
+                        "visible": "artistic_style == '4-panel character sheet'",
+                    },
+                ),
                 "camera_model": combo("camera_model_list"),
                 "camera_lens": combo("camera_lens_specs"),
                 "camera_horizontal_angle": combo("camera_horizontal_angle_list"),
@@ -150,21 +482,74 @@ class CharacterPromptBuilderScene:
                 "camera_shot": combo("camera_shot_list"),
                 "camera_view": combo("camera_view_list"),
                 "preset_location": combo("location_list"),
-                "location": ("STRING", {"multiline": True, "default": "", "placeholder": "Add a custom location description in here"}),
-                "time_of_day": (["-", "Dawn", "Morning", "Midday", "Afternoon", "Golden Hour", "Sunset", "Dusk", "Evening", "Night", "Midnight", "Blue Hour"],),
-                "weather": (["-", "Sunny", "Cloudy", "Overcast", "Rainy", "Stormy", "Snowy", "Foggy", "Misty", "Windy", "Clear"],),
+                "location": (
+                    "STRING",
+                    {
+                        "multiline": True,
+                        "default": "",
+                        "placeholder": "Add a custom location description in here",
+                    },
+                ),
+                "time_of_day": (
+                    [
+                        "-",
+                        "Dawn",
+                        "Morning",
+                        "Midday",
+                        "Afternoon",
+                        "Golden Hour",
+                        "Sunset",
+                        "Dusk",
+                        "Evening",
+                        "Night",
+                        "Midnight",
+                        "Blue Hour",
+                    ],
+                ),
+                "weather": (
+                    [
+                        "-",
+                        "Sunny",
+                        "Cloudy",
+                        "Overcast",
+                        "Rainy",
+                        "Stormy",
+                        "Snowy",
+                        "Foggy",
+                        "Misty",
+                        "Windy",
+                        "Clear",
+                    ],
+                ),
                 "season": (["-", "Spring", "Summer", "Autumn", "Winter"],),
                 "light_type": combo("light_type_list"),
                 "light_quality": combo("light_quality_list"),
-                "prompt_prefix": ("STRING", {"multiline": True, "default": "", "placeholder": "Added before the generated prompt"}),
-                "prompt_suffix": ("STRING", {"multiline": True, "default": "", "placeholder": "Added after the generated prompt"}),
-                "enforce_subjects_only": ("BOOLEAN", {"default": False, "label": "Enforce Only Described Subjects"})
+                "prompt_prefix": (
+                    "STRING",
+                    {
+                        "multiline": True,
+                        "default": "",
+                        "placeholder": "Added before the generated prompt",
+                    },
+                ),
+                "prompt_suffix": (
+                    "STRING",
+                    {
+                        "multiline": True,
+                        "default": "",
+                        "placeholder": "Added after the generated prompt",
+                    },
+                ),
+                "enforce_subjects_only": (
+                    "BOOLEAN",
+                    {"default": False, "label": "Enforce Only Described Subjects"},
+                ),
             },
             "optional": {
                 "settings2": ("PM_SETTINGS",),
                 "settings3": ("PM_SETTINGS",),
                 "settings4": ("PM_SETTINGS",),
-            }
+            },
         }
 
     RETURN_TYPES = ("STRING",)
@@ -172,14 +557,32 @@ class CharacterPromptBuilderScene:
     FUNCTION = "generate"
     CATEGORY = "CharacterPromptBuilder"
 
-    def generate(self, num_people, settings1, artistic_style="-", camera_model="-",
-                 camera_vertical_angle="-",camera_horizontal_angle="-", camera_shot="-", camera_view="-", camera_lens="-",
-                 light_type="-", light_quality="-",
-                 preset_location="-", location="", time_of_day="-", weather="-", season="-",
-                 prompt_prefix="", prompt_suffix="",
-                 enforce_subjects_only=False,
-                 settings2=None, settings3=None, settings4=None,
-                 character_sheet_render_style="comic"):
+    def generate(
+        self,
+        num_people,
+        settings1,
+        artistic_style="-",
+        camera_model="-",
+        camera_vertical_angle="-",
+        camera_horizontal_angle="-",
+        camera_shot="-",
+        camera_view="-",
+        camera_lens="-",
+        light_type="-",
+        light_quality="-",
+        preset_location="-",
+        location="",
+        time_of_day="-",
+        weather="-",
+        season="-",
+        prompt_prefix="",
+        prompt_suffix="",
+        enforce_subjects_only=False,
+        settings2=None,
+        settings3=None,
+        settings4=None,
+        character_sheet_render_style="comic",
+    ):
 
         # Collect settings for each person
         settings_list = [settings1]
@@ -215,8 +618,12 @@ class CharacterPromptBuilderScene:
             "camera_view": camera_view,
             "camera_lens": camera_lens,
             "camera_model": camera_model,
-            "location": scene_location, "time_of_day": time_of_day, "weather": weather, "season": season,
-            "light_type": light_type, "light_quality": light_quality,
+            "location": scene_location,
+            "time_of_day": time_of_day,
+            "weather": weather,
+            "season": season,
+            "light_type": light_type,
+            "light_quality": light_quality,
         }
 
         # Generate prose for each person
@@ -231,10 +638,10 @@ class CharacterPromptBuilderScene:
             prompt = self._generate_natural_language(
                 s,
                 include_scene_tail=not is_multi_person,
-                character_sheet_render_style=character_sheet_render_style
+                character_sheet_render_style=character_sheet_render_style,
             )
             if is_multi_person:
-                prompt = f"Person {idx+1}: {prompt}"
+                prompt = f"Person {idx + 1}: {prompt}"
             person_prompts.append(prompt)
 
         # Combine all person prompts
@@ -274,33 +681,86 @@ class CharacterPromptBuilderScene:
             parts.append(prompt_suffix.strip())
 
         final_prompt = " ".join(parts)
-        final_prompt = final_prompt.replace(" natural language", "").replace("natural language ", "").replace("natural language", "")
+        final_prompt = (
+            final_prompt.replace(" natural language", "")
+            .replace("natural language ", "")
+            .replace("natural language", "")
+        )
         final_prompt = final_prompt.replace(" prose", "").replace("prose ", "")
 
         if enforce_subjects_only:
-            final_prompt += "\n\nONLY SHOW THE DESCRIBED SUBJECTS, NO EXTRA PEOPLE OR CHARACTERS"
+            final_prompt += (
+                "\n\nONLY SHOW THE DESCRIBED SUBJECTS, NO EXTRA PEOPLE OR CHARACTERS"
+            )
 
         return (final_prompt.strip(),)
 
-    def _generate_natural_language(self, s, include_scene_tail=True, character_sheet_render_style="comic"):
+    def _generate_natural_language(
+        self, s, include_scene_tail=True, character_sheet_render_style="comic"
+    ):
         def get_eye_mood(expression):
-            expression_lower = expression.lower() if expression and expression != "-" else ""
-            if expression_lower in ["happy", "excited", "amused", "in love", "surprised and amused", "smiling", "silly"]:
+            expression_lower = (
+                expression.lower() if expression and expression != "-" else ""
+            )
+            if expression_lower in [
+                "happy",
+                "excited",
+                "amused",
+                "in love",
+                "surprised and amused",
+                "smiling",
+                "silly",
+            ]:
                 return ("bright", "sparkling with life", "a warm, lively gleam")
-            elif expression_lower in ["angry", "serious", "proud", "prideful", "sarcastic", "contemptuous"]:
+            elif expression_lower in [
+                "angry",
+                "serious",
+                "proud",
+                "prideful",
+                "sarcastic",
+                "contemptuous",
+            ]:
                 return ("piercing", "intense and focused", "a sharp, penetrating gaze")
-            elif expression_lower in ["sad", "disappointed", "fearful", "anxious", "nervous"]:
+            elif expression_lower in [
+                "sad",
+                "disappointed",
+                "fearful",
+                "anxious",
+                "nervous",
+            ]:
                 return ("glistening", "deep with emotion", "a soft, vulnerable depth")
-            elif expression_lower in ["serene", "peaceful", "calm", "content", "relieved", "pensive"]:
+            elif expression_lower in [
+                "serene",
+                "peaceful",
+                "calm",
+                "content",
+                "relieved",
+                "pensive",
+            ]:
                 return ("soft", "calm and soulful", "a gentle, peaceful quality")
-            elif expression_lower in ["sexually aroused", "ahegao", "in love","mischievous", "flirty", "seductive"]:
-                return ("smoldering", "heavy-lidded and alluring", "a sultry, magnetic intensity")
+            elif expression_lower in [
+                "sexually aroused",
+                "ahegao",
+                "in love",
+                "mischievous",
+                "flirty",
+                "seductive",
+            ]:
+                return (
+                    "smoldering",
+                    "heavy-lidded and alluring",
+                    "a sultry, magnetic intensity",
+                )
             elif expression_lower in ["curious", "surprised", "confused"]:
                 return ("wide", "alert and engaging", "a curious, captivating spark")
             elif expression_lower in ["shy", "cautious", "bored"]:
                 return ("guarded", "quietly expressive", "a subtle inner light")
             else:
-                return ("expressive", "alive with natural depth", "a genuine, soulful quality")
+                return (
+                    "expressive",
+                    "alive with natural depth",
+                    "a genuine, soulful quality",
+                )
 
         def get(key, default="-"):
             return s.get(key, default)
@@ -309,7 +769,7 @@ class CharacterPromptBuilderScene:
             val = s.get(key, default)
             if isinstance(val, (int, float)):
                 return float(val)
-            if isinstance(val, str) and val not in ['', '-']:
+            if isinstance(val, str) and val not in ["", "-"]:
                 try:
                     return float(val)
                 except:
@@ -319,7 +779,7 @@ class CharacterPromptBuilderScene:
         def get_article(word):
             if not word:
                 return "a"
-            return "an" if word[0].lower() in 'aeiou' else "a"
+            return "an" if word[0].lower() in "aeiou" else "a"
 
         def get_verb(subj):
             return "is" if subj in ["She", "He"] else "are"
@@ -365,7 +825,13 @@ class CharacterPromptBuilderScene:
         nationality_2 = get("nationality_2", "").strip()
         nationality_mix = int(getf("nationality_mix", 0))  # Now expects 0-100
         nationality_str = ""
-        if nationality_1 and nationality_1 != "-" and nationality_2 and nationality_2 != "-" and nationality_1 != nationality_2:
+        if (
+            nationality_1
+            and nationality_1 != "-"
+            and nationality_2
+            and nationality_2 != "-"
+            and nationality_1 != nationality_2
+        ):
             percent_2 = nationality_mix
             percent_1 = 100 - percent_2
             # Special case for 50/50 and near-equal mixes
@@ -428,7 +894,9 @@ class CharacterPromptBuilderScene:
         eye_shape = get("eye_shape")
         eye_base = ""
         if eye_color != "-" and eye_shape != "-":
-            eye_base = f"{eye_adj} {eye_color.lower()} eyes with {eye_shape.lower()} shape"
+            eye_base = (
+                f"{eye_adj} {eye_color.lower()} eyes with {eye_shape.lower()} shape"
+            )
         elif eye_color != "-":
             eye_base = f"{eye_adj} {eye_color.lower()} eyes"
         elif eye_shape != "-":
@@ -486,18 +954,24 @@ class CharacterPromptBuilderScene:
             face_features.append(f"{subj} has a {nose_desc}")
         # Face shape
         if get("face_shape") != "-":
-            face_shape = get('face_shape').lower().replace('-shaped', '').replace(' ', '-')
+            face_shape = (
+                get("face_shape").lower().replace("-shaped", "").replace(" ", "-")
+            )
             article = get_article(face_shape)
             face_features.append(f"{article} {face_shape}-shaped face")
         # Join features naturally
         face_features_phrase = ""
         if face_features:
+
             def ensure_poss(s):
                 return s if s.strip().startswith(poss) else f"{poss} {s}"
+
             if len(face_features) == 1:
                 face_features_phrase = ensure_poss(face_features[0])
             elif len(face_features) == 2:
-                face_features_phrase = f"{ensure_poss(face_features[0])} and {face_features[1]}"
+                face_features_phrase = (
+                    f"{ensure_poss(face_features[0])} and {face_features[1]}"
+                )
             else:
                 face_features_phrase = f"{ensure_poss(face_features[0])}, {', '.join(face_features[1:-1])}, and {face_features[-1]}"
 
@@ -506,7 +980,9 @@ class CharacterPromptBuilderScene:
         if get("lip_shape") != "-":
             lip_desc = get("lip_shape").lower()
             if get("lip_color") != "-":
-                lips_phrase = f"{poss} {lip_desc} lips are painted {get('lip_color').lower()}"
+                lips_phrase = (
+                    f"{poss} {lip_desc} lips are painted {get('lip_color').lower()}"
+                )
             else:
                 lips_phrase = f"{poss} {lip_desc} lips"
         elif get("lip_color") != "-":
@@ -526,7 +1002,9 @@ class CharacterPromptBuilderScene:
         if hair_length != "-":
             hair_parts.append(hair_length.lower())
             if hair_length.lower() in ["waist length", "hip length", "tailbone length"]:
-                vivid_hair_length = f"that reaches down to {hair_length.lower().replace(' length', '')}"
+                vivid_hair_length = (
+                    f"that reaches down to {hair_length.lower().replace(' length', '')}"
+                )
         if get("hair_style") != "-":
             hair_parts.append(get("hair_style").lower())
         hair_phrase = ""
@@ -563,11 +1041,11 @@ class CharacterPromptBuilderScene:
         if gender == "Woman":
             # LEGS (female only)
             if get("legs") != "-":
-                    legs = get("legs").lower()
-                    legs_color = get("legs_color").lower()
-                    if legs_color != "-" and legs_color != "":
-                        legs = f"{legs_color} {legs}"
-                    clothing.append(legs)
+                legs = get("legs").lower()
+                legs_color = get("legs_color").lower()
+                if legs_color != "-" and legs_color != "":
+                    legs = f"{legs_color} {legs}"
+                clothing.append(legs)
             # DRESSES (female only)
             if get("dresses") != "-":
                 dress = get("dresses").lower()
@@ -579,10 +1057,24 @@ class CharacterPromptBuilderScene:
                     dress = f"{dress} made of {dress_material} material"
                 clothing.append(dress)
                 # Check for sheer/see-through/thin dress material
-                if dress_material and ("sheer" in dress_material or "see-through" in dress_material) and (get("underwear") == "-"):
-                    nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else ""
-                    areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else ""
-                    clothing.append(f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the dress")
+                if (
+                    dress_material
+                    and ("sheer" in dress_material or "see-through" in dress_material)
+                    and (get("underwear") == "-")
+                ):
+                    nipple_desc = (
+                        get("nipple_appearance").lower()
+                        if get("nipple_appearance") != "-"
+                        else ""
+                    )
+                    areola_desc = (
+                        get("areola_appearance").lower()
+                        if get("areola_appearance") != "-"
+                        else ""
+                    )
+                    clothing.append(
+                        f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the dress"
+                    )
             # TOPS (female)
             if get("tops") != "-":
                 top = get("tops").lower()
@@ -594,23 +1086,37 @@ class CharacterPromptBuilderScene:
                     top = f"{top} made of {top_material} material"
                 clothing.append(top)
                 # Check for sheer/see-through/thin top material
-                if top_material and ("sheer" in top_material or "see-through" in top_material) and (get("underwear") == "-"):
-                    nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else ""
-                    areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else ""
-                    clothing.append(f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the top")
+                if (
+                    top_material
+                    and ("sheer" in top_material or "see-through" in top_material)
+                    and (get("underwear") == "-")
+                ):
+                    nipple_desc = (
+                        get("nipple_appearance").lower()
+                        if get("nipple_appearance") != "-"
+                        else ""
+                    )
+                    areola_desc = (
+                        get("areola_appearance").lower()
+                        if get("areola_appearance") != "-"
+                        else ""
+                    )
+                    clothing.append(
+                        f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the top"
+                    )
             # PANTS (female)
             if get("pants") != "-":
-                    pants = get("pants").lower()
-                    pants_color = get("pants_color").lower()
-                    pants_material = s.get("pants_material", "-")
-                    if pants_color != "-" and pants_color != "":
-                        pants = f"{pants_color} {pants}"
-                    if pants_material and pants_material != "-":
-                        pants = f"{pants} made of {pants_material.lower()} material"
-                    clothing.append(pants)
+                pants = get("pants").lower()
+                pants_color = get("pants_color").lower()
+                pants_material = s.get("pants_material", "-")
+                if pants_color != "-" and pants_color != "":
+                    pants = f"{pants_color} {pants}"
+                if pants_material and pants_material != "-":
+                    pants = f"{pants} made of {pants_material.lower()} material"
+                clothing.append(pants)
             # UNDERWEAR (female only)
             if get("underwear") != "-":
-                uw = get('underwear').lower()
+                uw = get("underwear").lower()
                 uw_color = get("underwear_color").lower()
                 uw_material = s.get("underwear_material", "-").lower()
                 if uw_color != "-" and uw_color != "":
@@ -619,59 +1125,106 @@ class CharacterPromptBuilderScene:
                     uw = f"{uw} made of {uw_material} material"
                 # If a dress or top is present, underwear is only slightly visible
                 # Check for sheer/see-through underwear
-                if uw_material and ("sheer" in uw_material or "see-through" in uw_material) and (get("dresses") == "-" or get("tops") == "-"):
-                    nipple_desc = get("nipple_appearance").lower() if get("nipple_appearance") != "-" else ""
-                    areola_desc = get("areola_appearance").lower() if get("areola_appearance") != "-" else ""
+                if (
+                    uw_material
+                    and ("sheer" in uw_material or "see-through" in uw_material)
+                    and (get("dresses") == "-" or get("tops") == "-")
+                ):
+                    nipple_desc = (
+                        get("nipple_appearance").lower()
+                        if get("nipple_appearance") != "-"
+                        else ""
+                    )
+                    areola_desc = (
+                        get("areola_appearance").lower()
+                        if get("areola_appearance") != "-"
+                        else ""
+                    )
                     underwear_phrase = f"{poss} {uw}, revealing {poss} only slightly visible {nipple_desc} nipples and {areola_desc} areolae beneath them"
-                elif (get("dresses") != "-" or get("tops") != "-"):
-                    garment = "dress" if get("dresses") != "-" else "top" if get("tops") != "-" else None
-                    underwear_phrase = f"{poss} {uw} is only slightly visible beneath {poss} {garment}"
+                elif get("dresses") != "-" or get("tops") != "-":
+                    garment = (
+                        "dress"
+                        if get("dresses") != "-"
+                        else "top"
+                        if get("tops") != "-"
+                        else None
+                    )
+                    underwear_phrase = (
+                        f"{poss} {uw} is only slightly visible beneath {poss} {garment}"
+                    )
                 else:
                     underwear_phrase = f"{poss} {uw}"
                 clothing.append(underwear_phrase)
             # CAPES (female)
             if get("capes") != "-":
-                    cape = get("capes").lower()
-                    cape_color = get("capes_color").lower()
-                    cape_material = s.get("capes_material", "-")
-                    if cape_color != "-" and cape_color != "":
-                        cape = f"{cape_color} {cape}"
-                    if cape_material and cape_material != "-":
-                        cape = f"{cape} made of {cape_material.lower()}"
-                    clothing.append(cape)
+                cape = get("capes").lower()
+                cape_color = get("capes_color").lower()
+                cape_material = s.get("capes_material", "-")
+                if cape_color != "-" and cape_color != "":
+                    cape = f"{cape_color} {cape}"
+                if cape_material and cape_material != "-":
+                    cape = f"{cape} made of {cape_material.lower()}"
+                clothing.append(cape)
             # HATS (female)
             if get("hats") != "-":
-                    hat = get("hats").lower()
-                    hat_color = get("hats_color").lower()
-                    if hat_color != "-" and hat_color != "":
-                        hat = f"{hat_color} {hat}"
-                    clothing.append(hat)
+                hat = get("hats").lower()
+                hat_color = get("hats_color").lower()
+                if hat_color != "-" and hat_color != "":
+                    hat = f"{hat_color} {hat}"
+                clothing.append(hat)
             # GLOVES (female)
             if s.get("womens_gloves", "-") != "-":
-                    gloves = s.get("womens_gloves").lower()
-                    gloves_color = s.get("womens_gloves_color", "-").lower()
-                    gloves_material = s.get("womens_gloves_material", "-").lower()
-                    if gloves_color != "-" and gloves_color != "":
-                        gloves = f"{gloves_color} {gloves}"
-                    if gloves_material != "-" and gloves_material != "":
-                        gloves = f"{gloves} made of {gloves_material}"
-                    clothing.append(gloves)
+                gloves = s.get("womens_gloves").lower()
+                gloves_color = s.get("womens_gloves_color", "-").lower()
+                gloves_material = s.get("womens_gloves_material", "-").lower()
+                if gloves_color != "-" and gloves_color != "":
+                    gloves = f"{gloves_color} {gloves}"
+                if gloves_material != "-" and gloves_material != "":
+                    gloves = f"{gloves} made of {gloves_material}"
+                clothing.append(gloves)
             # BELT (female)
             if s.get("womens_belt", "-") != "-":
-                    belt = s.get("womens_belt").lower()
-                    belt_color = s.get("womens_belt_color", "-").lower()
-                    belt_material = s.get("womens_belt_material", "-").lower()
-                    if belt_color != "-" and belt_color != "":
-                        belt = f"{belt_color} {belt}"
-                    if belt_material != "-" and belt_material != "":
-                        belt = f"{belt} made of {belt_material}"
-                    clothing.append(belt)
+                belt = s.get("womens_belt").lower()
+                belt_color = s.get("womens_belt_color", "-").lower()
+                belt_material = s.get("womens_belt_material", "-").lower()
+                if belt_color != "-" and belt_color != "":
+                    belt = f"{belt_color} {belt}"
+                if belt_material != "-" and belt_material != "":
+                    belt = f"{belt} made of {belt_material}"
+                clothing.append(belt)
             # SUITS (female)
             if s.get("womens_suits", "-") != "-":
-                    suit = s.get("womens_suits").lower()
-                    primary_color = s.get("womens_suits_primary_color", "-").lower()
-                    accent_color = s.get("womens_suits_accent_color", "-").lower()
-                    
+                suit = s.get("womens_suits").lower()
+                primary_color = s.get("womens_suits_primary_color", "-").lower()
+                accent_color = s.get("womens_suits_accent_color", "-").lower()
+
+                # Check if suit contains placeholder patterns
+                has_primary_placeholder = "{primary_color}" in suit
+                has_accent_placeholder = "{accent_color}" in suit
+
+                if has_primary_placeholder or has_accent_placeholder:
+                    # Replace placeholders with actual color values
+                    # If color is "-", replace with empty string to remove placeholder
+                    primary_value = (
+                        primary_color
+                        if (primary_color != "-" and primary_color != "")
+                        else ""
+                    )
+                    accent_value = (
+                        accent_color
+                        if (accent_color != "-" and accent_color != "")
+                        else ""
+                    )
+
+                    suit = suit.replace("{primary_color}", primary_value)
+                    suit = suit.replace("{accent_color}", accent_value)
+
+                    # Clean up any double spaces that might result from empty replacements
+                    import re
+
+                    suit = re.sub(r"\s+", " ", suit).strip()
+                else:
+                    # No placeholders - use original prepend logic
                     if primary_color != "-" and primary_color != "":
                         if accent_color != "-" and accent_color != "":
                             suit = f"{primary_color} and {accent_color} {suit}"
@@ -679,8 +1232,8 @@ class CharacterPromptBuilderScene:
                             suit = f"{primary_color} {suit}"
                     elif accent_color != "-" and accent_color != "":
                         suit = f"{suit} with {accent_color} accents"
-                    
-                    clothing.append(suit)
+
+                clothing.append(suit)
 
         # === MALE-SPECIFIC CLOTHING ===
         if gender == "Man":
@@ -696,67 +1249,69 @@ class CharacterPromptBuilderScene:
                 clothing.append(top)
             # PANTS (male)
             if get("pants") != "-":
-                    pants = get("pants").lower()
-                    pants_color = get("pants_color").lower()
-                    pants_material = s.get("pants_material", "-")
-                    if pants_color != "-" and pants_color != "":
-                        pants = f"{pants_color} {pants}"
-                    if pants_material and pants_material != "-":
-                        pants = f"{pants} made of {pants_material.lower()} material"
-                    clothing.append(pants)
+                pants = get("pants").lower()
+                pants_color = get("pants_color").lower()
+                pants_material = s.get("pants_material", "-")
+                if pants_color != "-" and pants_color != "":
+                    pants = f"{pants_color} {pants}"
+                if pants_material and pants_material != "-":
+                    pants = f"{pants} made of {pants_material.lower()} material"
+                clothing.append(pants)
             # CAPES (male)
             if get("capes") != "-":
-                    cape = get("capes").lower()
-                    cape_color = get("capes_color").lower()
-                    cape_material = s.get("capes_material", "-")
-                    if cape_color != "-" and cape_color != "":
-                        cape = f"{cape_color} {cape}"
-                    if cape_material and cape_material != "-":
-                        cape = f"{cape} made of {cape_material.lower()}"
-                    clothing.append(cape)
+                cape = get("capes").lower()
+                cape_color = get("capes_color").lower()
+                cape_material = s.get("capes_material", "-")
+                if cape_color != "-" and cape_color != "":
+                    cape = f"{cape_color} {cape}"
+                if cape_material and cape_material != "-":
+                    cape = f"{cape} made of {cape_material.lower()}"
+                clothing.append(cape)
             # HATS (male)
             if get("hats") != "-":
-                    hat = get("hats").lower()
-                    hat_color = get("hats_color").lower()
-                    if hat_color != "-" and hat_color != "":
-                        hat = f"{hat_color} {hat}"
-                    clothing.append(hat)
+                hat = get("hats").lower()
+                hat_color = get("hats_color").lower()
+                if hat_color != "-" and hat_color != "":
+                    hat = f"{hat_color} {hat}"
+                clothing.append(hat)
             # GLOVES (male)
             if s.get("mens_gloves", "-") != "-":
-                    gloves = s.get("mens_gloves").lower()
-                    gloves_color = s.get("mens_gloves_color", "-").lower()
-                    gloves_material = s.get("mens_gloves_material", "-").lower()
-                    if gloves_color != "-" and gloves_color != "":
-                        gloves = f"{gloves_color} {gloves}"
-                    if gloves_material != "-" and gloves_material != "":
-                        gloves = f"{gloves} made of {gloves_material}"
-                    clothing.append(gloves)
+                gloves = s.get("mens_gloves").lower()
+                gloves_color = s.get("mens_gloves_color", "-").lower()
+                gloves_material = s.get("mens_gloves_material", "-").lower()
+                if gloves_color != "-" and gloves_color != "":
+                    gloves = f"{gloves_color} {gloves}"
+                if gloves_material != "-" and gloves_material != "":
+                    gloves = f"{gloves} made of {gloves_material}"
+                clothing.append(gloves)
             # BELT (male)
             if s.get("mens_belt", "-") != "-":
-                    belt = s.get("mens_belt").lower()
-                    belt_color = s.get("mens_belt_color", "-").lower()
-                    belt_material = s.get("mens_belt_material", "-").lower()
-                    if belt_color != "-" and belt_color != "":
-                        belt = f"{belt_color} {belt}"
-                    if belt_material != "-" and belt_material != "":
-                        belt = f"{belt} made of {belt_material}"
-                    clothing.append(belt)
+                belt = s.get("mens_belt").lower()
+                belt_color = s.get("mens_belt_color", "-").lower()
+                belt_material = s.get("mens_belt_material", "-").lower()
+                if belt_color != "-" and belt_color != "":
+                    belt = f"{belt_color} {belt}"
+                if belt_material != "-" and belt_material != "":
+                    belt = f"{belt} made of {belt_material}"
+                clothing.append(belt)
             # SUITS (male)
             if s.get("mens_suits", "-") != "-":
-                    suit = s.get("mens_suits").lower()
-                    clothing.append(suit)
+                suit = s.get("mens_suits").lower()
+                clothing.append(suit)
 
         # CUSTOM CLOTHING (both genders)
         custom_clothing = s.get("custom_clothing", "")
         if custom_clothing and custom_clothing.strip():
-                clothing.append(custom_clothing.strip())
+            clothing.append(custom_clothing.strip())
 
         # Breasts and bum (for women)
         body_features = []
 
-        if (get("breast_size") != "-" or get("breast_cup_size") != "-") and gender == "Woman" :
-            breast_size = get('breast_size')
-            breast_cup_size = get('breast_cup_size')
+        if (
+            get("breast_size") != "-" or get("breast_cup_size") != "-"
+        ) and gender == "Woman":
+            breast_size = get("breast_size")
+            breast_cup_size = get("breast_cup_size")
             breast_shape = get("breast_shape")
             breast_desc = ""
             if breast_size != "-":
@@ -768,7 +1323,6 @@ class CharacterPromptBuilderScene:
             breast_desc = breast_desc.strip()
             body_features.append(f"{breast_desc} breasts")
 
-
         if get("bum_size") != "-":
             body_features.append(f"{get('bum_size').lower()} bum")
         body_features_phrase = ""
@@ -778,47 +1332,46 @@ class CharacterPromptBuilderScene:
         # --- BEGIN: Subtle nipple outline logic ---
         subtle_nipple_phrase = ""
         stretched_material = s.get("stretched_material", False)
-            # Get material for top or dress
+        # Get material for top or dress
         garment = None
         garment_material = None
         if get("dresses") != "-":
-                garment = "dress"
-                garment_material = s.get("dresses_material", "-").lower()
+            garment = "dress"
+            garment_material = s.get("dresses_material", "-").lower()
         else:
-                garment = "top"
-                garment_material = s.get("tops_material", "-").lower()
+            garment = "top"
+            garment_material = s.get("tops_material", "-").lower()
         if (
-                gender == "Woman"
-                and ((get("tops") != "-") or (get("dresses") != "-"))
-                and garment_material != "-" and stretched_material
-            ):
-                # Use selected nipple/areola appearance if set, otherwise default to "nipples"
-                breast_size_desc = ""
-                if get("breast_size") != "-":
-                    breast_size_desc = get("breast_size").lower()
-                nipple_desc = ""
-                if get("nipple_appearance") != "-":
-                    nipple_desc = get("nipple_appearance").lower()
-                areola_desc = ""
-                if get("areola_appearance") != "-":
-                    areola_desc = get("areola_appearance").lower()
-                # --- Improved, always safe-for-work phrasing ---
-                details = []
-                if breast_size_desc:
-                    details.append(f"{breast_size_desc} breasts")
-                if nipple_desc:
-                    details.append(f"{nipple_desc} nipples")
-                if areola_desc:
-                    details.append(f"{areola_desc} areolae")
-                if details:
-                    details_str = ", ".join(details)
-                else:
-                    details_str = "breasts and nipples"
-                subtle_nipple_phrase = (
-                    f"Her {garment}, made of {garment_material}, is tightly stretched and visibly compressing her {details_str}, conforming closely to her shape and realistically revealing the natural contours beneath the fabric, including subtle outlines, the effect is natural and realistic, never explicit or exposed"
-                )
-                extra_clothing_description = subtle_nipple_phrase
-            # --- END: Subtle nipple outline logic ---
+            gender == "Woman"
+            and ((get("tops") != "-") or (get("dresses") != "-"))
+            and garment_material != "-"
+            and stretched_material
+        ):
+            # Use selected nipple/areola appearance if set, otherwise default to "nipples"
+            breast_size_desc = ""
+            if get("breast_size") != "-":
+                breast_size_desc = get("breast_size").lower()
+            nipple_desc = ""
+            if get("nipple_appearance") != "-":
+                nipple_desc = get("nipple_appearance").lower()
+            areola_desc = ""
+            if get("areola_appearance") != "-":
+                areola_desc = get("areola_appearance").lower()
+            # --- Improved, always safe-for-work phrasing ---
+            details = []
+            if breast_size_desc:
+                details.append(f"{breast_size_desc} breasts")
+            if nipple_desc:
+                details.append(f"{nipple_desc} nipples")
+            if areola_desc:
+                details.append(f"{areola_desc} areolae")
+            if details:
+                details_str = ", ".join(details)
+            else:
+                details_str = "breasts and nipples"
+            subtle_nipple_phrase = f"Her {garment}, made of {garment_material}, is tightly stretched and visibly compressing her {details_str}, conforming closely to her shape and realistically revealing the natural contours beneath the fabric, including subtle outlines, the effect is natural and realistic, never explicit or exposed"
+            extra_clothing_description = subtle_nipple_phrase
+        # --- END: Subtle nipple outline logic ---
         if clothing:
             # Use commas and 'and' for the last item
             if len(clothing) == 1:
@@ -827,14 +1380,20 @@ class CharacterPromptBuilderScene:
                 clothing_str = f"{clothing[0]} and {clothing[1]}"
             else:
                 clothing_str = ", ".join(clothing[:-1]) + f", and {clothing[-1]}"
-            if 'extra_clothing_description' in locals():
+            if "extra_clothing_description" in locals():
                 clothing_phrase = f"{subj} {get_verb(subj)} wearing a {clothing_str}, {extra_clothing_description}"
             else:
                 clothing_phrase = f"{subj} {get_verb(subj)} wearing a {clothing_str}"
             # If body features exist, append "covering ..." after clothing
             if body_features_phrase:
                 import re
-                covering_features = re.sub(f"^{subj} has ", f"{poss} ", body_features_phrase, flags=re.IGNORECASE)
+
+                covering_features = re.sub(
+                    f"^{subj} has ",
+                    f"{poss} ",
+                    body_features_phrase,
+                    flags=re.IGNORECASE,
+                )
                 clothing_phrase += f" covering {covering_features}"
             body_features_phrase = ""
         else:
@@ -858,7 +1417,9 @@ class CharacterPromptBuilderScene:
                     details_str = "breasts and nipples"
                 clothing_phrase = f"{subj} {get_verb(subj)} completely nude and {poss} {details_str} are visible"
             elif gender == "Man":
-                clothing_phrase = f"{subj} {get_verb(subj)} shirtless" if not clothing else ""
+                clothing_phrase = (
+                    f"{subj} {get_verb(subj)} shirtless" if not clothing else ""
+                )
             else:
                 clothing_phrase = ""
 
@@ -891,9 +1452,9 @@ class CharacterPromptBuilderScene:
             mask_color = s.get("womens_mask_color", "-").lower()
             mask_material = s.get("womens_mask_material", "-").lower()
         accessory_parts = []
-        if necklace != "-" :
+        if necklace != "-":
             accessory_parts.append(f"{get('necklace').lower()} necklace")
-        if earrings != "-" :
+        if earrings != "-":
             accessory_parts.append(f"{get('earrings').lower()} earrings")
         if bracelet != "-":
             accessory_parts.append(f"{get('bracelet').lower()} bracelet")
@@ -921,25 +1482,23 @@ class CharacterPromptBuilderScene:
             if len(accessory_parts) == 1:
                 jewelry_phrase = f"accessorized with {accessory_parts[0]}"
             else:
-                jewelry_phrase = f"accessorized with " + ", ".join(accessory_parts[:-1]) + f", and {accessory_parts[-1]}"
+                jewelry_phrase = (
+                    f"accessorized with "
+                    + ", ".join(accessory_parts[:-1])
+                    + f", and {accessory_parts[-1]}"
+                )
 
         # Tattoo
         tattoo_phrase = ""
-        if get("tattoo") != "-" :
+        if get("tattoo") != "-":
             tattoo_desc = get("tattoo").lower()
             if tattoo_desc not in ["-", "no tattoos"]:
                 tattoo_phrase = f"with {tattoo_desc}"
 
         # Fingernails (for women, if not wearing gloves)
-        fingernails_present = (
-            get("fingernail_style") != "-" and
-            gender == "Woman"
-        )
+        fingernails_present = get("fingernail_style") != "-" and gender == "Woman"
         gloves_type = s.get("womens_gloves", "-").lower()
-        gloves_present = (
-            gloves_type != "-" and
-            s.get("gender", "-") == "Woman"
-        )
+        gloves_present = gloves_type != "-" and s.get("gender", "-") == "Woman"
         show_fingernails = fingernails_present and (
             not gloves_present or "fingerless" in gloves_type
         )
@@ -948,7 +1507,9 @@ class CharacterPromptBuilderScene:
             fingernail_style = get("fingernail_style").lower().replace(" nails", "")
             nail_color = get("nail_color").lower() if get("nail_color") != "-" else ""
             if nail_color:
-                fingernail_phrase = f"{poss} fingernails are {fingernail_style}, painted {nail_color}"
+                fingernail_phrase = (
+                    f"{poss} fingernails are {fingernail_style}, painted {nail_color}"
+                )
             else:
                 fingernail_phrase = f"{poss} fingernails are {fingernail_style}"
         elif not gloves_present and gender == "Woman":
@@ -981,7 +1542,9 @@ class CharacterPromptBuilderScene:
             ("sitting_pose", s.get("sitting_pose", "-")),
             ("laying_down_pose", s.get("laying_down_pose", "-")),
         ]
-        selected_pose = next((val for key, val in pose_fields if val and val != "-"), None)
+        selected_pose = next(
+            (val for key, val in pose_fields if val and val != "-"), None
+        )
         pose_phrase = ""
         if selected_pose:
             pose_phrase = f"{subj.lower()} {get_verb(subj)} {selected_pose.lower()}"
@@ -989,7 +1552,9 @@ class CharacterPromptBuilderScene:
         # Interaction
         interaction_phrase = ""
         if s.get("interaction", "-") != "-":
-            interaction_phrase = f"{subj.lower()} {get_verb(subj)} {s.get('interaction')}"
+            interaction_phrase = (
+                f"{subj.lower()} {get_verb(subj)} {s.get('interaction')}"
+            )
 
         # Props
         props = s.get("props", "-")
@@ -998,15 +1563,20 @@ class CharacterPromptBuilderScene:
         if props and props != "-":
             # If props starts with a verb (e.g., "holding", "carrying"), insert color before the object
             import re
+
             match = re.match(r"(\w+ing) (a|an|the)? ?(.+)", props.lower())
             if match:
                 verb = match.group(1)
                 article = match.group(2) or ""
                 obj = match.group(3)
                 if props_color and props_color != "-":
-                    props_phrase = f"{subj.lower()} {get_verb(subj)} {verb} {article} {props_color.lower()} {obj}".replace("  ", " ")
+                    props_phrase = f"{subj.lower()} {get_verb(subj)} {verb} {article} {props_color.lower()} {obj}".replace(
+                        "  ", " "
+                    )
                 else:
-                    props_phrase = f"{subj.lower()} {get_verb(subj)} {verb} {article} {obj}".replace("  ", " ")
+                    props_phrase = f"{subj.lower()} {get_verb(subj)} {verb} {article} {obj}".replace(
+                        "  ", " "
+                    )
             else:
                 # fallback: just append color before prop
                 if props_color and props_color != "-":
@@ -1023,7 +1593,9 @@ class CharacterPromptBuilderScene:
         # Expression
         expression_phrase = ""
         if get("facial_expression") != "-":
-            expression_phrase = f"{subj} has a {get('facial_expression').lower()} facial expression"
+            expression_phrase = (
+                f"{subj} has a {get('facial_expression').lower()} facial expression"
+            )
 
         # Camera angles
         camera_horizontal_angle_phrase = ""
@@ -1033,9 +1605,7 @@ class CharacterPromptBuilderScene:
         camera_vertical_angle_phrase = ""
         camera_combined_angle_phrase = ""
         if camera_horizontal != "-" and camera_vertical != "-":
-            camera_combined_angle_phrase = (
-                f"set at a {camera_horizontal.lower()} and is set at a {camera_vertical.lower()}"
-            )
+            camera_combined_angle_phrase = f"set at a {camera_horizontal.lower()} and is set at a {camera_vertical.lower()}"
         else:
             if camera_horizontal != "-":
                 camera_horizontal_angle_phrase = f"set at a {camera_horizontal.lower()}"
@@ -1132,11 +1702,11 @@ class CharacterPromptBuilderScene:
 
         # Lighting
         lighting_phrase = ""
-        if get("light_type") != '-':
+        if get("light_type") != "-":
             light_desc = ""
-            if s.get("light_quality", '-') != '-':
+            if s.get("light_quality", "-") != "-":
                 light_desc += s.get("light_quality").lower()
-            if get("light_type") != '-':
+            if get("light_type") != "-":
                 if light_desc:
                     light_desc += " "
                 light_desc += get("light_type").lower()
@@ -1145,9 +1715,11 @@ class CharacterPromptBuilderScene:
         # Camera shot and view
         camera_shot_view_phrase = ""
         if get("camera_shot") != "-" and get("camera_view") != "-":
-            camera_shot_view_phrase = f"{get('camera_view').lower()}, {get('camera_shot').lower()}"
+            camera_shot_view_phrase = (
+                f"{get('camera_view').lower()}, {get('camera_shot').lower()}"
+            )
         elif get("camera_shot") != "-":
-            camera_shot_view_phrase = f"{get("camera_shot").lower()}"
+            camera_shot_view_phrase = f"{get('camera_shot').lower()}"
         elif get("camera_view") != "-":
             camera_shot_view_phrase = get("camera_view").lower()
         if camera_shot_view_phrase:
@@ -1160,7 +1732,9 @@ class CharacterPromptBuilderScene:
             style_prefix if style_prefix else None,
             camera_model_phrase,
             camera_lens_phrase,
-            camera_combined_angle_phrase if camera_combined_angle_phrase else camera_horizontal_angle_phrase,
+            camera_combined_angle_phrase
+            if camera_combined_angle_phrase
+            else camera_horizontal_angle_phrase,
             camera_vertical_angle_phrase if not camera_combined_angle_phrase else "",
             subject_sentence,
             body_type_phrase,
@@ -1219,27 +1793,34 @@ class CharacterPromptBuilderScene:
                 camera_vertical = s_panel.get("camera_vertical_angle")
                 camera_combined_angle_phrase = ""
                 if camera_horizontal != "-" and camera_vertical != "-":
-                    camera_combined_angle_phrase = (
-                        f"{camera_horizontal.lower()} and set at a {camera_vertical.lower()}"
-                    )
+                    camera_combined_angle_phrase = f"{camera_horizontal.lower()} and set at a {camera_vertical.lower()}"
                 else:
                     if camera_horizontal != "-":
                         camera_combined_angle_phrase = f"{camera_horizontal.lower()}"
                     if camera_vertical != "-":
                         if camera_combined_angle_phrase:
-                            camera_combined_angle_phrase += f" and set at a {camera_vertical.lower()}"
+                            camera_combined_angle_phrase += (
+                                f" and set at a {camera_vertical.lower()}"
+                            )
                         else:
                             camera_combined_angle_phrase = f"{camera_vertical.lower()}"
                 # Update phrases with the new camera phrase
                 panel_phrases = phrases.copy()
                 # Remove any phrase containing "4-panel character sheet style"
-                panel_phrases = [p for p in panel_phrases if not (p and "4-panel character sheet style" in p)]
+                panel_phrases = [
+                    p
+                    for p in panel_phrases
+                    if not (p and "4-panel character sheet style" in p)
+                ]
                 # Insert the camera phrase at the beginning
                 if camera_combined_angle_phrase:
                     panel_phrases.insert(0, camera_combined_angle_phrase)
                 main_desc_panel = ", ".join(panel_phrases) + "\n"
                 panel_prompts.append(f"{panel_name}: {main_desc_panel}")
-            prompt = f"Generate a {style_prefix} character model sheet image with 4 evenly spaced vertical column panels: \n\n" + "\n".join(panel_prompts)
+            prompt = (
+                f"Generate a {style_prefix} character model sheet image with 4 evenly spaced vertical column panels: \n\n"
+                + "\n".join(panel_prompts)
+            )
             return prompt
         else:
             # Add tail if include_scene_tail
@@ -1250,7 +1831,9 @@ class CharacterPromptBuilderScene:
                 if location and location.strip():
                     tail_phrases.append(f"The scene takes place {location.strip()}")
                 elif s.get("preset_location") and s.get("preset_location") != "-":
-                    tail_phrases.append(f"The scene takes place {s.get('preset_location')}")
+                    tail_phrases.append(
+                        f"The scene takes place {s.get('preset_location')}"
+                    )
                 # Environment
                 env_parts = []
                 if s.get("time_of_day") != "-":
@@ -1262,11 +1845,11 @@ class CharacterPromptBuilderScene:
                 if env_parts:
                     tail_phrases.append(" ".join(env_parts))
                 # Lighting
-                if s.get("light_type") != '-':
+                if s.get("light_type") != "-":
                     light_desc = ""
-                    if s.get("light_quality", '-') != '-':
+                    if s.get("light_quality", "-") != "-":
                         light_desc += s.get("light_quality").lower()
-                    if s.get("light_type") != '-':
+                    if s.get("light_type") != "-":
                         if light_desc:
                             light_desc += " "
                         light_desc += s.get("light_type").lower()
