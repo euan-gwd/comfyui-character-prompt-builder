@@ -62,7 +62,9 @@ class CharacterPromptBuilderFemaleFashion:
                 "capes_material": combo("capes_material_list"),
                 "hats": combo("hats_list"),
                 "hats_color": combo("hats_color_list"),
-                "womens_suits": combo("womens_suits_list")
+                "womens_suits": combo("womens_suits_list"),
+                "womens_suits_primary_color": combo("womens_suits_primary_color_list"),
+                "womens_suits_accent_color": combo("womens_suits_accent_color_list")
             },
             "optional": {
                 "womens_shoes": combo("womens_shoes_list"),
@@ -120,7 +122,7 @@ class CharacterPromptBuilderFemaleFashion:
             underwear="-", underwear_color="-", underwear_material="-",
             capes="-", capes_color="-", capes_material="-",
             hats="-", hats_color="-",
-            womens_suits="-",
+            womens_suits="-", womens_suits_primary_color="-", womens_suits_accent_color="-",
             womens_shoes="-", womens_shoe_color="-", womens_shoe_material="-",
             womens_gloves="-", womens_gloves_color="-",
             womens_gloves_material="-",
@@ -147,6 +149,8 @@ class CharacterPromptBuilderFemaleFashion:
             "capes": capes, "capes_color": capes_color, "capes_material": capes_material,
             "hats": hats, "hats_color": hats_color,
             "womens_suits": womens_suits,
+            "womens_suits_primary_color": womens_suits_primary_color,
+            "womens_suits_accent_color": womens_suits_accent_color,
             "womens_shoes": womens_shoes, "womens_shoe_color": womens_shoe_color, "womens_shoe_material": womens_shoe_material,
             "womens_gloves": womens_gloves, "womens_gloves_color": womens_gloves_color,
             "womens_gloves_material": womens_gloves_material,

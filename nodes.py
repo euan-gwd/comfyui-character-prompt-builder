@@ -669,6 +669,17 @@ class CharacterPromptBuilderScene:
             # SUITS (female)
             if s.get("womens_suits", "-") != "-":
                     suit = s.get("womens_suits").lower()
+                    primary_color = s.get("womens_suits_primary_color", "-").lower()
+                    accent_color = s.get("womens_suits_accent_color", "-").lower()
+                    
+                    if primary_color != "-" and primary_color != "":
+                        if accent_color != "-" and accent_color != "":
+                            suit = f"{primary_color} and {accent_color} {suit}"
+                        else:
+                            suit = f"{primary_color} {suit}"
+                    elif accent_color != "-" and accent_color != "":
+                        suit = f"{suit} with {accent_color} accents"
+                    
                     clothing.append(suit)
 
         # === MALE-SPECIFIC CLOTHING ===
