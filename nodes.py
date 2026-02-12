@@ -871,9 +871,6 @@ class CharacterPromptBuilderScene:
         def get_verb(subj):
             return "is" if subj in ["She", "He"] else "are"
 
-        def get_verb(subj):
-            return "is" if subj in ["She", "He"] else "are"
-
         # --- Begin natural language prose generation ---
         prose = []
 
@@ -1418,6 +1415,7 @@ class CharacterPromptBuilderScene:
 
         # --- BEGIN: Subtle nipple outline logic ---
         subtle_nipple_phrase = ""
+        extra_clothing_description = None
         stretched_material = s.get("stretched_material", False)
         # Get material for top or dress
         garment = None
@@ -1467,7 +1465,7 @@ class CharacterPromptBuilderScene:
                 clothing_str = f"{clothing[0]} and {clothing[1]}"
             else:
                 clothing_str = ", ".join(clothing[:-1]) + f", and {clothing[-1]}"
-            if "extra_clothing_description" in locals():
+            if extra_clothing_description:
                 clothing_phrase = f"{subj} {get_verb(subj)} wearing a {clothing_str}, {extra_clothing_description}"
             else:
                 clothing_phrase = f"{subj} {get_verb(subj)} wearing a {clothing_str}"
