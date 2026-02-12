@@ -450,14 +450,17 @@ class CharacterPromptBuilderScene:
     def INPUT_TYPES(s):
         data = _load_character_data()
 
-        def combo(key, default=None):
+        def combo(key, default=None, extra_opts=None):
             _list = data.get(key, ["-"]).copy()
             if "-" not in _list:
                 _list.insert(0, "-")
             # Always set default to "professional photography" for artistic_style_list
             if key == "artistic_style_list":
                 default = "professional photography"
-            return (_list, {"default": default} if default else {})
+            opts = {"default": default} if default else {}
+            if extra_opts:
+                opts.update(extra_opts)
+            return (_list, opts)
 
         # Add preset_location combo box
         return {
@@ -471,6 +474,74 @@ class CharacterPromptBuilderScene:
                     ["comic", "photorealistic"],
                     {
                         "default": "comic",
+                        "display": "dropdown",
+                        "visible": "artistic_style == '4-panel character sheet'",
+                    },
+                ),
+                # Panel 1 Camera Settings
+                "panel1_camera_view": combo(
+                    "camera_view_list",
+                    "front view",
+                    {
+                        "display": "dropdown",
+                        "visible": "artistic_style == '4-panel character sheet'",
+                    },
+                ),
+                "panel1_camera_shot": combo(
+                    "camera_shot_list",
+                    "wide",
+                    {
+                        "display": "dropdown",
+                        "visible": "artistic_style == '4-panel character sheet'",
+                    },
+                ),
+                # Panel 2 Camera Settings
+                "panel2_camera_view": combo(
+                    "camera_view_list",
+                    "back view",
+                    {
+                        "display": "dropdown",
+                        "visible": "artistic_style == '4-panel character sheet'",
+                    },
+                ),
+                "panel2_camera_shot": combo(
+                    "camera_shot_list",
+                    "wide",
+                    {
+                        "display": "dropdown",
+                        "visible": "artistic_style == '4-panel character sheet'",
+                    },
+                ),
+                # Panel 3 Camera Settings
+                "panel3_camera_view": combo(
+                    "camera_view_list",
+                    "right side view",
+                    {
+                        "display": "dropdown",
+                        "visible": "artistic_style == '4-panel character sheet'",
+                    },
+                ),
+                "panel3_camera_shot": combo(
+                    "camera_shot_list",
+                    "wide",
+                    {
+                        "display": "dropdown",
+                        "visible": "artistic_style == '4-panel character sheet'",
+                    },
+                ),
+                # Panel 4 Camera Settings
+                "panel4_camera_view": combo(
+                    "camera_view_list",
+                    "front view",
+                    {
+                        "display": "dropdown",
+                        "visible": "artistic_style == '4-panel character sheet'",
+                    },
+                ),
+                "panel4_camera_shot": combo(
+                    "camera_shot_list",
+                    "medium close up",
+                    {
                         "display": "dropdown",
                         "visible": "artistic_style == '4-panel character sheet'",
                     },
@@ -582,6 +653,14 @@ class CharacterPromptBuilderScene:
         settings3=None,
         settings4=None,
         character_sheet_render_style="comic",
+        panel1_camera_view="front view",
+        panel1_camera_shot="wide",
+        panel2_camera_view="back view",
+        panel2_camera_shot="wide",
+        panel3_camera_view="right side view",
+        panel3_camera_shot="wide",
+        panel4_camera_view="front view",
+        panel4_camera_shot="medium close up",
     ):
 
         # Collect settings for each person
@@ -624,6 +703,14 @@ class CharacterPromptBuilderScene:
             "season": season,
             "light_type": light_type,
             "light_quality": light_quality,
+            "panel1_camera_view": panel1_camera_view,
+            "panel1_camera_shot": panel1_camera_shot,
+            "panel2_camera_view": panel2_camera_view,
+            "panel2_camera_shot": panel2_camera_shot,
+            "panel3_camera_view": panel3_camera_view,
+            "panel3_camera_shot": panel3_camera_shot,
+            "panel4_camera_view": panel4_camera_view,
+            "panel4_camera_shot": panel4_camera_shot,
         }
 
         # Generate prose for each person
@@ -1774,10 +1861,26 @@ class CharacterPromptBuilderScene:
 
         if s.get("artistic_style") == "4-panel character sheet":
             panels = [
-                ("front view eye-level wide shot", "Panel 1"),
-                ("back (rear) view eye-level wide shot", "Panel 2"),
-                ("right side view eye-level wide shot", "Panel 3"),
-                ("front view eye-level close up shot", "Panel 4"),
+                (
+                    s.get("panel1_camera_view", "front view"),
+                    s.get("panel1_camera_shot", "wide"),
+                    "Panel 1",
+                ),
+                (
+                    s.get("panel2_camera_view", "back view"),
+                    s.get("panel2_camera_shot", "wide"),
+                    "Panel 2",
+                ),
+                (
+                    s.get("panel3_camera_view", "right side view"),
+                    s.get("panel3_camera_shot", "wide"),
+                    "Panel 3",
+                ),
+                (
+                    s.get("panel4_camera_view", "front view"),
+                    s.get("panel4_camera_shot", "medium close up"),
+                    "Panel 4",
+                ),
             ]
             panel_prompts = []
             # Choose style prefix based on character_sheet_render_style
@@ -1785,25 +1888,16 @@ class CharacterPromptBuilderScene:
                 style_prefix = "photorealistic"
             else:
                 style_prefix = "Ink drawn comic book illustration"
-            for angle, panel_name in panels:
-                s_panel = s.copy()
-                s_panel["camera_horizontal_angle"] = angle
-                # Rebuild camera phrases for this panel
-                camera_horizontal = s_panel.get("camera_horizontal_angle")
-                camera_vertical = s_panel.get("camera_vertical_angle")
-                camera_combined_angle_phrase = ""
-                if camera_horizontal != "-" and camera_vertical != "-":
-                    camera_combined_angle_phrase = f"{camera_horizontal.lower()} and set at a {camera_vertical.lower()}"
-                else:
-                    if camera_horizontal != "-":
-                        camera_combined_angle_phrase = f"{camera_horizontal.lower()}"
-                    if camera_vertical != "-":
-                        if camera_combined_angle_phrase:
-                            camera_combined_angle_phrase += (
-                                f" and set at a {camera_vertical.lower()}"
-                            )
-                        else:
-                            camera_combined_angle_phrase = f"{camera_vertical.lower()}"
+            for camera_view, camera_shot, panel_name in panels:
+                # Build the camera phrase from view and shot
+                camera_phrase = ""
+                if camera_view != "-" and camera_shot != "-":
+                    camera_phrase = f"{camera_view.lower()} {camera_shot.lower()} shot"
+                elif camera_view != "-":
+                    camera_phrase = f"{camera_view.lower()} shot"
+                elif camera_shot != "-":
+                    camera_phrase = f"{camera_shot.lower()} shot"
+
                 # Update phrases with the new camera phrase
                 panel_phrases = phrases.copy()
                 # Remove any phrase containing "4-panel character sheet style"
@@ -1812,9 +1906,16 @@ class CharacterPromptBuilderScene:
                     for p in panel_phrases
                     if not (p and "4-panel character sheet style" in p)
                 ]
+                # Remove the original camera_shot_view_phrase if present (first phrase)
+                if (
+                    panel_phrases
+                    and camera_shot_view_phrase
+                    and panel_phrases[0] == camera_shot_view_phrase
+                ):
+                    panel_phrases.pop(0)
                 # Insert the camera phrase at the beginning
-                if camera_combined_angle_phrase:
-                    panel_phrases.insert(0, camera_combined_angle_phrase)
+                if camera_phrase:
+                    panel_phrases.insert(0, camera_phrase)
                 main_desc_panel = ", ".join(panel_phrases) + "\n"
                 panel_prompts.append(f"{panel_name}: {main_desc_panel}")
             prompt = (
