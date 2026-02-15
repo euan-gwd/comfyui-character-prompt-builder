@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2026-02-15
+
+### Changed
+
+- **Refactored Data Loading Architecture**
+  - Extracted shared utility functions into new `utils.py` module
+  - `load_character_data()` - now cached with `@lru_cache(maxsize=1)` for better performance
+  - `get_default_character_data()` - centralized fallback data
+  - `combo()` - standardized helper for dropdown list creation
+- **Eliminated Code Duplication**
+  - Removed duplicate `_load_character_data()` functions from all 7 node files (~210 lines eliminated)
+  - Removed duplicate `combo()` helper functions from node files
+  - Removed duplicate import statements and constants
+  - Standardized function signatures across all nodes
+- **Improved Maintainability**
+  - Single source of truth for data loading logic
+  - Consistent quote style and formatting across all files
+  - Better separation of concerns with dedicated utilities module
+
 ## [2.0.0] - 2026-02-01
 
 ### Added
