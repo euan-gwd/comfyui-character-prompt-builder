@@ -167,6 +167,18 @@
     "58",
     "60"
   ],
+  "waist_size_list": [
+    "Tiny",
+    "Narrow",
+    "Small",
+    "Medium",
+    "Thick",
+    "Wide",
+    "Waspy",
+    "Hourglass",
+    "Athletic",
+    "Undefined"
+  ],
   "bum_size_list": [
     "Flat",
     "Small",
@@ -1895,7 +1907,8 @@
     "close-up",
     "extreme close-up",
     "cowboy",
-    "establishing"
+    "establishing",
+    "full body view only, camera zoomed out so she is in the center of the frame with 15% white space from edge of image, show entire body including feet"
   ],
   "camera_view_list": [
     "front view",
@@ -2675,7 +2688,11 @@
     "analog film",
     "black and white",
     "charcoal drawing",
+    "comic book illustration",
+    "anime comic book illustration",
     "ink drawn comic book illustration",
+    "animated cell-shading comic book illustration",
+    "western comic book illustration",
     "3D cartoon illustration",
     "cinematic film",
     "fine art portrait",
@@ -4054,7 +4071,6 @@
     "laughing together",
     "sharing a romantic moment",
     "exchanging a loving glance",
-    "holding each other close",
-    "having sex"
+    "holding each other close"
   ]
 }

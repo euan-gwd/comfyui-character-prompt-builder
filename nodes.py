@@ -689,12 +689,17 @@ class CharacterPromptBuilderScene:
         elif preset_location and preset_location != "-":
             scene_location = preset_location
 
+        # Store artistic_style separately for multi-person scenes
+        is_multi_person = num_people != "1"
+        scene_artistic_style = artistic_style if num_people != "1" else artistic_style
+        scene_camera_shot = camera_shot if num_people != "1" else camera_shot
+        scene_camera_view = camera_view if num_people != "1" else camera_view
+
         scene_settings = {
-            "artistic_style": artistic_style,
             "camera_horizontal_angle": camera_horizontal_angle,
             "camera_vertical_angle": camera_vertical_angle,
-            "camera_shot": camera_shot,
-            "camera_view": camera_view,
+            # "camera_shot": camera_shot,
+            # "camera_view": camera_view,
             "camera_lens": camera_lens,
             "camera_model": camera_model,
             "location": scene_location,
@@ -713,6 +718,16 @@ class CharacterPromptBuilderScene:
             "panel4_camera_shot": panel4_camera_shot,
         }
 
+        # For multi-person, add the following to scene_settings only for single-person
+        if not is_multi_person:
+            scene_settings["artistic_style"] = artistic_style
+            scene_settings["camera_shot"] = camera_shot
+            scene_settings["camera_view"] = camera_view
+        else:
+            scene_artistic_style = artistic_style
+            scene_camera_shot = camera_shot
+            scene_camera_view = camera_view
+
         # Generate prose for each person
         person_prompts = []
         is_multi_person = num_people != "1"
@@ -728,7 +743,11 @@ class CharacterPromptBuilderScene:
                 character_sheet_render_style=character_sheet_render_style,
             )
             if is_multi_person:
-                prompt = f"Person {idx + 1}: {prompt}"
+                if num_people == "2":
+                    position = "on the LEFT" if idx == 0 else "on the RIGHT"
+                    prompt = f"{position.upper()}: {prompt}"
+                else:
+                    prompt = f"Person {idx + 1}: {prompt}"
             person_prompts.append(prompt)
 
         # Combine all person prompts
@@ -760,14 +779,43 @@ class CharacterPromptBuilderScene:
 
         # Compose final prompt with prefix/suffix
         parts = []
-        if prompt_prefix and prompt_prefix.strip():
-            parts.append(prompt_prefix.strip())
+
+        # For multi-person scenes, add camera_shot and camera_view to prefix
+        camera_shot_view_phrase = ""
+        if scene_camera_shot != "-" and scene_camera_view != "-":
+            camera_shot_view_phrase = f"{scene_camera_view.lower()}, {scene_camera_shot.lower()} shot"
+        elif scene_camera_shot != "-":
+            camera_shot_view_phrase = f"{scene_camera_shot.lower()} shot"
+        elif scene_camera_view != "-":
+            camera_shot_view_phrase = scene_camera_view.lower()
+
+        artistic_style_phrase = ""
+        if scene_artistic_style and scene_artistic_style != "-":
+            style_clean = scene_artistic_style.strip()
+            if not style_clean.lower().endswith("style"):
+                style_clean += " style"
+            artistic_style_phrase = f"in a {style_clean}"
+
+        if is_multi_person:
+            combined_prefix = []
+            if camera_shot_view_phrase:
+                combined_prefix.append(camera_shot_view_phrase)
+            if artistic_style_phrase:
+                combined_prefix.append(artistic_style_phrase)
+            if prompt_prefix and prompt_prefix.strip():
+                combined_prefix.append(prompt_prefix.strip())
+            parts.append(", ".join(combined_prefix))
+        else:
+            if prompt_prefix and prompt_prefix.strip():
+                parts.append(prompt_prefix.strip())
+
         if prompt and prompt.strip():
             parts.append(prompt.strip())
         if prompt_suffix and prompt_suffix.strip():
             parts.append(prompt_suffix.strip())
 
-        final_prompt = " ".join(parts)
+
+        final_prompt = "\n\n".join(parts)
         final_prompt = (
             final_prompt.replace(" natural language", "")
             .replace("natural language ", "")
@@ -1115,22 +1163,22 @@ class CharacterPromptBuilderScene:
         if get("fashion_aesthetic") != "-":
             fashion_phrase = f"{poss} style is {get('fashion_aesthetic').lower()}"
 
-        # Clothing
-        clothing = []
-        clothing_phrase = ""
+        # Clothing - split into core clothing and accessory clothing
+        core_clothing = []
+        accessory_clothing = []
         underwear_phrase = ""
         gender = s.get("gender", "-")
 
         # === FEMALE-SPECIFIC CLOTHING ===
         if gender == "Woman":
-            # LEGS (female only)
+            # LEGS (female only) - accessory clothing
             if get("legs") != "-":
                 legs = get("legs").lower()
                 legs_color = get("legs_color").lower()
                 if legs_color != "-" and legs_color != "":
                     legs = f"{legs_color} {legs}"
-                clothing.append(legs)
-            # DRESSES (female only)
+                accessory_clothing.append(legs)
+            # DRESSES (female only) - core clothing
             if get("dresses") != "-":
                 dress = get("dresses").lower()
                 dress_color = get("dresses_color").lower()
@@ -1139,7 +1187,7 @@ class CharacterPromptBuilderScene:
                     dress = f"{dress_color} {dress}"
                 if dress_material and dress_material != "-":
                     dress = f"{dress} made of {dress_material} material"
-                clothing.append(dress)
+                core_clothing.append(dress)
                 # Check for sheer/see-through/thin dress material
                 if (
                     dress_material
@@ -1156,10 +1204,10 @@ class CharacterPromptBuilderScene:
                         if get("areola_appearance") != "-"
                         else ""
                     )
-                    clothing.append(
+                    core_clothing.append(
                         f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the dress"
                     )
-            # TOPS (female)
+            # TOPS (female) - core clothing
             if get("tops") != "-":
                 top = get("tops").lower()
                 top_color = get("tops_color").lower()
@@ -1168,7 +1216,7 @@ class CharacterPromptBuilderScene:
                     top = f"{top_color} {top}"
                 if top_material and top_material != "-":
                     top = f"{top} made of {top_material} material"
-                clothing.append(top)
+                core_clothing.append(top)
                 # Check for sheer/see-through/thin top material
                 if (
                     top_material
@@ -1185,10 +1233,10 @@ class CharacterPromptBuilderScene:
                         if get("areola_appearance") != "-"
                         else ""
                     )
-                    clothing.append(
+                    core_clothing.append(
                         f"{poss} {nipple_desc} nipples and {areola_desc} areolae are only slightly visible through the top"
                     )
-            # PANTS (female)
+            # PANTS (female) - core clothing
             if get("pants") != "-":
                 pants = get("pants").lower()
                 pants_color = get("pants_color").lower()
@@ -1197,8 +1245,8 @@ class CharacterPromptBuilderScene:
                     pants = f"{pants_color} {pants}"
                 if pants_material and pants_material != "-":
                     pants = f"{pants} made of {pants_material.lower()} material"
-                clothing.append(pants)
-            # UNDERWEAR (female only)
+                core_clothing.append(pants)
+            # UNDERWEAR (female only) - core clothing
             if get("underwear") != "-":
                 uw = get("underwear").lower()
                 uw_color = get("underwear_color").lower()
@@ -1207,13 +1255,13 @@ class CharacterPromptBuilderScene:
                     uw = f"{uw_color} {uw}"
                 if uw_material and uw_material != "-":
                     uw = f"{uw} made of {uw_material} material"
-                # If a dress or top is present, underwear is only slightly visible
-                # Check for sheer/see-through underwear
+                # Check for sheer/see-through underwear with no dress/top
                 if (
                     uw_material
                     and ("sheer" in uw_material or "see-through" in uw_material)
-                    and (get("dresses") == "-" or get("tops") == "-")
+                    and (get("dresses") == "-" and get("tops") == "-")
                 ):
+                    # Sheer underwear with no covering - use subtle visibility phrasing
                     nipple_desc = (
                         get("nipple_appearance").lower()
                         if get("nipple_appearance") != "-"
@@ -1224,8 +1272,18 @@ class CharacterPromptBuilderScene:
                         if get("areola_appearance") != "-"
                         else ""
                     )
-                    underwear_phrase = f"{poss} {uw}, revealing {poss} only slightly visible {nipple_desc} nipples and {areola_desc} areolae beneath them"
+                    details = []
+                    if nipple_desc:
+                        details.append(f"{nipple_desc} nipples")
+                    if areola_desc:
+                        details.append(f"{areola_desc} areolae")
+                    if details:
+                        details_str = ", ".join(details)
+                    else:
+                        details_str = "breasts and nipples"
+                    underwear_phrase = f"{poss} {uw}, visibly conforming to {poss} shape and realistically revealing subtle contours and the natural forms of {poss} {details_str} beneath the sheer material"
                 elif get("dresses") != "-" or get("tops") != "-":
+                    # Underwear beneath dress/top - mention it's slightly visible
                     garment = (
                         "dress"
                         if get("dresses") != "-"
@@ -1237,9 +1295,10 @@ class CharacterPromptBuilderScene:
                         f"{poss} {uw} is only slightly visible beneath {poss} {garment}"
                     )
                 else:
+                    # Underwear without covering - just mention it, no visibility description
                     underwear_phrase = f"{poss} {uw}"
-                clothing.append(underwear_phrase)
-            # CAPES (female)
+                core_clothing.append(underwear_phrase)
+            # CAPES (female) - core clothing
             if get("capes") != "-":
                 cape = get("capes").lower()
                 cape_color = get("capes_color").lower()
@@ -1248,15 +1307,15 @@ class CharacterPromptBuilderScene:
                     cape = f"{cape_color} {cape}"
                 if cape_material and cape_material != "-":
                     cape = f"{cape} made of {cape_material.lower()}"
-                clothing.append(cape)
-            # HATS (female)
+                core_clothing.append(cape)
+            # HATS (female) - accessory clothing
             if get("hats") != "-":
                 hat = get("hats").lower()
                 hat_color = get("hats_color").lower()
                 if hat_color != "-" and hat_color != "":
                     hat = f"{hat_color} {hat}"
-                clothing.append(hat)
-            # GLOVES (female)
+                accessory_clothing.append(hat)
+            # GLOVES (female) - accessory clothing
             if s.get("womens_gloves", "-") != "-":
                 gloves = s.get("womens_gloves").lower()
                 gloves_color = s.get("womens_gloves_color", "-").lower()
@@ -1265,8 +1324,8 @@ class CharacterPromptBuilderScene:
                     gloves = f"{gloves_color} {gloves}"
                 if gloves_material != "-" and gloves_material != "":
                     gloves = f"{gloves} made of {gloves_material}"
-                clothing.append(gloves)
-            # BELT (female)
+                accessory_clothing.append(gloves)
+            # BELT (female) - accessory clothing
             if s.get("womens_belt", "-") != "-":
                 belt = s.get("womens_belt").lower()
                 belt_color = s.get("womens_belt_color", "-").lower()
@@ -1275,8 +1334,8 @@ class CharacterPromptBuilderScene:
                     belt = f"{belt_color} {belt}"
                 if belt_material != "-" and belt_material != "":
                     belt = f"{belt} made of {belt_material}"
-                clothing.append(belt)
-            # SUITS (female)
+                accessory_clothing.append(belt)
+            # SUITS (female) - core clothing
             if s.get("womens_suits", "-") != "-":
                 suit = s.get("womens_suits").lower()
                 primary_color = s.get("womens_suits_primary_color", "-").lower()
@@ -1317,11 +1376,11 @@ class CharacterPromptBuilderScene:
                     elif accent_color != "-" and accent_color != "":
                         suit = f"{suit} with {accent_color} accents"
 
-                clothing.append(suit)
+                core_clothing.append(suit)
 
         # === MALE-SPECIFIC CLOTHING ===
         if gender == "Man":
-            # TOPS (male)
+            # TOPS (male) - core clothing
             if get("tops") != "-":
                 top = get("tops").lower()
                 top_color = get("tops_color").lower()
@@ -1330,8 +1389,8 @@ class CharacterPromptBuilderScene:
                     top = f"{top_color} {top}"
                 if top_material and top_material != "-":
                     top = f"{top} made of {top_material} material"
-                clothing.append(top)
-            # PANTS (male)
+                core_clothing.append(top)
+            # PANTS (male) - core clothing
             if get("pants") != "-":
                 pants = get("pants").lower()
                 pants_color = get("pants_color").lower()
@@ -1340,8 +1399,8 @@ class CharacterPromptBuilderScene:
                     pants = f"{pants_color} {pants}"
                 if pants_material and pants_material != "-":
                     pants = f"{pants} made of {pants_material.lower()} material"
-                clothing.append(pants)
-            # CAPES (male)
+                core_clothing.append(pants)
+            # CAPES (male) - core clothing
             if get("capes") != "-":
                 cape = get("capes").lower()
                 cape_color = get("capes_color").lower()
@@ -1350,15 +1409,15 @@ class CharacterPromptBuilderScene:
                     cape = f"{cape_color} {cape}"
                 if cape_material and cape_material != "-":
                     cape = f"{cape} made of {cape_material.lower()}"
-                clothing.append(cape)
-            # HATS (male)
+                core_clothing.append(cape)
+            # HATS (male) - accessory clothing
             if get("hats") != "-":
                 hat = get("hats").lower()
                 hat_color = get("hats_color").lower()
                 if hat_color != "-" and hat_color != "":
                     hat = f"{hat_color} {hat}"
-                clothing.append(hat)
-            # GLOVES (male)
+                accessory_clothing.append(hat)
+            # GLOVES (male) - accessory clothing
             if s.get("mens_gloves", "-") != "-":
                 gloves = s.get("mens_gloves").lower()
                 gloves_color = s.get("mens_gloves_color", "-").lower()
@@ -1367,8 +1426,8 @@ class CharacterPromptBuilderScene:
                     gloves = f"{gloves_color} {gloves}"
                 if gloves_material != "-" and gloves_material != "":
                     gloves = f"{gloves} made of {gloves_material}"
-                clothing.append(gloves)
-            # BELT (male)
+                accessory_clothing.append(gloves)
+            # BELT (male) - accessory clothing
             if s.get("mens_belt", "-") != "-":
                 belt = s.get("mens_belt").lower()
                 belt_color = s.get("mens_belt_color", "-").lower()
@@ -1377,16 +1436,16 @@ class CharacterPromptBuilderScene:
                     belt = f"{belt_color} {belt}"
                 if belt_material != "-" and belt_material != "":
                     belt = f"{belt} made of {belt_material}"
-                clothing.append(belt)
-            # SUITS (male)
+                accessory_clothing.append(belt)
+            # SUITS (male) - core clothing
             if s.get("mens_suits", "-") != "-":
                 suit = s.get("mens_suits").lower()
-                clothing.append(suit)
+                core_clothing.append(suit)
 
-        # CUSTOM CLOTHING (both genders)
+        # CUSTOM CLOTHING (both genders) - add to core clothing
         custom_clothing = s.get("custom_clothing", "")
         if custom_clothing and custom_clothing.strip():
-            clothing.append(custom_clothing.strip())
+            core_clothing.append(custom_clothing.strip())
 
         # Breasts and bum (for women)
         body_features = []
@@ -1409,6 +1468,8 @@ class CharacterPromptBuilderScene:
 
         if get("bum_size") != "-":
             body_features.append(f"{get('bum_size').lower()} bum")
+        if get("waist_size") != "-":
+            body_features.append(f"{get('waist_size').lower()} waist")
         body_features_phrase = ""
         if body_features:
             body_features_phrase = f"{subj} has " + " and ".join(body_features)
@@ -1457,19 +1518,27 @@ class CharacterPromptBuilderScene:
             subtle_nipple_phrase = f"Her {garment}, made of {garment_material}, is tightly stretched and visibly compressing her {details_str}, conforming closely to her shape and realistically revealing the natural contours beneath the fabric, including subtle outlines, the effect is natural and realistic, never explicit or exposed"
             extra_clothing_description = subtle_nipple_phrase
         # --- END: Subtle nipple outline logic ---
-        if clothing:
-            # Use commas and 'and' for the last item
-            if len(clothing) == 1:
-                clothing_str = clothing[0]
-            elif len(clothing) == 2:
-                clothing_str = f"{clothing[0]} and {clothing[1]}"
+        # Generate separate core and accessory clothing phrases (like shoes pattern)
+        core_clothing_phrase = ""
+        accessory_clothing_phrase = ""
+
+        # Build core_clothing_phrase
+        if core_clothing:
+            if len(core_clothing) == 1:
+                clothing_str = core_clothing[0]
+            elif len(core_clothing) == 2:
+                clothing_str = f"{core_clothing[0]} and {core_clothing[1]}"
             else:
-                clothing_str = ", ".join(clothing[:-1]) + f", and {clothing[-1]}"
+                clothing_str = (
+                    ", ".join(core_clothing[:-1]) + f", and {core_clothing[-1]}"
+                )
+
             if extra_clothing_description:
-                clothing_phrase = f"{subj} {get_verb(subj)} wearing a {clothing_str}, {extra_clothing_description}"
+                core_clothing_phrase = f"{subj} {get_verb(subj)} wearing {clothing_str}, {extra_clothing_description}"
             else:
-                clothing_phrase = f"{subj} {get_verb(subj)} wearing a {clothing_str}"
-            # If body features exist, append "covering ..." after clothing
+                core_clothing_phrase = f"{subj} {get_verb(subj)} wearing {clothing_str}"
+
+            # If body features exist, append "covering ..." after core clothing
             if body_features_phrase:
                 import re
 
@@ -1479,12 +1548,28 @@ class CharacterPromptBuilderScene:
                     body_features_phrase,
                     flags=re.IGNORECASE,
                 )
-                clothing_phrase += f" covering {covering_features}"
-            body_features_phrase = ""
-        else:
-            # No clothing present - nude handling
+                core_clothing_phrase += f" covering {covering_features}"
+                body_features_phrase = ""
+
+        # Build accessory_clothing_phrase
+        if accessory_clothing:
+            if len(accessory_clothing) == 1:
+                accessory_str = accessory_clothing[0]
+            elif len(accessory_clothing) == 2:
+                accessory_str = f"{accessory_clothing[0]} and {accessory_clothing[1]}"
+            else:
+                accessory_str = (
+                    ", ".join(accessory_clothing[:-1])
+                    + f", and {accessory_clothing[-1]}"
+                )
+
+            accessory_clothing_phrase = (
+                f"{subj} {get_verb(subj)} wearing {accessory_str}"
+            )
+
+        # Handle nude/shirtless cases when no core clothing
+        if not core_clothing:
             if gender == "Woman":
-                # Display the selected breast/nipple/areola details if no clothing is present
                 nipple_desc = ""
                 if get("nipple_appearance") != "-":
                     nipple_desc = get("nipple_appearance").lower()
@@ -1500,13 +1585,18 @@ class CharacterPromptBuilderScene:
                     details_str = ", ".join(details)
                 else:
                     details_str = "breasts and nipples"
-                clothing_phrase = f"{subj} {get_verb(subj)} completely nude and {poss} {details_str} are visible"
+
+                if accessory_clothing:
+                    # Has accessory clothing but no core - add nude description
+                    accessory_clothing_phrase += f" and {get_verb(subj)} completely nude and {poss} {details_str} are visible"
+                else:
+                    # Completely nude
+                    core_clothing_phrase = f"{subj} {get_verb(subj)} completely nude and {poss} {details_str} are visible"
             elif gender == "Man":
-                clothing_phrase = (
-                    f"{subj} {get_verb(subj)} shirtless" if not clothing else ""
-                )
-            else:
-                clothing_phrase = ""
+                if accessory_clothing:
+                    accessory_clothing_phrase += " and is otherwise shirtless"
+                else:
+                    core_clothing_phrase = f"{subj} {get_verb(subj)} shirtless"
 
         # Accessories
         # Only check for not "-" (no weight) for all female fashion fields
@@ -1833,8 +1923,9 @@ class CharacterPromptBuilderScene:
             facial_hair_phrase,
             makeup_phrase,
             expression_phrase,
-            clothing_phrase,
             body_features_phrase,
+            core_clothing_phrase,
+            accessory_clothing_phrase,
             shoes_phrase,
             jewelry_phrase,
             fingernail_phrase,
