@@ -19,7 +19,7 @@ class CharacterPromptBuilderScene:
                     data, "artistic_style_list", "professional photography"
                 ),
                 "character_sheet_render_style": (
-                    ["comic", "photorealistic"],
+                    ["comic", "photorealistic","3D cartoon illustration","UE5 animated 3D render"],
                     {
                         "default": "comic",
                         "display": "dropdown",
@@ -1430,7 +1430,11 @@ class CharacterPromptBuilderScene:
             # Choose style prefix based on character_sheet_render_style
             if character_sheet_render_style == "photorealistic":
                 style_prefix = "photorealistic"
-            else:
+            elif character_sheet_render_style == "3D cartoon illustration":
+                style_prefix = "3D cartoon illustration"
+            elif character_sheet_render_style == "UE5 animated 3D render":
+                style_prefix = "hyperrealistic Unreal Engine 5 animated 3D render"
+            else:  # comic
                 style_prefix = "Ink drawn comic book illustration"
             for camera_view, camera_shot, panel_name in panels:
                 # Build the camera phrase from view and shot
