@@ -947,31 +947,269 @@ class CharacterPromptBuilderScene:
 
                 core_clothing.append(suit)
 
-        if get("shoes") != "-":
-            shoe = get("shoes").lower()
-            shoe_color = get("shoes_color").lower()
-            if shoe_color != "-" and shoe_color != "":
-                shoe = f"{shoe_color} {shoe}"
-            accessory_clothing.append(shoe)
+        # CUSTOM CLOTHING (both genders) - add to core clothing
+        custom_clothing = s.get("custom_clothing", "")
+        if custom_clothing and custom_clothing.strip():
+            core_clothing.append(custom_clothing.strip())
 
-        if get("necklace") != "-":
-            necklace = get("necklace").lower()
-            accessory_clothing.append(necklace)
-        if get("earrings") != "-":
-            earrings = get("earrings").lower()
-            accessory_clothing.append(earrings)
-        if get("bracelet") != "-":
-            bracelet = get("bracelet").lower()
-            accessory_clothing.append(bracelet)
-        if get("ring") != "-":
-            ring = get("ring").lower()
-            accessory_clothing.append(ring)
-        if get("fingernail_style") != "-":
-            nails = get("fingernail_style").lower()
-            nail_color = get("fingernail_color").lower()
-            if nail_color != "-" and nail_color != "":
-                nails = f"{nails} with {nail_color} polish"
-            accessory_clothing.append(nails)
+        # Breasts and bum (for women)
+        body_features = []
+
+        if (
+            get("breast_size") != "-" or get("breast_cup_size") != "-"
+        ) and gender == "Woman":
+            breast_size = get("breast_size")
+            breast_cup_size = get("breast_cup_size")
+            breast_shape = get("breast_shape")
+            breast_desc = ""
+            if breast_size != "-":
+                breast_desc += f"{breast_size.lower()} "
+            if breast_cup_size != "-":
+                breast_desc += f"{breast_cup_size} cup "
+            if breast_shape != "-":
+                breast_desc += f"{breast_shape.lower()}-shaped "
+            breast_desc = breast_desc.strip()
+            body_features.append(f"{breast_desc} breasts")
+
+        if get("bum_size") != "-":
+            body_features.append(f"{get('bum_size').lower()} bum")
+        if get("waist_size") != "-":
+            body_features.append(f"{get('waist_size').lower()} waist")
+        body_features_phrase = ""
+        if body_features:
+            body_features_phrase = f"{subj} has " + " and ".join(body_features)
+
+        # --- BEGIN: Subtle nipple outline logic ---
+        subtle_nipple_phrase = ""
+        extra_clothing_description = None
+        stretched_material = s.get("stretched_material", False)
+        # Get material for top or dress
+        garment = None
+        garment_material = None
+        if get("dresses") != "-":
+            garment = "dress"
+            garment_material = s.get("dresses_material", "-").lower()
+        else:
+            garment = "top"
+            garment_material = s.get("tops_material", "-").lower()
+        if (
+            gender == "Woman"
+            and ((get("tops") != "-") or (get("dresses") != "-"))
+            and garment_material != "-"
+            and stretched_material
+        ):
+            # Use selected nipple/areola appearance if set, otherwise default to "nipples"
+            breast_size_desc = ""
+            if get("breast_size") != "-":
+                breast_size_desc = get("breast_size").lower()
+            nipple_desc = ""
+            if get("nipple_appearance") != "-":
+                nipple_desc = get("nipple_appearance").lower()
+            areola_desc = ""
+            if get("areola_appearance") != "-":
+                areola_desc = get("areola_appearance").lower()
+            # --- Improved, always safe-for-work phrasing ---
+            details = []
+            if breast_size_desc:
+                details.append(f"{breast_size_desc} breasts")
+            if nipple_desc:
+                details.append(f"{nipple_desc} nipples")
+            if areola_desc:
+                details.append(f"{areola_desc} areolae")
+            if details:
+                details_str = ", ".join(details)
+            else:
+                details_str = "breasts and nipples"
+            subtle_nipple_phrase = f"Her {garment}, made of {garment_material}, is tightly stretched and visibly compressing her {details_str}, conforming closely to her shape and realistically revealing the natural contours beneath the fabric, including subtle outlines, the effect is natural and realistic, never explicit or exposed"
+            extra_clothing_description = subtle_nipple_phrase
+        # --- END: Subtle nipple outline logic ---
+
+        # Generate separate core and accessory clothing phrases (like shoes pattern)
+        core_clothing_phrase = ""
+        accessory_clothing_phrase = ""
+
+        # Build core_clothing_phrase
+        if core_clothing:
+            if len(core_clothing) == 1:
+                clothing_str = core_clothing[0]
+            elif len(core_clothing) == 2:
+                clothing_str = f"{core_clothing[0]} and {core_clothing[1]}"
+            else:
+                clothing_str = (
+                    ", ".join(core_clothing[:-1]) + f", and {core_clothing[-1]}"
+                )
+
+            if extra_clothing_description:
+                core_clothing_phrase = f"{subj} {get_verb(subj)} wearing {clothing_str}, {extra_clothing_description}"
+            else:
+                core_clothing_phrase = f"{subj} {get_verb(subj)} wearing {clothing_str}"
+
+            # If body features exist, append "covering ..." after core clothing
+            if body_features_phrase:
+                covering_features = re.sub(
+                    f"^{subj} has ",
+                    f"{poss} ",
+                    body_features_phrase,
+                    flags=re.IGNORECASE,
+                )
+                core_clothing_phrase += f" covering {covering_features}"
+                body_features_phrase = ""
+
+        # Build accessory_clothing_phrase
+        if accessory_clothing:
+            if len(accessory_clothing) == 1:
+                accessory_str = accessory_clothing[0]
+            elif len(accessory_clothing) == 2:
+                accessory_str = f"{accessory_clothing[0]} and {accessory_clothing[1]}"
+            else:
+                accessory_str = (
+                    ", ".join(accessory_clothing[:-1])
+                    + f", and {accessory_clothing[-1]}"
+                )
+
+            accessory_clothing_phrase = (
+                f"{subj} {get_verb(subj)} wearing {accessory_str}"
+            )
+
+        # Handle nude/shirtless cases when no core clothing
+        if not core_clothing:
+            if gender == "Woman":
+                nipple_desc = ""
+                if get("nipple_appearance") != "-":
+                    nipple_desc = get("nipple_appearance").lower()
+                areola_desc = ""
+                if get("areola_appearance") != "-":
+                    areola_desc = get("areola_appearance").lower()
+                details = []
+                if nipple_desc:
+                    details.append(f"{nipple_desc} nipples")
+                if areola_desc:
+                    details.append(f"and {poss} {areola_desc} areolae")
+                if details:
+                    details_str = ", ".join(details)
+                else:
+                    details_str = "breasts and nipples"
+
+                if accessory_clothing:
+                    # Has accessory clothing but no core - add nude description
+                    accessory_clothing_phrase += f" and {get_verb(subj)} completely nude and {poss} {details_str} are visible"
+                else:
+                    # Completely nude
+                    core_clothing_phrase = f"{subj} {get_verb(subj)} completely nude and {poss} {details_str} are visible"
+            elif gender == "Man":
+                if accessory_clothing:
+                    accessory_clothing_phrase += " and is otherwise shirtless"
+                else:
+                    core_clothing_phrase = f"{subj} {get_verb(subj)} shirtless"
+
+        # Shoes - gender specific
+        shoes_phrase = ""
+        if get("womens_shoes") != "-" and gender == "Woman":
+            shoe_desc = get("womens_shoes").lower()
+            if get("womens_shoe_color") != "-":
+                shoe_desc = f"{get('womens_shoe_color').lower()} {shoe_desc}"
+            shoe_material = s.get("womens_shoe_material", "-")
+            if shoe_material and shoe_material != "-":
+                shoe_desc = f"{shoe_desc} made of {shoe_material.lower()}"
+            shoes_phrase = f"{subj} {get_verb(subj)} wearing {shoe_desc}"
+        # MENS SHOES
+        if s.get("mens_shoes", "-") != "-" and gender == "Man":
+            shoe_desc = s.get("mens_shoes").lower()
+            if s.get("mens_shoe_color", "-") != "-":
+                shoe_desc = f"{s.get('mens_shoe_color').lower()} {shoe_desc}"
+            shoe_material = s.get("mens_shoe_material", "-")
+            if shoe_material and shoe_material != "-":
+                shoe_desc = f"{shoe_desc} made of {shoe_material.lower()}"
+            shoes_phrase = f"{subj} {get_verb(subj)} wearing {shoe_desc}"
+
+        # Accessories
+        # Only check for not "-" (no weight) for all female fashion fields
+        jewelry = []
+        necklace = get("necklace")
+        earrings = get("earrings")
+        bracelet = get("bracelet")
+        ring = get("ring")
+        watches = get("watches")
+        watches_color = get("watches_color")
+        glasses = ""
+        glasses_color = ""
+        if s.get("mens_glasses", "-") != "-" and s.get("gender", "-") == "Man":
+            glasses = s.get("mens_glasses").lower()
+            glasses_color = s.get("mens_glasses_color", "-").lower()
+        if s.get("womens_glasses", "-") != "-" and s.get("gender", "-") == "Woman":
+            glasses = s.get("womens_glasses").lower()
+            glasses_color = s.get("womens_glasses_color", "-").lower()
+        mask = ""
+        mask_color = ""
+        mask_material = ""
+        if s.get("mens_mask", "-") != "-" and s.get("gender", "-") == "Man":
+            mask = s.get("mens_mask").lower()
+            mask_color = s.get("mens_mask_color", "-").lower()
+            mask_material = s.get("mens_mask_material", "-").lower()
+        if s.get("womens_mask", "-") != "-" and s.get("gender", "-") == "Woman":
+            mask = s.get("womens_mask").lower()
+            mask_color = s.get("womens_mask_color", "-").lower()
+            mask_material = s.get("womens_mask_material", "-").lower()
+        accessory_parts = []
+        if necklace != "-":
+            accessory_parts.append(f"{get('necklace').lower()} necklace")
+        if earrings != "-":
+            accessory_parts.append(f"{get('earrings').lower()} earrings")
+        if bracelet != "-":
+            accessory_parts.append(f"{get('bracelet').lower()} bracelet")
+        if ring != "-":
+            accessory_parts.append(f"{get('ring').lower()} ring")
+        if watches != "-":
+            watch = watches.lower()
+            if watches_color != "-" and watches_color != "":
+                watch = f"{watches_color.lower()} {watch}"
+            accessory_parts.append(f"{watch} watch")
+        if glasses and glasses != "-":
+            if glasses_color != "-" and glasses_color != "":
+                glasses = f"{glasses_color} {glasses}"
+            accessory_parts.append(f"{glasses}")
+        if mask and mask != "-":
+            mask_desc = mask
+            if mask_color != "-" and mask_color != "":
+                mask_desc = f"{mask_color} {mask_desc}"
+            if mask_material != "-" and mask_material != "":
+                mask_desc = f"{mask_desc} made of {mask_material}"
+            accessory_parts.append(f"{mask_desc}")
+        jewelry_phrase = ""
+        if accessory_parts:
+            # Use Oxford comma for last item
+            if len(accessory_parts) == 1:
+                jewelry_phrase = f"accessorized with {accessory_parts[0]}"
+            else:
+                jewelry_phrase = (
+                    f"accessorized with "
+                    + ", ".join(accessory_parts[:-1])
+                    + f", and {accessory_parts[-1]}"
+                )
+
+        # Fingernails (for women, if not wearing gloves)
+        fingernails_present = get("fingernail_style") != "-" and gender == "Woman"
+        gloves_type = s.get("womens_gloves", "-").lower()
+        gloves_present = gloves_type != "-" and s.get("gender", "-") == "Woman"
+        show_fingernails = fingernails_present and (
+            not gloves_present or "fingerless" in gloves_type
+        )
+        fingernail_phrase = ""
+        if show_fingernails:
+            fingernail_style = get("fingernail_style").lower().replace(" nails", "")
+            nail_color = (
+                get("fingernail_color").lower()
+                if get("fingernail_color") != "-"
+                else ""
+            )
+            if nail_color:
+                fingernail_phrase = (
+                    f"{poss} fingernails are {fingernail_style}, painted {nail_color}"
+                )
+            else:
+                fingernail_phrase = f"{poss} fingernails are {fingernail_style}"
+        elif not gloves_present and gender == "Woman":
+            fingernail_phrase = f"{poss} hands and fingers are visible"
 
         pose = get("model_pose")
         pose_phrase = ""
@@ -1034,12 +1272,18 @@ class CharacterPromptBuilderScene:
             all_phrase_parts.append(facial_hair_phrase)
         if fashion_phrase:
             all_phrase_parts.append(fashion_phrase)
-        if core_clothing:
-            core_clothing_str = ", ".join(core_clothing)
-            all_phrase_parts.append(f"wearing {core_clothing_str}")
-        if accessory_clothing:
-            accessory_clothing_str = ", ".join(accessory_clothing)
-            all_phrase_parts.append(f"with {accessory_clothing_str}")
+        if core_clothing_phrase:
+            all_phrase_parts.append(core_clothing_phrase)
+        if accessory_clothing_phrase:
+            all_phrase_parts.append(accessory_clothing_phrase)
+        if shoes_phrase:
+            all_phrase_parts.append(shoes_phrase)
+        if jewelry_phrase:
+            all_phrase_parts.append(jewelry_phrase)
+        if fingernail_phrase:
+            all_phrase_parts.append(fingernail_phrase)
+        if body_features_phrase:
+            all_phrase_parts.append(body_features_phrase)
         if pose_phrase:
             all_phrase_parts.append(pose_phrase)
         if camera_phrase:

@@ -1907,8 +1907,7 @@
     "close-up",
     "extreme close-up",
     "cowboy",
-    "establishing",
-    "full body view only, camera zoomed out so she is in the center of the frame with 15% white space from edge of image, show entire body including feet"
+    "establishing"
   ],
   "camera_view_list": [
     "front view",
@@ -1924,6 +1923,7 @@
     "back-left quarter view",
     "front-left quarter view",
     "overhead view",
+    "drone view",
     "low angle view",
     "high angle view",
     "eye-level view",
@@ -2700,6 +2700,7 @@
     "high fashion editorial",
     "hyperrealistic Unreal Engine 5 animated 3D render",
     "ink drawing",
+    "Instagram reel",
     "Instagram mirror selfie",
     "line art",
     "monochrome",
