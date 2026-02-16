@@ -1216,30 +1216,6 @@ class CharacterPromptBuilderScene:
         if pose != "-":
             pose_phrase = f"{subj} is {pose.lower()}"
 
-        shot = get("camera_shot")
-        view = get("camera_view")
-        camera_phrase = ""
-        if shot != "-" and view != "-":
-            camera_phrase = f"{view.lower()}, {shot.lower()} shot"
-        elif shot != "-":
-            camera_phrase = f"{shot.lower()} shot"
-        elif view != "-":
-            camera_phrase = view.lower()
-
-        location_phrase = ""
-        loc = get("location")
-        if loc and loc != "-":
-            location_phrase = f"in {loc.lower()}"
-
-        lighting_phrase = ""
-        lt = get("light_type")
-        lq = get("light_quality")
-        if lt != "-":
-            if lq != "-":
-                lighting_phrase = f"lit by {lq.lower()} {lt.lower()}"
-            else:
-                lighting_phrase = f"lit by {lt.lower()}"
-
         skin_details_phrase = ""
         skin_details = get("skin_details")
         if skin_details and skin_details != "-":
@@ -1250,83 +1226,293 @@ class CharacterPromptBuilderScene:
         if tattoos and tattoos != "-" and tattoos != "No tattoos":
             tattoo_phrase = f"{subj} has {tattoos.lower()}"
 
-        props_color = get("props_color")
-        props_color_phrase = ""
-        if props_color and props_color != "-":
-            props_color_phrase = f"with {props_color.lower()} props"
+        # Props handling with action parsing
+        props = s.get("props", "-")
+        props_color = s.get("props_color", "-")
+        props_phrase = ""
+        if props and props != "-":
+            # If props starts with a verb (e.g., "holding", "carrying"), insert color before the object
+            match = re.match(r"(\w+ing) (a|an|the)? ?(.+)", props.lower())
+            if match:
+                verb = match.group(1)
+                article = match.group(2) or ""
+                obj = match.group(3)
+                if props_color and props_color != "-":
+                    props_phrase = f"{subj.lower()} {get_verb(subj)} {verb} {article} {props_color.lower()} {obj}".replace(
+                        "  ", " "
+                    )
+                else:
+                    props_phrase = f"{subj.lower()} {get_verb(subj)} {verb} {article} {obj}".replace(
+                        "  ", " "
+                    )
+            else:
+                # fallback: just append color before prop
+                if props_color and props_color != "-":
+                    props_phrase = f"{subj.lower()} {get_verb(subj)} {props_color.lower()} {props.lower()}"
+                else:
+                    props_phrase = f"{subj.lower()} {get_verb(subj)} {props.lower()}"
 
-        all_phrase_parts = []
-        if subject_sentence:
-            all_phrase_parts.append(subject_sentence)
-        if body_type_phrase:
-            all_phrase_parts.append(body_type_phrase)
-        if face_features_phrase:
-            all_phrase_parts.append(face_features_phrase)
-        if lips_phrase:
-            all_phrase_parts.append(lips_phrase)
-        if makeup_phrase:
-            all_phrase_parts.append(makeup_phrase)
-        if hair_phrase:
-            all_phrase_parts.append(hair_phrase)
-        if facial_hair_phrase:
-            all_phrase_parts.append(facial_hair_phrase)
-        if fashion_phrase:
-            all_phrase_parts.append(fashion_phrase)
-        if core_clothing_phrase:
-            all_phrase_parts.append(core_clothing_phrase)
-        if accessory_clothing_phrase:
-            all_phrase_parts.append(accessory_clothing_phrase)
-        if shoes_phrase:
-            all_phrase_parts.append(shoes_phrase)
-        if jewelry_phrase:
-            all_phrase_parts.append(jewelry_phrase)
-        if fingernail_phrase:
-            all_phrase_parts.append(fingernail_phrase)
-        if body_features_phrase:
-            all_phrase_parts.append(body_features_phrase)
-        if pose_phrase:
-            all_phrase_parts.append(pose_phrase)
-        if camera_phrase:
-            all_phrase_parts.append(f"view is {camera_phrase}")
-        if location_phrase:
-            all_phrase_parts.append(location_phrase)
-        if lighting_phrase:
-            all_phrase_parts.append(lighting_phrase)
-        if skin_details_phrase:
-            all_phrase_parts.append(skin_details_phrase)
-        if tattoo_phrase:
-            all_phrase_parts.append(tattoo_phrase)
-        if props_color_phrase:
-            all_phrase_parts.append(props_color_phrase)
+        # Custom action/pose
+        custom_action = s.get("custom_action", "") or s.get("custom_pose", "")
+        custom_action_phrase = ""
+        if custom_action and custom_action.strip():
+            custom_action_phrase = custom_action.strip()
 
-        main_desc = ", ".join(all_phrase_parts)
+        # Expression
+        expression_phrase = ""
+        if get("facial_expression") != "-":
+            expression_phrase = (
+                f"{subj} has a {get('facial_expression').lower()} facial expression"
+            )
 
-        tail = ""
-        if style_prefix:
-            tail = style_prefix
+        # Camera shot and view
+        camera_shot_view_phrase = ""
+        if get("camera_shot") != "-" and get("camera_view") != "-":
+            camera_shot_view_phrase = (
+                f"{get('camera_view').lower()}, {get('camera_shot').lower()}"
+            )
+        elif get("camera_shot") != "-":
+            camera_shot_view_phrase = f"{get('camera_shot').lower()}"
+        elif get("camera_view") != "-":
+            camera_shot_view_phrase = get("camera_view").lower()
+        if camera_shot_view_phrase:
+            camera_shot_view_phrase = f"{camera_shot_view_phrase} shot"
 
-        if main_desc and tail:
-            prompt = main_desc
-            if not prompt.endswith("."):
-                prompt += "."
-            prompt += " " + tail
-        elif main_desc:
-            prompt = main_desc
-            if prompt and not prompt.endswith("."):
-                prompt += "."
+        # Camera angles
+        camera_horizontal = get("camera_horizontal_angle")
+        camera_vertical = get("camera_vertical_angle")
+        camera_horizontal_angle_phrase = ""
+        camera_vertical_angle_phrase = ""
+        camera_combined_angle_phrase = ""
+        if camera_horizontal != "-" and camera_vertical != "-":
+            camera_combined_angle_phrase = f"set at a {camera_horizontal.lower()} and is set at a {camera_vertical.lower()}"
         else:
-            phrases = []
-            if style_prefix:
-                phrases.append(style_prefix)
-            if location_phrase:
-                phrases.append(f"in {location_phrase}")
-            if lighting_phrase:
-                phrases.append(lighting_phrase)
-            main_desc = ", ".join(phrases)
-            prompt = main_desc
-            if prompt and not prompt.endswith("."):
-                prompt += "."
-        return prompt.strip()
+            if camera_horizontal != "-":
+                camera_horizontal_angle_phrase = f"set at a {camera_horizontal.lower()}"
+            if camera_vertical != "-":
+                camera_vertical_angle_phrase = f"set at a {camera_vertical.lower()}"
+
+        camera_lens_phrase = ""
+        if get("camera_lens") != "-":
+            camera_lens_phrase = f"the camera lens is a {get('camera_lens').lower()}"
+
+        camera_model_phrase = ""
+        if get("camera_model") != "-":
+            camera_model_phrase = f"the camera is a {get('camera_model').lower()}"
+
+        # Location
+        location = get("location", "")
+        location_phrase = ""
+        if location and location.strip():
+            location_phrase = f"The scene takes place {location.strip()}"
+        elif s.get("preset_location") and s.get("preset_location") != "-":
+            location_phrase = f"The scene takes place {s.get('preset_location')}"
+
+        # Lighting
+        lighting_phrase = ""
+        if get("light_type") != "-":
+            light_desc = ""
+            if get("light_quality") != "-":
+                light_desc += get("light_quality").lower()
+            if get("light_type") != "-":
+                if light_desc:
+                    light_desc += " "
+                light_desc += get("light_type").lower()
+            lighting_phrase = f"The scene is lit by {light_desc}"
+
+        # Environment
+        env_parts = []
+        if get("time_of_day") != "-":
+            env_parts.append(f"It is {get('time_of_day').lower()}")
+        if get("weather") != "-":
+            env_parts.append(f"The weather is {get('weather').lower()}")
+        if get("season") != "-":
+            env_parts.append(f"It is {get('season').lower()} season")
+        environment_phrase = " ".join(env_parts)
+
+        # Skin features
+        skin_features = []
+        if skin_details and skin_details != "-":
+            skin_features.append(skin_details)
+        freckles_val = s.get("freckles", "-")
+        if freckles_val and freckles_val != "-":
+            skin_features.append(freckles_val)
+        dimples_val = s.get("dimples", "-")
+        if dimples_val and dimples_val != "-":
+            skin_features.append(dimples_val)
+        moles_val = s.get("moles", "-")
+        if moles_val and moles_val != "-":
+            skin_features.append(moles_val)
+        tanned_skin_val = s.get("tanned_skin", "-")
+        if tanned_skin_val and tanned_skin_val != "-":
+            skin_features.append(tanned_skin_val)
+        skin_acne_val = s.get("skin_acne", "-")
+        if skin_acne_val and skin_acne_val != "-":
+            skin_features.append(skin_acne_val)
+        skin_imperfections_val = s.get("skin_imperfections", "-")
+        if skin_imperfections_val and skin_imperfections_val != "-":
+            skin_features.append(skin_imperfections_val)
+        skin_phrase = ""
+        if skin_features:
+            skin_phrase = f"{poss} skin shows " + ", ".join(skin_features)
+
+        # Compose into a single natural language paragraph
+        phrases = [
+            camera_shot_view_phrase,
+            style_prefix if style_prefix else None,
+            camera_model_phrase,
+            camera_lens_phrase,
+            camera_combined_angle_phrase
+            if camera_combined_angle_phrase
+            else camera_horizontal_angle_phrase,
+            camera_vertical_angle_phrase if not camera_combined_angle_phrase else "",
+            subject_sentence,
+            body_type_phrase,
+            pose_phrase,
+            custom_action_phrase,
+            props_phrase,
+            face_features_phrase,
+            lips_phrase,
+            hair_phrase,
+            facial_hair_phrase,
+            makeup_phrase,
+            expression_phrase,
+            body_features_phrase,
+            core_clothing_phrase,
+            accessory_clothing_phrase,
+            shoes_phrase,
+            jewelry_phrase,
+            fingernail_phrase,
+            skin_phrase,
+            tattoo_phrase,
+            fashion_phrase,
+        ]
+
+        # For multi-person (include_scene_tail=False), exclude location/environment/lighting
+        if include_scene_tail:
+            tail_phrases = [
+                location_phrase,
+                environment_phrase,
+                lighting_phrase,
+            ]
+        else:
+            tail_phrases = []
+
+        # Remove empty phrases and strip
+        phrases = [p.strip() for p in phrases if p and p.strip()]
+        tail_phrases = [p.strip() for p in tail_phrases if p and p.strip()]
+
+        # 4-panel character sheet handling
+        if s.get("artistic_style") == "4-panel character sheet":
+            panels = [
+                (
+                    s.get("panel1_camera_view", "front view"),
+                    s.get("panel1_camera_shot", "wide"),
+                    "Panel 1",
+                ),
+                (
+                    s.get("panel2_camera_view", "back view"),
+                    s.get("panel2_camera_shot", "wide"),
+                    "Panel 2",
+                ),
+                (
+                    s.get("panel3_camera_view", "right side view"),
+                    s.get("panel3_camera_shot", "wide"),
+                    "Panel 3",
+                ),
+                (
+                    s.get("panel4_camera_view", "front view"),
+                    s.get("panel4_camera_shot", "medium close up"),
+                    "Panel 4",
+                ),
+            ]
+            panel_prompts = []
+            # Choose style prefix based on character_sheet_render_style
+            if character_sheet_render_style == "photorealistic":
+                style_prefix = "photorealistic"
+            else:
+                style_prefix = "Ink drawn comic book illustration"
+            for camera_view, camera_shot, panel_name in panels:
+                # Build the camera phrase from view and shot
+                camera_phrase = ""
+                if camera_view != "-" and camera_shot != "-":
+                    camera_phrase = f"{camera_view.lower()} {camera_shot.lower()} shot"
+                elif camera_view != "-":
+                    camera_phrase = f"{camera_view.lower()} shot"
+                elif camera_shot != "-":
+                    camera_phrase = f"{camera_shot.lower()} shot"
+
+                # Update phrases with the new camera phrase
+                panel_phrases = phrases.copy()
+                # Remove any phrase containing "4-panel character sheet style"
+                panel_phrases = [
+                    p
+                    for p in panel_phrases
+                    if not (p and "4-panel character sheet style" in p)
+                ]
+                # Remove the original camera_shot_view_phrase if present (first phrase)
+                if (
+                    panel_phrases
+                    and camera_shot_view_phrase
+                    and panel_phrases[0] == camera_shot_view_phrase
+                ):
+                    panel_phrases.pop(0)
+                # Insert the camera phrase at the beginning
+                if camera_phrase:
+                    panel_phrases.insert(0, camera_phrase)
+                main_desc_panel = ", ".join(panel_phrases) + "\n"
+                panel_prompts.append(f"{panel_name}: {main_desc_panel}")
+            prompt = (
+                f"Generate a {style_prefix} character model sheet image with 4 evenly spaced vertical column panels: \n\n"
+                + "\n".join(panel_prompts)
+            )
+            return prompt
+        else:
+            # Add tail if include_scene_tail
+            tail_phrases = []
+            if include_scene_tail:
+                # Location
+                location = s.get("location", "")
+                if location and location.strip():
+                    tail_phrases.append(f"The scene takes place {location.strip()}")
+                elif s.get("preset_location") and s.get("preset_location") != "-":
+                    tail_phrases.append(
+                        f"The scene takes place {s.get('preset_location')}"
+                    )
+                # Environment
+                env_parts = []
+                if s.get("time_of_day") != "-":
+                    env_parts.append(f"It is {s.get('time_of_day').lower()}")
+                if s.get("weather") != "-":
+                    env_parts.append(f"The weather is {s.get('weather').lower()}")
+                if s.get("season") != "-":
+                    env_parts.append(f"It is {s.get('season').lower()} season")
+                if env_parts:
+                    tail_phrases.append(" ".join(env_parts))
+                # Lighting
+                if s.get("light_type") != "-":
+                    light_desc = ""
+                    if s.get("light_quality", "-") != "-":
+                        light_desc += s.get("light_quality").lower()
+                    if s.get("light_type") != "-":
+                        if light_desc:
+                            light_desc += " "
+                        light_desc += s.get("light_type").lower()
+                    tail_phrases.append(f"The scene is lit by {light_desc}")
+
+            tail = ". ".join(tail_phrases)
+            if tail:
+                main_desc = ", ".join(phrases)
+                prompt = main_desc
+                if not prompt.endswith("."):
+                    prompt += "."
+                prompt += " " + tail
+            else:
+                main_desc = ", ".join(phrases)
+                prompt = main_desc
+                if prompt and not prompt.endswith("."):
+                    prompt += "."
+            return prompt.strip()
 
 
 NODE_CLASS_MAPPINGS = {
