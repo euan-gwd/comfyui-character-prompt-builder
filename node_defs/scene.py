@@ -756,7 +756,10 @@ class CharacterPromptBuilderScene:
         self, s, include_scene_tail=True, character_sheet_render_style="comic"
     ):
         # Check if this is a spaceship character
-        if s.get("character_type") == "spaceship":
+        if (
+            s.get("character_type") == "spaceship"
+            and s.get("artistic_style") != "4-panel character sheet"
+        ):
             return self._generate_spaceship_prompt(s, include_scene_tail)
 
         def get_eye_mood(expression):
