@@ -4361,6 +4361,10 @@
     "Low mounted",
     "Mid-fuselage",
     "Shoulder mounted",
+    "Angled downward",
+    "Angled upward",
+    "High mount angled down",
+    "High mount angled up",
     "Anhedral (downward tilt)",
     "Dihedral (upward tilt)",
     "Shoulder with anhedral",
@@ -4371,6 +4375,11 @@
     "0",
     "1",
     "2",
+    "Twin tail fins",
+    "V-shaped tail",
+    "Split tail",
+    "Triple tail fins",
+    "Inverted V-shaped tail",
     "Twin tail",
     "V-tail",
     "Pelican tail",
@@ -4380,6 +4389,10 @@
   "spaceship_canard_list": [
     "-",
     "None",
+    "Small triangular wings near front",
+    "Two small front wings",
+    "Front wings close to main wings",
+    "Extended front wings",
     "Fore-mounted delta",
     "Canard pairs",
     "Close-coupled",
@@ -4412,9 +4425,12 @@
     "Quad nozzles",
     "Single large exhaust",
     "Offset engines",
+    "Rotating nozzles",
+    "Engines that fold away",
+    "Split exhaust",
+    "Ring-shaped exhaust",
     "Gimbaled thrust vectoring",
     "Retractable engine pods",
-    "Split exhaust",
     "Annular exhaust"
   ],
   "spaceship_fuselage_shape_list": [
@@ -4431,13 +4447,14 @@
   ],
   "spaceship_hull_structure_list": [
     "-",
+    "Single-piece shell",
     "Monocoque",
-    "Segmented plates",
+    "Armored plate sections",
     "Modular sections",
-    "Frame and skin",
-    "Honeycomb core",
-    "Sandwich composite",
-    "Armored sections"
+    "Frame with outer covering",
+    "Lightweight honeycomb construction",
+    "Layered composite material",
+    "Heavy armored sections"
   ],
   "spaceship_surface_texture_list": [
     "-",
@@ -4447,6 +4464,9 @@
     "Armored plates",
     "Corrugated",
     "Heat tiles",
+    "Heat-resistant tiles",
+    "Microscopic surface pattern",
+    "Angular radar-deflecting surfaces",
     "Ablative coating",
     "Nano-textured",
     "Stealth faceting"
@@ -4497,5 +4517,19 @@
     "Gear retracted",
     "Gear deployed",
     "Partially deployed"
+  ],
+  "spaceship_style_list": [
+    "-",
+    "Mass Effect",
+    "Halo UNSC",
+    "Halo Covenant",
+    "Star Trek Federation",
+    "Star Wars Rebel",
+    "Star Wars Imperial",
+    "The Expanse",
+    "Babylon 5 Earth Alliance",
+    "Babylon 5 Minbari",
+    "Battlestar Galactica",
+    "Generic Sci-Fi"
   ]
 }
