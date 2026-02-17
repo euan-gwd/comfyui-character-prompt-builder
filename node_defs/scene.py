@@ -28,7 +28,7 @@ class CharacterPromptBuilderScene:
                     {
                         "default": "comic",
                         "display": "dropdown",
-                        "visible": "artistic_style == '4-panel character sheet'",
+                        "visible": "artistic_style == 'character sheet'",
                     },
                 ),
                 "panel1_camera_view": combo(
@@ -37,7 +37,7 @@ class CharacterPromptBuilderScene:
                     "front view",
                     {
                         "display": "dropdown",
-                        "visible": "artistic_style == '4-panel character sheet'",
+                        "visible": "artistic_style == 'character sheet'",
                     },
                 ),
                 "panel1_camera_shot": combo(
@@ -46,7 +46,7 @@ class CharacterPromptBuilderScene:
                     "wide",
                     {
                         "display": "dropdown",
-                        "visible": "artistic_style == '4-panel character sheet'",
+                        "visible": "artistic_style == 'character sheet'",
                     },
                 ),
                 "panel2_camera_view": combo(
@@ -55,7 +55,7 @@ class CharacterPromptBuilderScene:
                     "back view",
                     {
                         "display": "dropdown",
-                        "visible": "artistic_style == '4-panel character sheet'",
+                        "visible": "artistic_style == 'character sheet'",
                     },
                 ),
                 "panel2_camera_shot": combo(
@@ -64,7 +64,7 @@ class CharacterPromptBuilderScene:
                     "wide",
                     {
                         "display": "dropdown",
-                        "visible": "artistic_style == '4-panel character sheet'",
+                        "visible": "artistic_style == 'character sheet'",
                     },
                 ),
                 "panel3_camera_view": combo(
@@ -73,7 +73,7 @@ class CharacterPromptBuilderScene:
                     "right side view",
                     {
                         "display": "dropdown",
-                        "visible": "artistic_style == '4-panel character sheet'",
+                        "visible": "artistic_style == 'character sheet'",
                     },
                 ),
                 "panel3_camera_shot": combo(
@@ -82,7 +82,7 @@ class CharacterPromptBuilderScene:
                     "wide",
                     {
                         "display": "dropdown",
-                        "visible": "artistic_style == '4-panel character sheet'",
+                        "visible": "artistic_style == 'character sheet'",
                     },
                 ),
                 "panel4_camera_view": combo(
@@ -91,7 +91,7 @@ class CharacterPromptBuilderScene:
                     "front view",
                     {
                         "display": "dropdown",
-                        "visible": "artistic_style == '4-panel character sheet'",
+                        "visible": "artistic_style == 'character sheet'",
                     },
                 ),
                 "panel4_camera_shot": combo(
@@ -100,7 +100,7 @@ class CharacterPromptBuilderScene:
                     "medium close up",
                     {
                         "display": "dropdown",
-                        "visible": "artistic_style == '4-panel character sheet'",
+                        "visible": "artistic_style == 'character sheet'",
                     },
                 ),
                 "camera_model": combo(data, "camera_model_list"),
@@ -758,7 +758,7 @@ class CharacterPromptBuilderScene:
         # Check if this is a spaceship character
         if (
             s.get("character_type") == "spaceship"
-            and s.get("artistic_style") != "4-panel character sheet"
+            and s.get("artistic_style") != "character sheet"
         ):
             return self._generate_spaceship_prompt(s, include_scene_tail)
 
@@ -1796,8 +1796,8 @@ class CharacterPromptBuilderScene:
         phrases = [p.strip() for p in phrases if p and p.strip()]
         tail_phrases = [p.strip() for p in tail_phrases if p and p.strip()]
 
-        # 4-panel character sheet handling
-        if s.get("artistic_style") == "4-panel character sheet":
+        # character sheet handling
+        if s.get("artistic_style") == "character sheet":
             panels = [
                 (
                     s.get("panel1_camera_view", "front view"),
@@ -1864,11 +1864,11 @@ class CharacterPromptBuilderScene:
                     # For humans, use the existing logic
                     # Update phrases with the new camera phrase
                     panel_phrases = phrases.copy()
-                    # Remove any phrase containing "4-panel character sheet style"
+                    # Remove any phrase containing "character sheet style"
                     panel_phrases = [
                         p
                         for p in panel_phrases
-                        if not (p and "4-panel character sheet style" in p)
+                        if not (p and "character sheet style" in p)
                     ]
                     # Remove the original camera_shot_view_phrase if present (first phrase)
                     if (
