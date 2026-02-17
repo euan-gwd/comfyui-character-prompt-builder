@@ -104,7 +104,7 @@ class CharacterPromptBuilderScene:
                 "panel4_camera_shot": combo(
                     data,
                     "camera_shot_list",
-                    "medium close up",
+                    "close up",
                     {
                         "display": "dropdown",
                         "visible": "artistic_style == 'character sheet' and num_panels == '4'",
@@ -1929,7 +1929,7 @@ class CharacterPromptBuilderScene:
             elif character_sheet_render_style == "3D cartoon illustration":
                 style_prefix = "3D cartoon illustration"
             elif character_sheet_render_style == "UE5 animated 3D render":
-                style_prefix = "hyperrealistic Unreal Engine 5 animated 3D render"
+                style_prefix = "Unreal Engine 5 animated 3D render"
             else:  # comic
                 style_prefix = "Ink drawn comic book illustration"
 
@@ -2061,7 +2061,7 @@ class CharacterPromptBuilderScene:
 
             # Build final prompt
             prompt = (
-                f"Generate a {style_prefix} character model sheet image with {num_panels} evenly spaced vertical column panels, simple solid background, simple uniform lighting, focus only on the subject: \n\n"
+                f"Generate a {style_prefix} character model sheet image with {num_panels} evenly spaced vertical column panels: \n\n"
                 + "\n".join(panel_prompts)
             )
 
