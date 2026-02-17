@@ -159,6 +159,42 @@ class CharacterPromptBuilderScene:
                 "season": (["-", "Spring", "Summer", "Autumn", "Winter"],),
                 "light_type": combo(data, "light_type_list"),
                 "light_quality": combo(data, "light_quality_list"),
+                "spaceship_environment": combo(
+                    data,
+                    "spaceship_environment_list",
+                    "-",
+                    {
+                        "display": "dropdown",
+                        "visible": "character_type == 'spaceship'",
+                    },
+                ),
+                "spaceship_lighting": combo(
+                    data,
+                    "spaceship_lighting_list",
+                    "-",
+                    {
+                        "display": "dropdown",
+                        "visible": "character_type == 'spaceship'",
+                    },
+                ),
+                "spaceship_background": combo(
+                    data,
+                    "spaceship_background_list",
+                    "-",
+                    {
+                        "display": "dropdown",
+                        "visible": "character_type == 'spaceship'",
+                    },
+                ),
+                "engine_glow_intensity": combo(
+                    data,
+                    "engine_glow_intensity_list",
+                    "moderate",
+                    {
+                        "display": "dropdown",
+                        "visible": "character_type == 'spaceship'",
+                    },
+                ),
                 "prompt_prefix": (
                     "STRING",
                     {
@@ -226,6 +262,10 @@ class CharacterPromptBuilderScene:
         panel3_camera_shot="wide",
         panel4_camera_view="front view",
         panel4_camera_shot="medium close up",
+        spaceship_environment="-",
+        spaceship_lighting="-",
+        spaceship_background="-",
+        engine_glow_intensity="moderate",
     ):
         settings_list = [settings1]
         if num_people in ("2", "3", "4"):
@@ -266,6 +306,10 @@ class CharacterPromptBuilderScene:
             "season": season,
             "light_type": light_type,
             "light_quality": light_quality,
+            "spaceship_environment": spaceship_environment,
+            "spaceship_lighting": spaceship_lighting,
+            "spaceship_background": spaceship_background,
+            "engine_glow_intensity": engine_glow_intensity,
             "panel1_camera_view": panel1_camera_view,
             "panel1_camera_shot": panel1_camera_shot,
             "panel2_camera_view": panel2_camera_view,
@@ -453,9 +497,21 @@ class CharacterPromptBuilderScene:
             engine_parts.append(engine_desc)
 
         # Add propulsion with glow color
+        engine_glow_intensity = get("engine_glow_intensity", "moderate")
         if propulsion_type != "-":
             propulsion_desc = f"{propulsion_type.lower()}"
-            if engine_glow_color != "-":
+
+            engine_glow_color = get("engine_glow_color", "-")
+            if engine_glow_intensity == "none":
+                pass
+            elif engine_glow_intensity == "subtle" and engine_glow_color != "-":
+                propulsion_desc += (
+                    f" emitting a subtle {engine_glow_color.lower()} glow"
+                )
+            elif (
+                engine_glow_intensity in ["moderate", "prominent", "overwhelming"]
+                and engine_glow_color != "-"
+            ):
                 propulsion_desc += f" emitting a {engine_glow_color.lower()} glow"
 
             if engine_parts:
@@ -706,33 +762,51 @@ class CharacterPromptBuilderScene:
         # Build tail (scene context)
         tail_phrases = []
         if include_scene_tail:
-            # Location
-            location = get("location", "")
-            if location and location.strip():
-                tail_phrases.append(f"The scene takes place {location.strip()}")
-            elif get("preset_location") != "-":
-                tail_phrases.append(f"The scene takes place {get('preset_location')}")
+            # Location - use spaceship_environment for spaceships
+            spaceship_environment = get("spaceship_environment", "-")
+            if spaceship_environment != "-":
+                tail_phrases.append(f"The scene takes place in {spaceship_environment}")
             else:
-                tail_phrases.append("The starship floats in deep space")
+                location = get("location", "")
+                if location and location.strip():
+                    tail_phrases.append(f"The scene takes place {location.strip()}")
+                elif get("preset_location") != "-":
+                    tail_phrases.append(
+                        f"The scene takes place {get('preset_location')}"
+                    )
+                else:
+                    tail_phrases.append("The starship floats in deep space")
 
-            # Environment
-            env_parts = []
-            if get("time_of_day") != "-":
-                env_parts.append(f"It is {get('time_of_day').lower()}")
-            if get("weather") != "-":
-                env_parts.append(f"The weather is {get('weather').lower()}")
-            if get("season") != "-":
-                env_parts.append(f"It is {get('season').lower()} season")
-            if env_parts:
-                tail_phrases.append(". ".join(env_parts))
+            # Background
+            spaceship_background = get("spaceship_background", "-")
+            if spaceship_background != "-":
+                tail_phrases.append(f"with {spaceship_background} in the background")
 
-            # Lighting
-            if get("light_type") != "-":
-                light_desc = ""
-                if get("light_quality") != "-":
-                    light_desc += get("light_quality").lower() + " "
-                light_desc += get("light_type").lower()
-                tail_phrases.append(f"Lighting is {light_desc}")
+            # Lighting - use spaceship_lighting for spaceships
+            spaceship_lighting = get("spaceship_lighting", "-")
+            if spaceship_lighting != "-":
+                tail_phrases.append(f"Lighting: {spaceship_lighting}")
+            else:
+                if get("light_type") != "-":
+                    light_desc = ""
+                    if get("light_quality") != "-":
+                        light_desc += get("light_quality").lower() + " "
+                    light_desc += get("light_type").lower()
+                    tail_phrases.append(f"Lighting is {light_desc}")
+
+            # Engine glow intensity affects scene lighting
+            engine_glow_intensity = get("engine_glow_intensity", "moderate")
+            engine_glow_color = get("engine_glow_color", "-")
+            if engine_glow_intensity == "prominent" and engine_glow_color != "-":
+                tail_phrases.append(
+                    f"bathed in {engine_glow_color.lower()} engine illumination"
+                )
+            elif engine_glow_intensity == "overwhelming" and engine_glow_color != "-":
+                tail_phrases.append(
+                    f"scene dominated by intense {engine_glow_color.lower()} engine glow lighting"
+                )
+            elif engine_glow_intensity == "none" and engine_glow_color != "-":
+                tail_phrases.append("no engine glow illuminating the scene")
 
             # Camera equipment
             if get("camera_model") != "-":
@@ -1896,7 +1970,7 @@ class CharacterPromptBuilderScene:
                     main_desc_panel = ", ".join(panel_phrases) + "\n"
                     panel_prompts.append(f"{panel_name}: {main_desc_panel}")
             prompt = (
-                f"Generate a {style_prefix} character model sheet image with {num_panels} evenly spaced vertical column panels: \n\n"
+                f"Generate a {style_prefix} character model sheet image with {num_panels} evenly spaced vertical column panels, simple solid background, simple uniform lighting, focus only on the subject: \n\n"
                 + "\n".join(panel_prompts)
             )
             return prompt
