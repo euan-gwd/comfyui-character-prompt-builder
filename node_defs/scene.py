@@ -498,18 +498,13 @@ class CharacterPromptBuilderScene:
         # Visual Style Reference
         style_reference = get("style_reference", "Generic Sci-Fi")
         if style_reference != "-" and style_reference != "Generic Sci-Fi":
-            style_desc = {
-                "Mass Effect": "with sleek curved hull design featuring glowing blue element zero technology reminiscent of Systems Alliance vessels",
-                "Halo UNSC": "with chunky military armor plating in olive and gray tones featuring industrial practical design",
-                "Halo Covenant": "with organic purple curves and flowing alien aesthetic with glowing energy cores",
-                "Star Trek Federation": "with clean white and gray surfaces featuring classic saucer sections and bright optimistic aesthetic",
-                "Star Wars Rebel": "with weathered asymmetrical panels showing industrial lived-in aesthetic with mismatched components",
-                "Star Wars Imperial": "with angular gray uniform surfaces featuring menacing clean lines and standardized construction",
-                "The Expanse": "with realistic utilitarian design featuring functional modules and no artificial gravity rings",
-                "Babylon 5 Earth Alliance": "with boxy practical design featuring rotating habitation sections and utilitarian construction",
-                "Babylon 5 Minbari": "with organic white crystalline curves featuring flowing elegant surfaces and advanced technology",
-                "Battlestar Galactica": "with industrial chunky military design featuring armored plating and practical functional aesthetics",
-            }.get(style_reference, "")
+            # Load style descriptions from JSON configuration
+            from ..utils import load_character_data
+
+            data = load_character_data()
+            descriptions = data.get("descriptions", {})
+            franchise_styles = descriptions.get("spaceship_franchise_styles", {})
+            style_desc = franchise_styles.get(style_reference, "")
             if style_desc:
                 parts.append(style_desc)
 
