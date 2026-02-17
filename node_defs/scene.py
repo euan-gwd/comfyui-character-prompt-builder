@@ -19,7 +19,12 @@ class CharacterPromptBuilderScene:
                     data, "artistic_style_list", "professional photography"
                 ),
                 "character_sheet_render_style": (
-                    ["comic", "photorealistic","3D cartoon illustration","UE5 animated 3D render"],
+                    [
+                        "comic",
+                        "photorealistic",
+                        "3D cartoon illustration",
+                        "UE5 animated 3D render",
+                    ],
                     {
                         "default": "comic",
                         "display": "dropdown",
@@ -237,7 +242,7 @@ class CharacterPromptBuilderScene:
         elif preset_location and preset_location != "-":
             scene_location = preset_location
 
-        is_multi_person = num_people != "1"
+        is_multi_character = num_people != "1"
         scene_artistic_style = artistic_style if num_people != "1" else artistic_style
         scene_camera_shot = camera_shot if num_people != "1" else camera_shot
         scene_camera_view = camera_view if num_people != "1" else camera_view
@@ -263,7 +268,7 @@ class CharacterPromptBuilderScene:
             "panel4_camera_shot": panel4_camera_shot,
         }
 
-        if not is_multi_person:
+        if not is_multi_character:
             scene_settings["artistic_style"] = artistic_style
             scene_settings["camera_shot"] = camera_shot
             scene_settings["camera_view"] = camera_view
@@ -272,28 +277,28 @@ class CharacterPromptBuilderScene:
             scene_camera_shot = camera_shot
             scene_camera_view = camera_view
 
-        person_prompts = []
-        is_multi_person = num_people != "1"
+        character_prompts = []
+        is_multi_character = num_people != "1"
 
-        for idx, person_settings in enumerate(settings_list):
-            s = person_settings.copy() if person_settings else {}
+        for idx, character_settings in enumerate(settings_list):
+            s = character_settings.copy() if character_settings else {}
             s.update(scene_settings)
             prompt = self._generate_natural_language(
                 s,
-                include_scene_tail=not is_multi_person,
+                include_scene_tail=not is_multi_character,
                 character_sheet_render_style=character_sheet_render_style,
             )
-            if is_multi_person:
+            if is_multi_character:
                 if num_people == "2":
                     position = "on the LEFT" if idx == 0 else "on the RIGHT"
-                    prompt = f"{position.upper()}: {prompt}"
+                    prompt = f"CHARACTER {idx + 1} {position.upper()}: {prompt}"
                 else:
-                    prompt = f"Person {idx + 1}: {prompt}"
-            person_prompts.append(prompt)
+                    prompt = f"CHARACTER {idx + 1}: {prompt}"
+            character_prompts.append(prompt)
 
-        prompt = "\n\n".join(person_prompts)
+        prompt = "\n\n".join(character_prompts)
 
-        if is_multi_person:
+        if is_multi_character:
             tail_parts = []
             if scene_location:
                 tail_parts.append(f"The scene takes place {scene_location}")
@@ -332,7 +337,7 @@ class CharacterPromptBuilderScene:
                 style_clean += " style"
             artistic_style_phrase = f"in a {style_clean}"
 
-        if is_multi_person:
+        if is_multi_character:
             combined_prefix = []
             if camera_shot_view_phrase:
                 combined_prefix.append(camera_shot_view_phrase)
@@ -365,9 +370,193 @@ class CharacterPromptBuilderScene:
 
         return (final_prompt.strip(),)
 
+    def _generate_spaceship_prompt(self, s, include_scene_tail=True):
+        """Generate a natural language prompt for a spaceship character."""
+
+        def get(key, default="-"):
+            return s.get(key, default)
+
+        # Build spaceship description
+        parts = []
+
+        # Basic identification - explicitly identify as a spacecraft
+        spaceship_type = get("spaceship_type", "Fighter")
+        spaceship_size = get("spaceship_size", "Medium")
+
+        if spaceship_type != "-":
+            parts.append(
+                f"A starship, a {spaceship_size.lower()} {spaceship_type.lower()} spacecraft"
+            )
+
+        # Colors and materials
+        color_parts = []
+        primary_color = get("primary_color", "Silver")
+        if primary_color != "-":
+            color_parts.append(primary_color.lower())
+
+        accent_color = get("accent_color", "Blue")
+        if accent_color != "-":
+            color_parts.append(f"with {accent_color.lower()} accents")
+
+        material = get("spaceship_material", "Titanium Alloy")
+        if material != "-":
+            color_parts.append(f"made of {material.lower()}")
+
+        if color_parts:
+            parts.append(" ".join(color_parts))
+
+        # Design and condition - explicitly space-oriented
+        design_style = get("design_style", "Sleek")
+        condition = get("condition", "Pristine")
+
+        design_parts = []
+        if design_style != "-":
+            design_parts.append(design_style.lower())
+        if condition != "-":
+            design_parts.append(condition.lower())
+
+        if design_parts:
+            parts.append(
+                f"featuring a {' '.join(design_parts)} interstellar design capable of faster-than-light travel"
+            )
+
+        # Propulsion - space context
+        propulsion_type = get("propulsion_type", "Ion Engines")
+        engine_glow_color = get("engine_glow_color", "Blue")
+
+        if propulsion_type != "-":
+            propulsion_desc = (
+                f"powered by {propulsion_type.lower()} for deep space travel"
+            )
+            if engine_glow_color != "-":
+                propulsion_desc += f" emitting a {engine_glow_color.lower()} glow in the vacuum of space"
+            parts.append(propulsion_desc)
+
+        # Faction
+        faction = get("faction", "Military")
+        if faction != "-":
+            parts.append(f"belonging to the {faction} faction")
+
+        # Cockpit
+        cockpit_type = get("cockpit_type", "-")
+        cockpit_lighting = get("cockpit_lighting", "-")
+
+        if cockpit_type != "-":
+            cockpit_desc = f"with a {cockpit_type.lower()} cockpit"
+            if cockpit_lighting != "-":
+                cockpit_desc += f" featuring {cockpit_lighting.lower()} lighting"
+            parts.append(cockpit_desc)
+
+        # Markings and decals
+        markings = get("markings", "-")
+        decal_style = get("decal_style", "-")
+
+        marking_parts = []
+        if markings != "-":
+            marking_parts.append(markings.lower())
+        if decal_style != "-":
+            marking_parts.append(f"{decal_style.lower()} decals")
+
+        if marking_parts:
+            parts.append(f"adorned with {' and '.join(marking_parts)}")
+
+        # Running lights
+        running_lights = get("running_lights", "-")
+        if running_lights != "-":
+            parts.append(f"with {running_lights.lower()} running lights")
+
+        # Camera and style from scene settings
+        camera_shot = get("camera_shot", "-")
+        camera_view = get("camera_view", "-")
+
+        camera_parts = []
+        if camera_view != "-":
+            camera_parts.append(camera_view.lower())
+        if camera_shot != "-":
+            camera_parts.append(f"{camera_shot.lower()} shot")
+
+        # Artistic style
+        artistic_style = get("artistic_style", "-")
+        if artistic_style != "-":
+            style_clean = artistic_style.strip()
+            if not style_clean.lower().endswith("style"):
+                style_clean += " style"
+            camera_parts.append(f"in a {style_clean}")
+
+        # Combine main description
+        main_desc = ", ".join(parts)
+
+        # Build tail (scene context)
+        tail_phrases = []
+        if include_scene_tail:
+            # Location - default to space for spaceships
+            location = get("location", "")
+            if location and location.strip():
+                tail_phrases.append(f"The scene takes place {location.strip()}")
+            elif get("preset_location") != "-":
+                tail_phrases.append(f"The scene takes place {get('preset_location')}")
+            else:
+                tail_phrases.append("The starship is floating in deep space")
+
+            # Environment
+            env_parts = []
+            if get("time_of_day") != "-":
+                env_parts.append(f"It is {get('time_of_day').lower()}")
+            if get("weather") != "-":
+                env_parts.append(f"The weather is {get('weather').lower()}")
+            if get("season") != "-":
+                env_parts.append(f"It is {get('season').lower()} season")
+            if env_parts:
+                tail_phrases.append(" ".join(env_parts))
+
+            # Lighting
+            if get("light_type") != "-":
+                light_desc = ""
+                if get("light_quality") != "-":
+                    light_desc += get("light_quality").lower() + " "
+                light_desc += get("light_type").lower()
+                tail_phrases.append(f"The scene is lit by {light_desc}")
+
+            # Camera equipment
+            if get("camera_model") != "-":
+                tail_phrases.append(f"the camera is a {get('camera_model').lower()}")
+            if get("camera_lens") != "-":
+                tail_phrases.append(
+                    f"the camera lens is a {get('camera_lens').lower()}"
+                )
+
+            # Camera angles
+            camera_horizontal = get("camera_horizontal_angle")
+            camera_vertical = get("camera_vertical_angle")
+            if camera_horizontal != "-" and camera_vertical != "-":
+                tail_phrases.append(
+                    f"set at a {camera_horizontal.lower()} and {camera_vertical.lower()}"
+                )
+            elif camera_horizontal != "-":
+                tail_phrases.append(f"set at a {camera_horizontal.lower()}")
+            elif camera_vertical != "-":
+                tail_phrases.append(f"set at a {camera_vertical.lower()}")
+
+        # Combine camera parts with main description
+        if camera_parts:
+            main_desc += ", " + ", ".join(camera_parts)
+
+        # Final assembly
+        prompt = main_desc
+        if tail_phrases:
+            if not prompt.endswith("."):
+                prompt += "."
+            prompt += " " + " ".join(tail_phrases)
+
+        return prompt.strip()
+
     def _generate_natural_language(
         self, s, include_scene_tail=True, character_sheet_render_style="comic"
     ):
+        # Check if this is a spaceship character
+        if s.get("character_type") == "spaceship":
+            return self._generate_spaceship_prompt(s, include_scene_tail)
+
         def get_eye_mood(expression):
             expression_lower = (
                 expression.lower() if expression and expression != "-" else ""
@@ -1436,6 +1625,10 @@ class CharacterPromptBuilderScene:
                 style_prefix = "hyperrealistic Unreal Engine 5 animated 3D render"
             else:  # comic
                 style_prefix = "Ink drawn comic book illustration"
+
+            # Check if this is a spaceship for specialized handling
+            is_spaceship = s.get("character_type") == "spaceship"
+
             for camera_view, camera_shot, panel_name in panels:
                 # Build the camera phrase from view and shot
                 camera_phrase = ""
@@ -1446,26 +1639,44 @@ class CharacterPromptBuilderScene:
                 elif camera_shot != "-":
                     camera_phrase = f"{camera_shot.lower()} shot"
 
-                # Update phrases with the new camera phrase
-                panel_phrases = phrases.copy()
-                # Remove any phrase containing "4-panel character sheet style"
-                panel_phrases = [
-                    p
-                    for p in panel_phrases
-                    if not (p and "4-panel character sheet style" in p)
-                ]
-                # Remove the original camera_shot_view_phrase if present (first phrase)
-                if (
-                    panel_phrases
-                    and camera_shot_view_phrase
-                    and panel_phrases[0] == camera_shot_view_phrase
-                ):
-                    panel_phrases.pop(0)
-                # Insert the camera phrase at the beginning
-                if camera_phrase:
-                    panel_phrases.insert(0, camera_phrase)
-                main_desc_panel = ", ".join(panel_phrases) + "\n"
-                panel_prompts.append(f"{panel_name}: {main_desc_panel}")
+                if is_spaceship:
+                    # For spaceships, generate a specialized panel description
+                    # Temporarily update camera settings for this panel
+                    panel_s = s.copy()
+                    panel_s["camera_view"] = camera_view
+                    panel_s["camera_shot"] = camera_shot
+                    # Remove the 4-panel style so we don't recurse
+                    panel_s["artistic_style"] = "-"
+                    # Generate spaceship description for this panel
+                    panel_desc = self._generate_spaceship_prompt(
+                        panel_s, include_scene_tail=False
+                    )
+                    # Add camera phrase at the beginning
+                    if camera_phrase:
+                        panel_desc = f"{camera_phrase}, {panel_desc}"
+                    panel_prompts.append(f"{panel_name}: {panel_desc}\n")
+                else:
+                    # For humans, use the existing logic
+                    # Update phrases with the new camera phrase
+                    panel_phrases = phrases.copy()
+                    # Remove any phrase containing "4-panel character sheet style"
+                    panel_phrases = [
+                        p
+                        for p in panel_phrases
+                        if not (p and "4-panel character sheet style" in p)
+                    ]
+                    # Remove the original camera_shot_view_phrase if present (first phrase)
+                    if (
+                        panel_phrases
+                        and camera_shot_view_phrase
+                        and panel_phrases[0] == camera_shot_view_phrase
+                    ):
+                        panel_phrases.pop(0)
+                    # Insert the camera phrase at the beginning
+                    if camera_phrase:
+                        panel_phrases.insert(0, camera_phrase)
+                    main_desc_panel = ", ".join(panel_phrases) + "\n"
+                    panel_prompts.append(f"{panel_name}: {main_desc_panel}")
             prompt = (
                 f"Generate a {style_prefix} character model sheet image with 4 evenly spaced vertical column panels: \n\n"
                 + "\n".join(panel_prompts)
