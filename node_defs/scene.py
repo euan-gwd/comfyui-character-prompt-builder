@@ -379,13 +379,88 @@ class CharacterPromptBuilderScene:
         # Build spaceship description
         parts = []
 
+        # Physical Structure (Basic Building Blocks)
+        structure_parts = []
+
+        # Wing configuration
+        wing_count = get("wing_count", "2")
+        wing_type = get("wing_type", "Swept back")
+        wing_position = get("wing_position", "Mid-fuselage")
+
+        if wing_count != "-" and wing_count != "0":
+            wing_desc = f"{wing_count} {wing_type.lower()} wings"
+            if wing_position != "-":
+                wing_desc += f" mounted {wing_position.lower()}"
+            structure_parts.append(wing_desc)
+
+        # Vertical stabilizers
+        vertical_stabilizers = get("vertical_stabilizers", "2")
+        if vertical_stabilizers != "-" and vertical_stabilizers != "0":
+            structure_parts.append(f"{vertical_stabilizers} vertical stabilizers")
+
+        # Canard wings
+        canard_wings = get("canard_wings", "None")
+        if canard_wings != "-" and canard_wings != "None":
+            structure_parts.append(f"{canard_wings.lower()}")
+
+        # Engine configuration
+        engine_count = get("engine_count", "2")
+        engine_placement = get("engine_placement", "Rear cluster")
+        engine_configuration = get("engine_configuration", "Dual nozzles")
+
+        if engine_count != "-":
+            engine_desc = f"{engine_count} {engine_configuration.lower()} engines in {engine_placement.lower()} configuration"
+            structure_parts.append(engine_desc)
+
+        # Fuselage and hull
+        fuselage_shape = get("fuselage_shape", "Streamlined")
+        hull_structure = get("hull_structure", "Monocoque")
+        surface_texture = get("surface_texture", "Panel lines")
+
+        if fuselage_shape != "-":
+            hull_desc = f"a {fuselage_shape.lower()} fuselage"
+            if hull_structure != "-":
+                hull_desc += f" with {hull_structure.lower()} construction"
+            if surface_texture != "-":
+                hull_desc += f" and {surface_texture.lower()} surface texture"
+            structure_parts.append(hull_desc)
+
+        # Symmetry
+        symmetry = get("symmetry", "Bilateral")
+        if symmetry != "-" and symmetry != "Bilateral":
+            structure_parts.append(f"{symmetry.lower()} layout")
+
+        # Landing gear
+        landing_gear = get("landing_gear", "Retractable struts")
+        gear_deployment = get("gear_deployment", "-")
+
+        if landing_gear != "-":
+            gear_desc = f"{landing_gear.lower()}"
+            if gear_deployment != "-":
+                gear_desc += f" ({gear_deployment.lower()})"
+            structure_parts.append(gear_desc)
+
+        # Canopy
+        canopy_type = get("canopy_type", "Bubble canopy")
+        if canopy_type != "-":
+            structure_parts.append(f"{canopy_type.lower()}")
+
+        # Crew capacity (helps establish scale)
+        crew_capacity = get("crew_capacity", "Single pilot")
+        if crew_capacity != "-":
+            structure_parts.append(f"designed for {crew_capacity.lower()}")
+
+        # Add physical structure description
+        if structure_parts:
+            parts.append(f"A starship with {', '.join(structure_parts)}")
+
         # Basic identification - explicitly identify as a spacecraft
         spaceship_type = get("spaceship_type", "Fighter")
         spaceship_size = get("spaceship_size", "Medium")
 
         if spaceship_type != "-":
             parts.append(
-                f"A starship, a {spaceship_size.lower()} {spaceship_type.lower()} spacecraft"
+                f"a {spaceship_size.lower()} {spaceship_type.lower()} spacecraft"
             )
 
         # Colors and materials
@@ -464,6 +539,57 @@ class CharacterPromptBuilderScene:
         running_lights = get("running_lights", "-")
         if running_lights != "-":
             parts.append(f"with {running_lights.lower()} running lights")
+
+        # Weapon Systems
+        weapons = s.get("spaceship_weapons", [])
+        if weapons and len(weapons) > 0 and weapons[0] != "-":
+            weapon_list = ", ".join([w.lower() for w in weapons if w and w != "-"])
+            parts.append(f"equipped with {weapon_list}")
+
+        # Defensive Systems
+        shield_system = get("shield_system", "-")
+        armor_plating = get("armor_plating", "-")
+        cloaking_device = get("cloaking_device", "-")
+
+        defensive_parts = []
+        if shield_system != "-":
+            defensive_parts.append(f"{shield_system.lower()}")
+        if armor_plating != "-":
+            defensive_parts.append(f"{armor_plating.lower()}")
+        if cloaking_device != "-":
+            defensive_parts.append(f"{cloaking_device.lower()}")
+        if defensive_parts:
+            parts.append(f"protected by {' and '.join(defensive_parts)}")
+
+        # Utility Systems
+        cargo_capacity = get("cargo_capacity", "-")
+        sensor_array = get("sensor_array", "-")
+        communication_array = get("communication_array", "-")
+        tractor_beam = get("tractor_beam", "-")
+
+        utility_parts = []
+        if cargo_capacity != "-":
+            utility_parts.append(f"{cargo_capacity.lower()}")
+        if sensor_array != "-":
+            utility_parts.append(f"{sensor_array.lower()}")
+        if communication_array != "-":
+            utility_parts.append(f"{communication_array.lower()}")
+        if tractor_beam != "-":
+            utility_parts.append(f"{tractor_beam.lower()}")
+        if utility_parts:
+            parts.append(f"featuring {' and '.join(utility_parts)}")
+
+        # Special Features
+        special_features = s.get("spaceship_special_features", [])
+        if (
+            special_features
+            and len(special_features) > 0
+            and special_features[0] != "-"
+        ):
+            feature_list = ", ".join(
+                [f.lower() for f in special_features if f and f != "-"]
+            )
+            parts.append(f"with special systems including {feature_list}")
 
         # Camera and style from scene settings
         camera_shot = get("camera_shot", "-")

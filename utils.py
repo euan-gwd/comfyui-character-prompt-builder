@@ -4,19 +4,14 @@ Shared utilities for Character Prompt Builder nodes.
 
 import json
 import os
-from functools import lru_cache
 from urllib.request import urlopen
 
 
 RESOURCES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "resources")
 
 
-@lru_cache(maxsize=1)
 def load_character_data():
-    """Load character prompt data from local file or download if missing.
-
-    Uses LRU cache to avoid reloading the JSON file multiple times.
-    """
+    """Load character prompt data from local file or download if missing."""
     prompt_path = os.path.join(RESOURCES_DIR, "character_prompt.json")
     if not os.path.exists(prompt_path):
         try:

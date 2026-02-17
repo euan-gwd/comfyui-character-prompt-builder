@@ -4034,6 +4034,7 @@
   ],
   "spaceship_design_list": [
     "Sleek and Aerodynamic",
+    "Sleek",
     "Bulky and Industrial",
     "Angular and Aggressive",
     "Organic and Flowing",
@@ -4330,5 +4331,171 @@
     "Docking Collar",
     "External Hardpoints",
     "Variable Geometry Wings"
+  ],
+  "spaceship_wing_count_list": [
+    "-",
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "6",
+    "X-configuration",
+    "Bi-plane"
+  ],
+  "spaceship_wing_type_list": [
+    "-",
+    "Delta",
+    "Swept back",
+    "Forward swept",
+    "Straight",
+    "Tapered",
+    "Variable geometry",
+    "Crescent",
+    "Canted",
+    "Gull-wing"
+  ],
+  "spaceship_wing_position_list": [
+    "-",
+    "High mounted",
+    "Low mounted",
+    "Mid-fuselage",
+    "Shoulder mounted",
+    "Anhedral (downward tilt)",
+    "Dihedral (upward tilt)",
+    "Shoulder with anhedral",
+    "Shoulder with dihedral"
+  ],
+  "spaceship_vertical_stabilizers_list": [
+    "-",
+    "0",
+    "1",
+    "2",
+    "Twin tail",
+    "V-tail",
+    "Pelican tail",
+    "Triple tail",
+    "Inverted V-tail"
+  ],
+  "spaceship_canard_list": [
+    "-",
+    "None",
+    "Fore-mounted delta",
+    "Canard pairs",
+    "Close-coupled",
+    "Long-arm canards"
+  ],
+  "spaceship_engine_count_list": [
+    "-",
+    "1",
+    "2",
+    "3",
+    "4",
+    "6",
+    "8",
+    "12"
+  ],
+  "spaceship_engine_placement_list": [
+    "-",
+    "Rear cluster",
+    "Wing mounted",
+    "Fuselage embedded",
+    "Distributed",
+    "Linear array",
+    "Radial",
+    "Triangular formation",
+    "Diamond formation"
+  ],
+  "spaceship_engine_configuration_list": [
+    "-",
+    "Dual nozzles",
+    "Quad nozzles",
+    "Single large exhaust",
+    "Offset engines",
+    "Gimbaled thrust vectoring",
+    "Retractable engine pods",
+    "Split exhaust",
+    "Annular exhaust"
+  ],
+  "spaceship_fuselage_shape_list": [
+    "-",
+    "Cylindrical",
+    "Boxy",
+    "Streamlined",
+    "Needle-nose",
+    "Bulbous",
+    "Asymmetric",
+    "Blended body",
+    "Lifting body",
+    "Prismatic"
+  ],
+  "spaceship_hull_structure_list": [
+    "-",
+    "Monocoque",
+    "Segmented plates",
+    "Modular sections",
+    "Frame and skin",
+    "Honeycomb core",
+    "Sandwich composite",
+    "Armored sections"
+  ],
+  "spaceship_surface_texture_list": [
+    "-",
+    "Smooth",
+    "Panel lines",
+    "Riveted",
+    "Armored plates",
+    "Corrugated",
+    "Heat tiles",
+    "Ablative coating",
+    "Nano-textured",
+    "Stealth faceting"
+  ],
+  "spaceship_symmetry_list": [
+    "-",
+    "Bilateral",
+    "Asymmetrical",
+    "Radial",
+    "Offset cockpit"
+  ],
+  "spaceship_landing_gear_list": [
+    "-",
+    "Retractable struts",
+    "Retractable deployed",
+    "Fixed skids",
+    "VTOL thrusters",
+    "Landing sled",
+    "Docking only (no gear)",
+    "Magnetic landing pads",
+    "Gravitic landing system"
+  ],
+  "spaceship_canopy_type_list": [
+    "-",
+    "Bubble canopy",
+    "Wrap-around glass",
+    "Armored slit",
+    "External camera pods",
+    "No cockpit - remote",
+    "Clamshell canopy",
+    "Gull-wing canopy",
+    "Framed canopy"
+  ],
+  "spaceship_crew_capacity_list": [
+    "-",
+    "Single pilot",
+    "2-person cockpit",
+    "3-person crew",
+    "4-person crew",
+    "6-person crew",
+    "10-person crew",
+    "20-person crew",
+    "50-person crew",
+    "100+ person crew"
+  ],
+  "spaceship_gear_deployment_list": [
+    "-",
+    "Gear retracted",
+    "Gear deployed",
+    "Partially deployed"
   ]
 }

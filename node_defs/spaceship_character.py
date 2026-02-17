@@ -20,7 +20,9 @@ class CharacterPromptBuilderSpaceshipCharacter:
                 "accent_color": combo(data, "spaceship_accent_color_list", "Blue"),
                 # === MATERIAL & DESIGN ===
                 "material": combo(data, "spaceship_material_list", "Titanium Alloy"),
-                "design_style": combo(data, "spaceship_design_list", "Sleek"),
+                "design_style": combo(
+                    data, "spaceship_design_list", "Sleek and Aerodynamic"
+                ),
                 "condition": combo(data, "spaceship_condition_list", "Pristine"),
                 # === PROPULSION ===
                 "propulsion_type": combo(
@@ -31,6 +33,47 @@ class CharacterPromptBuilderSpaceshipCharacter:
                 "faction": combo(data, "spaceship_faction_list", "Military"),
             },
             "optional": {
+                # === PHYSICAL STRUCTURE (Basic Building Blocks) ===
+                # Aerodynamics
+                "wing_count": combo(data, "spaceship_wing_count_list", "2"),
+                "wing_type": combo(data, "spaceship_wing_type_list", "Swept back"),
+                "wing_position": combo(
+                    data, "spaceship_wing_position_list", "Mid-fuselage"
+                ),
+                "vertical_stabilizers": combo(
+                    data, "spaceship_vertical_stabilizers_list", "2"
+                ),
+                "canard_wings": combo(data, "spaceship_canard_list", "None"),
+                # Propulsion Structure
+                "engine_count": combo(data, "spaceship_engine_count_list", "2"),
+                "engine_placement": combo(
+                    data, "spaceship_engine_placement_list", "Rear cluster"
+                ),
+                "engine_configuration": combo(
+                    data, "spaceship_engine_configuration_list", "Dual nozzles"
+                ),
+                # Hull & Structure
+                "fuselage_shape": combo(
+                    data, "spaceship_fuselage_shape_list", "Streamlined"
+                ),
+                "hull_structure": combo(
+                    data, "spaceship_hull_structure_list", "Monocoque"
+                ),
+                "surface_texture": combo(
+                    data, "spaceship_surface_texture_list", "Panel lines"
+                ),
+                "symmetry": combo(data, "spaceship_symmetry_list", "Bilateral"),
+                # Surface Details
+                "landing_gear": combo(
+                    data, "spaceship_landing_gear_list", "Retractable struts"
+                ),
+                "canopy_type": combo(
+                    data, "spaceship_canopy_type_list", "Bubble canopy"
+                ),
+                "crew_capacity": combo(
+                    data, "spaceship_crew_capacity_list", "Single pilot"
+                ),
+                "gear_deployment": combo(data, "spaceship_gear_deployment_list"),
                 # === COCKPIT ===
                 "cockpit_type": combo(data, "spaceship_cockpit_list"),
                 "cockpit_lighting": combo(data, "spaceship_cockpit_lighting_list"),
@@ -56,11 +99,27 @@ class CharacterPromptBuilderSpaceshipCharacter:
         primary_color="Silver",
         accent_color="Blue",
         material="Titanium Alloy",
-        design_style="Sleek",
+        design_style="Sleek and Aerodynamic",
         condition="Pristine",
         propulsion_type="Ion Engines",
         engine_glow_color="Blue",
         faction="Military",
+        wing_count="2",
+        wing_type="Swept back",
+        wing_position="Mid-fuselage",
+        vertical_stabilizers="2",
+        canard_wings="None",
+        engine_count="2",
+        engine_placement="Rear cluster",
+        engine_configuration="Dual nozzles",
+        fuselage_shape="Streamlined",
+        hull_structure="Monocoque",
+        surface_texture="Panel lines",
+        symmetry="Bilateral",
+        landing_gear="Retractable struts",
+        canopy_type="Bubble canopy",
+        crew_capacity="Single pilot",
+        gear_deployment="-",
         cockpit_type="-",
         cockpit_lighting="-",
         markings="-",
@@ -82,6 +141,22 @@ class CharacterPromptBuilderSpaceshipCharacter:
                 "propulsion_type": propulsion_type,
                 "engine_glow_color": engine_glow_color,
                 "faction": faction,
+                "wing_count": wing_count,
+                "wing_type": wing_type,
+                "wing_position": wing_position,
+                "vertical_stabilizers": vertical_stabilizers,
+                "canard_wings": canard_wings,
+                "engine_count": engine_count,
+                "engine_placement": engine_placement,
+                "engine_configuration": engine_configuration,
+                "fuselage_shape": fuselage_shape,
+                "hull_structure": hull_structure,
+                "surface_texture": surface_texture,
+                "symmetry": symmetry,
+                "landing_gear": landing_gear,
+                "canopy_type": canopy_type,
+                "crew_capacity": crew_capacity,
+                "gear_deployment": gear_deployment,
                 "cockpit_type": cockpit_type,
                 "cockpit_lighting": cockpit_lighting,
                 "markings": markings,
