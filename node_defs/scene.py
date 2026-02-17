@@ -186,6 +186,15 @@ class CharacterPromptBuilderScene:
                         "visible": "character_type == 'spaceship'",
                     },
                 ),
+                "scene_color_palette": combo(
+                    data,
+                    "scene_color_palette_list",
+                    "None/Natural",
+                    {
+                        "display": "dropdown",
+                        "visible": "character_type == 'spaceship'",
+                    },
+                ),
                 "engine_glow_intensity": combo(
                     data,
                     "engine_glow_intensity_list",
@@ -266,6 +275,7 @@ class CharacterPromptBuilderScene:
         spaceship_lighting="-",
         spaceship_background="-",
         engine_glow_intensity="moderate",
+        scene_color_palette="None/Natural",
     ):
         settings_list = [settings1]
         if num_people in ("2", "3", "4"):
@@ -310,6 +320,7 @@ class CharacterPromptBuilderScene:
             "spaceship_lighting": spaceship_lighting,
             "spaceship_background": spaceship_background,
             "engine_glow_intensity": engine_glow_intensity,
+            "scene_color_palette": scene_color_palette,
             "panel1_camera_view": panel1_camera_view,
             "panel1_camera_shot": panel1_camera_shot,
             "panel2_camera_view": panel2_camera_view,
@@ -781,6 +792,13 @@ class CharacterPromptBuilderScene:
             spaceship_background = get("spaceship_background", "-")
             if spaceship_background != "-":
                 tail_phrases.append(f"with {spaceship_background} in the background")
+
+            # Scene color palette
+            scene_color_palette = get("scene_color_palette", "None/Natural")
+            if scene_color_palette != "None/Natural":
+                tail_phrases.append(
+                    f"Scene color palette: {scene_color_palette.lower()}"
+                )
 
             # Lighting - use spaceship_lighting for spaceships
             spaceship_lighting = get("spaceship_lighting", "-")

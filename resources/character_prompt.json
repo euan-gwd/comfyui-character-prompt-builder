@@ -4556,7 +4556,7 @@
     "intense solar radiation",
     "shadowy silhouette"
   ],
-  "spaceship_background_list": [
+    "spaceship_background_list": [
     "star field",
     "distant planets",
     "colorful nebula",
@@ -4572,6 +4572,18 @@
     "space debris",
     "other ships",
     "empty void"
+  ],
+  "scene_color_palette_list": [
+    "None/Natural",
+    "Warm tones",
+    "Cool tones",
+    "Neutral",
+    "Golden hour",
+    "Purple/Magenta",
+    "Green/Earthy",
+    "Red/Dramatic",
+    "Monochromatic",
+    "High contrast"
   ],
   "engine_glow_intensity_list": [
     "none",
