@@ -1987,10 +1987,88 @@ class CharacterPromptBuilderScene:
                         panel_phrases.insert(0, camera_phrase)
                     main_desc_panel = ", ".join(panel_phrases) + "\n"
                     panel_prompts.append(f"{panel_name}: {main_desc_panel}")
+
+            # Build scene details to include below panels
+            scene_details = []
+
+            if is_spaceship:
+                # Spaceship-specific scene details
+                spaceship_environment = s.get("spaceship_environment", "-")
+                if spaceship_environment != "-":
+                    scene_details.append(
+                        f"The scene takes place in {spaceship_environment}"
+                    )
+
+                spaceship_background = s.get("spaceship_background", "-")
+                if spaceship_background != "-":
+                    scene_details.append(
+                        f"with {spaceship_background} in the background"
+                    )
+
+                scene_color_palette = s.get("scene_color_palette", "None/Natural")
+                if scene_color_palette != "-":
+                    display_palette = scene_color_palette
+                    if scene_color_palette == "None/Natural":
+                        display_palette = "neutral"
+                    else:
+                        display_palette = scene_color_palette.lower()
+                    scene_details.append(f"Scene color palette: {display_palette}")
+
+                spaceship_lighting = s.get("spaceship_lighting", "-")
+                if spaceship_lighting != "-":
+                    scene_details.append(f"Lighting: {spaceship_lighting}")
+
+                engine_glow_intensity = s.get("engine_glow_intensity", "moderate")
+                engine_glow_color = s.get("engine_glow_color", "-")
+                if engine_glow_intensity == "prominent" and engine_glow_color != "-":
+                    scene_details.append(
+                        f"bathed in {engine_glow_color.lower()} engine illumination"
+                    )
+                elif (
+                    engine_glow_intensity == "overwhelming" and engine_glow_color != "-"
+                ):
+                    scene_details.append(
+                        f"scene dominated by intense {engine_glow_color.lower()} engine glow lighting"
+                    )
+                elif engine_glow_intensity == "none" and engine_glow_color != "-":
+                    scene_details.append("no engine glow illuminating the scene")
+            else:
+                # Human character scene details
+                location = s.get("location", "")
+                if location and location.strip():
+                    scene_details.append(f"The scene takes place {location.strip()}")
+                elif s.get("preset_location") and s.get("preset_location") != "-":
+                    scene_details.append(
+                        f"The scene takes place {s.get('preset_location')}"
+                    )
+
+                env_parts = []
+                if s.get("time_of_day") != "-":
+                    env_parts.append(f"It is {s.get('time_of_day').lower()}")
+                if s.get("weather") != "-":
+                    env_parts.append(f"The weather is {s.get('weather').lower()}")
+                if s.get("season") != "-":
+                    env_parts.append(f"It is {s.get('season').lower()} season")
+                if env_parts:
+                    scene_details.append(" ".join(env_parts))
+
+                if s.get("light_type") != "-":
+                    light_desc = ""
+                    if s.get("light_quality", "-") != "-":
+                        light_desc += s.get("light_quality").lower() + " "
+                    light_desc += s.get("light_type").lower()
+                    scene_details.append(f"Lighting is {light_desc}")
+
+            # Build final prompt
             prompt = (
                 f"Generate a {style_prefix} character model sheet image with {num_panels} evenly spaced vertical column panels, simple solid background, simple uniform lighting, focus only on the subject: \n\n"
                 + "\n".join(panel_prompts)
             )
+
+            # Add scene details below panels if any exist
+            if scene_details:
+                prompt += "\nScene Details:\n" + "\n".join(scene_details)
+
             return prompt
         else:
             # Add tail if include_scene_tail
