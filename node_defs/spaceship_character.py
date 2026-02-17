@@ -12,27 +12,32 @@ class CharacterPromptBuilderSpaceshipCharacter:
 
         return {
             "required": {
-                # === SPACESHIP TYPE ===
+                # === STYLE & IDENTITY ===
+                "style_reference": combo(data, "spaceship_style_list"),
                 "spaceship_type": combo(data, "spaceship_type_list"),
                 "spaceship_size": combo(data, "spaceship_size_list"),
-                # === COLORS ===
-                "primary_color": combo(data, "spaceship_primary_color_list"),
-                "accent_color": combo(data, "spaceship_accent_color_list"),
-                # === MATERIAL & DESIGN ===
-                "material": combo(data, "spaceship_material_list"),
+                "faction": combo(data, "spaceship_faction_list"),
+                # === APPEARANCE ===
                 "design_style": combo(data, "spaceship_design_list"),
                 "condition": combo(data, "spaceship_condition_list"),
+                "primary_color": combo(data, "spaceship_primary_color_list"),
+                "accent_color": combo(data, "spaceship_accent_color_list"),
                 # === PROPULSION ===
                 "propulsion_type": combo(data, "spaceship_propulsion_list"),
                 "engine_glow_color": combo(data, "spaceship_engine_glow_list"),
-                # === FACTION ===
-                "faction": combo(data, "spaceship_faction_list"),
-                # === VISUAL STYLE ===
-                "style_reference": combo(data, "spaceship_style_list"),
             },
             "optional": {
-                # === PHYSICAL STRUCTURE (Basic Building Blocks) ===
-                # Aerodynamics
+                # === MATERIAL ===
+                "material": combo(data, "spaceship_material_list"),
+                # === COCKPIT ===
+                "cockpit_type": combo(data, "spaceship_cockpit_list"),
+                "cockpit_lighting": combo(data, "spaceship_cockpit_lighting_list"),
+                # === MARKINGS ===
+                "markings": combo(data, "spaceship_markings_list"),
+                "decal_style": combo(data, "spaceship_decal_list"),
+                # === LIGHTING ===
+                "running_lights": combo(data, "spaceship_running_lights_list"),
+                # === WINGS ===
                 "wing_count": combo(data, "spaceship_wing_count_list"),
                 "wing_type": combo(data, "spaceship_wing_type_list"),
                 "wing_position": combo(data, "spaceship_wing_position_list"),
@@ -40,30 +45,22 @@ class CharacterPromptBuilderSpaceshipCharacter:
                     data, "spaceship_vertical_stabilizers_list"
                 ),
                 "canard_wings": combo(data, "spaceship_canard_list"),
-                # Propulsion Structure
+                # === ENGINES ===
                 "engine_count": combo(data, "spaceship_engine_count_list"),
                 "engine_placement": combo(data, "spaceship_engine_placement_list"),
                 "engine_configuration": combo(
                     data, "spaceship_engine_configuration_list"
                 ),
-                # Hull & Structure
+                # === HULL & STRUCTURE ===
                 "fuselage_shape": combo(data, "spaceship_fuselage_shape_list"),
                 "hull_structure": combo(data, "spaceship_hull_structure_list"),
                 "surface_texture": combo(data, "spaceship_surface_texture_list"),
                 "symmetry": combo(data, "spaceship_symmetry_list"),
-                # Surface Details
+                # === OPERATIONS ===
                 "landing_gear": combo(data, "spaceship_landing_gear_list"),
                 "canopy_type": combo(data, "spaceship_canopy_type_list"),
                 "crew_capacity": combo(data, "spaceship_crew_capacity_list"),
                 "gear_deployment": combo(data, "spaceship_gear_deployment_list"),
-                # === COCKPIT ===
-                "cockpit_type": combo(data, "spaceship_cockpit_list"),
-                "cockpit_lighting": combo(data, "spaceship_cockpit_lighting_list"),
-                # === MARKINGS ===
-                "markings": combo(data, "spaceship_markings_list"),
-                "decal_style": combo(data, "spaceship_decal_list"),
-                # === RUNNING LIGHTS ===
-                "running_lights": combo(data, "spaceship_running_lights_list"),
                 # === CHAIN ===
                 "settings_in": ("PM_SETTINGS",),
             },
