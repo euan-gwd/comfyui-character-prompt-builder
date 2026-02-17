@@ -31,6 +31,13 @@ class CharacterPromptBuilderScene:
                         "visible": "artistic_style == 'character sheet'",
                     },
                 ),
+                "num_panels": (
+                    ["2", "3", "4"],
+                    {
+                        "default": "4",
+                        "visible": "artistic_style == 'character sheet'",
+                    },
+                ),
                 "panel1_camera_view": combo(
                     data,
                     "camera_view_list",
@@ -73,7 +80,7 @@ class CharacterPromptBuilderScene:
                     "right side view",
                     {
                         "display": "dropdown",
-                        "visible": "artistic_style == 'character sheet'",
+                        "visible": "artistic_style == 'character sheet' and num_panels in ['3', '4']",
                     },
                 ),
                 "panel3_camera_shot": combo(
@@ -82,7 +89,7 @@ class CharacterPromptBuilderScene:
                     "wide",
                     {
                         "display": "dropdown",
-                        "visible": "artistic_style == 'character sheet'",
+                        "visible": "artistic_style == 'character sheet' and num_panels in ['3', '4']",
                     },
                 ),
                 "panel4_camera_view": combo(
@@ -91,7 +98,7 @@ class CharacterPromptBuilderScene:
                     "front view",
                     {
                         "display": "dropdown",
-                        "visible": "artistic_style == 'character sheet'",
+                        "visible": "artistic_style == 'character sheet' and num_panels == '4'",
                     },
                 ),
                 "panel4_camera_shot": combo(
@@ -100,7 +107,7 @@ class CharacterPromptBuilderScene:
                     "medium close up",
                     {
                         "display": "dropdown",
-                        "visible": "artistic_style == 'character sheet'",
+                        "visible": "artistic_style == 'character sheet' and num_panels == '4'",
                     },
                 ),
                 "camera_model": combo(data, "camera_model_list"),
@@ -210,6 +217,7 @@ class CharacterPromptBuilderScene:
         settings3=None,
         settings4=None,
         character_sheet_render_style="comic",
+        num_panels="4",
         panel1_camera_view="front view",
         panel1_camera_shot="wide",
         panel2_camera_view="back view",
@@ -266,6 +274,7 @@ class CharacterPromptBuilderScene:
             "panel3_camera_shot": panel3_camera_shot,
             "panel4_camera_view": panel4_camera_view,
             "panel4_camera_shot": panel4_camera_shot,
+            "num_panels": num_panels,
         }
 
         if not is_multi_character:
@@ -1798,6 +1807,7 @@ class CharacterPromptBuilderScene:
 
         # character sheet handling
         if s.get("artistic_style") == "character sheet":
+            num_panels = int(s.get("num_panels", 4))
             panels = [
                 (
                     s.get("panel1_camera_view", "front view"),
@@ -1810,16 +1820,16 @@ class CharacterPromptBuilderScene:
                     "Panel 2",
                 ),
                 (
-                    s.get("panel3_camera_view", "right side view"),
+                    s.get("panel3_camera_view", "side view"),
                     s.get("panel3_camera_shot", "wide"),
                     "Panel 3",
                 ),
                 (
                     s.get("panel4_camera_view", "front view"),
-                    s.get("panel4_camera_shot", "medium close up"),
+                    s.get("panel4_camera_shot", "close up"),
                     "Panel 4",
                 ),
-            ]
+            ][:num_panels]
             panel_prompts = []
             # Choose style prefix based on character_sheet_render_style
             if character_sheet_render_style == "photorealistic":
@@ -1850,6 +1860,9 @@ class CharacterPromptBuilderScene:
                     panel_s = s.copy()
                     panel_s["camera_view"] = camera_view
                     panel_s["camera_shot"] = camera_shot
+                    # Clear these so the "Shown in..." sentence isn't added at the end (avoid duplication)
+                    panel_s["camera_view"] = "-"
+                    panel_s["camera_shot"] = "-"
                     # Remove the 4-panel style so we don't recurse
                     panel_s["artistic_style"] = "-"
                     # Generate spaceship description for this panel
@@ -1883,7 +1896,7 @@ class CharacterPromptBuilderScene:
                     main_desc_panel = ", ".join(panel_phrases) + "\n"
                     panel_prompts.append(f"{panel_name}: {main_desc_panel}")
             prompt = (
-                f"Generate a {style_prefix} character model sheet image with 4 evenly spaced vertical column panels: \n\n"
+                f"Generate a {style_prefix} character model sheet image with {num_panels} evenly spaced vertical column panels: \n\n"
                 + "\n".join(panel_prompts)
             )
             return prompt
