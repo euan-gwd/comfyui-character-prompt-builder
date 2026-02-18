@@ -4379,10 +4379,10 @@
     "Angled upward",
     "High mount angled down",
     "High mount angled up",
-    "Anhedral (downward tilt)",
-    "Dihedral (upward tilt)",
-    "Shoulder with anhedral",
-    "Shoulder with dihedral"
+    "Wings angled down",
+    "Wings angled up",
+    "High-mounted wings angled down",
+    "High-mounted wings angled up"
   ],
   "spaceship_vertical_stabilizers_list": [
     "-",
@@ -4407,10 +4407,10 @@
     "Two small front wings",
     "Front wings close to main wings",
     "Extended front wings",
-    "Fore-mounted delta",
-    "Canard pairs",
-    "Close-coupled",
-    "Long-arm canards"
+    "Front delta wings",
+    "Two pairs of small front wings",
+    "Small wings close to nose",
+    "Long front wings"
   ],
   "spaceship_engine_count_list": [
     "-",
@@ -4426,12 +4426,12 @@
     "-",
     "Rear cluster",
     "Wing mounted",
-    "Fuselage embedded",
-    "Distributed",
-    "Linear array",
-    "Radial",
-    "Triangular formation",
-    "Diamond formation"
+    "Built into body",
+    "Spread across ship",
+    "In a line",
+    "In a circle",
+    "Three engines in triangle",
+    "Four engines in diamond shape"
   ],
   "spaceship_engine_configuration_list": [
     "-",
@@ -4449,20 +4449,20 @@
   ],
   "spaceship_fuselage_shape_list": [
     "-",
-    "Cylindrical",
+    "Round tube shape",
     "Boxy",
     "Streamlined",
     "Needle-nose",
-    "Bulbous",
-    "Asymmetric",
-    "Blended body",
-    "Lifting body",
-    "Prismatic"
+    "Rounded front",
+    "Uneven sides",
+    "Smooth flowing shape",
+    "Wingless flat shape",
+    "Angular flat sides"
   ],
   "spaceship_hull_structure_list": [
     "-",
     "Single-piece shell",
-    "Monocoque",
+    "Single shell construction",
     "Armored plate sections",
     "Modular sections",
     "Frame with outer covering",
@@ -4479,17 +4479,17 @@
     "Corrugated",
     "Heat tiles",
     "Heat-resistant tiles",
-    "Microscopic surface pattern",
-    "Angular radar-deflecting surfaces",
-    "Ablative coating",
-    "Nano-textured",
-    "Stealth faceting"
+    "Fine surface details",
+    "Stealth angled surfaces",
+    "Heat-shield coating",
+    "Micro-textured surface",
+    "Angled stealth panels"
   ],
   "spaceship_symmetry_list": [
     "-",
-    "Bilateral",
+    "Symmetrical",
     "Asymmetrical",
-    "Radial",
+    "Circular layout",
     "Offset cockpit"
   ],
   "spaceship_landing_gear_list": [

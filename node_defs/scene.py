@@ -435,25 +435,28 @@ class CharacterPromptBuilderScene:
         return (final_prompt.strip(),)
 
     def _generate_spaceship_prompt(self, s, include_scene_tail=True):
-        """Generate a natural language prompt for a spaceship character."""
+        """Generate a natural language prompt for a spaceship character using [Subject], [Technical Details], [Environment], [Lighting/Mood] structure."""
 
         def get(key, default="-"):
             return s.get(key, default)
 
-        sentences = []
+        # Build the four main sections
+        subject_parts = []
+        technical_parts = []
+        environment_parts = []
+        lighting_parts = []
 
-        # SECTION 1: Identity and Basic Structure
+        # Get basic info
         spaceship_type = get("spaceship_type", "Fighter")
         spaceship_size = get("spaceship_size", "Medium")
 
         if spaceship_type == "-":
             return "A spacecraft"
 
-        # Start with the ship type and size
-        subject = f"a {spaceship_size.lower()} {spaceship_type.lower()}"
-
-        # Build physical structure description
-        structure_parts = []
+        # ============================================
+        # SECTION 1: SUBJECT (Type, Size, Basic Structure)
+        # ============================================
+        subject_parts.append(f"a {spaceship_size.lower()} {spaceship_type.lower()}")
 
         # Wing configuration
         wing_count = get("wing_count", "2")
@@ -461,230 +464,176 @@ class CharacterPromptBuilderScene:
         wing_position = get("wing_position", "Mid-fuselage")
 
         if wing_count != "-" and wing_count != "0":
-            wing_desc = f"{wing_count} {wing_type.lower()} wings"
+            wing_desc = f"with {wing_count} {wing_type.lower()} wings"
             if wing_position != "-":
                 wing_desc += f" mounted {wing_position.lower()}"
-            structure_parts.append(wing_desc)
+            subject_parts.append(wing_desc)
 
-        # Vertical stabilizers - remove redundant "vertical stabilizers" suffix
+        # Vertical stabilizers
         vertical_stabilizers = get("vertical_stabilizers", "-")
         if vertical_stabilizers != "-" and vertical_stabilizers != "0":
-            # Values like "Twin tail fins" already describe the feature
-            structure_parts.append(f"and {vertical_stabilizers.lower()}")
+            subject_parts.append(f"and {vertical_stabilizers.lower()}")
 
         # Canard wings
         canard_wings = get("canard_wings", "None")
         if canard_wings != "-" and canard_wings != "None":
-            structure_parts.append(f"with {canard_wings.lower()}")
+            subject_parts.append(f"with {canard_wings.lower()}")
 
-        # Assemble first sentence: Subject + physical structure
-        if structure_parts:
-            first_sentence = f"{subject} with {', '.join(structure_parts)}"
-            sentences.append(first_sentence)
-        else:
-            sentences.append(subject.capitalize())
+        # Fuselage shape
+        fuselage_shape = get("fuselage_shape", "-")
+        if fuselage_shape != "-":
+            subject_parts.append(f"featuring a {fuselage_shape.lower()} body")
 
-        # SECTION 2: Propulsion and Engines
-        engine_parts = []
+        # Symmetry
+        symmetry = get("symmetry", "Symmetrical")
+        if symmetry != "-" and symmetry != "Symmetrical":
+            subject_parts.append(f"with {symmetry.lower()}")
 
+        # ============================================
+        # SECTION 2: TECHNICAL DETAILS (Engines, Materials, Features, etc.)
+        # ============================================
+
+        # Engine and propulsion
         engine_count = get("engine_count", "-")
         engine_placement = get("engine_placement", "-")
         engine_configuration = get("engine_configuration", "-")
         propulsion_type = get("propulsion_type", "-")
         engine_glow_color = get("engine_glow_color", "-")
+        engine_glow_intensity = get("engine_glow_intensity", "moderate")
 
+        engine_desc_parts = []
         if engine_count != "-" and engine_count != "0":
-            # Build engine description carefully to avoid "configuration" duplication
             if engine_configuration != "-":
-                # Use "configuration" from the placement, not from the engine config value
                 engine_desc = f"{engine_count} {engine_configuration.lower()}"
                 if engine_placement != "-":
-                    engine_desc += f" in a {engine_placement.lower()}"
+                    engine_desc += f" {engine_placement.lower()}"
             else:
                 engine_desc = f"{engine_count} engines"
                 if engine_placement != "-":
-                    engine_desc += f" in {engine_placement.lower()}"
+                    engine_desc += f" {engine_placement.lower()}"
+            engine_desc_parts.append(engine_desc)
 
-            engine_parts.append(engine_desc)
-
-        # Add propulsion with glow color
-        engine_glow_intensity = get("engine_glow_intensity", "moderate")
         if propulsion_type != "-":
-            propulsion_desc = f"{propulsion_type.lower()}"
+            propulsion_desc = propulsion_type.lower()
+            if engine_glow_intensity != "none" and engine_glow_color != "-":
+                if engine_glow_intensity == "subtle":
+                    propulsion_desc += f" with subtle {engine_glow_color.lower()} glow"
+                else:
+                    propulsion_desc += f" with {engine_glow_color.lower()} glow"
+            engine_desc_parts.append(f"powered by {propulsion_desc}")
 
-            engine_glow_color = get("engine_glow_color", "-")
-            if engine_glow_intensity == "none":
-                pass
-            elif engine_glow_intensity == "subtle" and engine_glow_color != "-":
-                propulsion_desc += (
-                    f" emitting a subtle {engine_glow_color.lower()} glow"
-                )
-            elif (
-                engine_glow_intensity in ["moderate", "prominent", "overwhelming"]
-                and engine_glow_color != "-"
-            ):
-                propulsion_desc += f" emitting a {engine_glow_color.lower()} glow"
+        if engine_desc_parts:
+            technical_parts.append(", ".join(engine_desc_parts))
 
-            if engine_parts:
-                engine_parts.append(f"powered by {propulsion_desc}")
-            else:
-                engine_parts.append(f"powered by {propulsion_desc}")
-
-        if engine_parts:
-            engine_sentence = f"It features {', '.join(engine_parts)}"
-            sentences.append(engine_sentence)
-
-        # SECTION 3: Hull and Construction
-        hull_parts = []
-
-        fuselage_shape = get("fuselage_shape", "-")
+        # Hull and materials
         hull_structure = get("hull_structure", "-")
         surface_texture = get("surface_texture", "-")
         material = get("spaceship_material", "-")
 
-        if fuselage_shape != "-":
-            hull_parts.append(f"a {fuselage_shape.lower()} fuselage")
-
+        hull_desc_parts = []
         if hull_structure != "-":
-            hull_parts.append(f"{hull_structure.lower()} construction")
-
-        # Remove redundant "surface texture" suffix
+            hull_desc_parts.append(f"built with {hull_structure.lower()}")
         if surface_texture != "-":
-            hull_parts.append(f"{surface_texture.lower()}")
-
+            hull_desc_parts.append(f"{surface_texture.lower()} surface")
         if material != "-":
-            hull_parts.append(f"{material.lower()} hull")
+            hull_desc_parts.append(f"made from {material.lower()}")
 
-        # Symmetry
-        symmetry = get("symmetry", "Bilateral")
-        if symmetry != "-" and symmetry != "Bilateral":
-            hull_parts.append(f"{symmetry.lower()} layout")
+        if hull_desc_parts:
+            technical_parts.append(", ".join(hull_desc_parts))
 
-        if hull_parts:
-            hull_sentence = f"The vessel has {', '.join(hull_parts)}"
-            sentences.append(hull_sentence)
-
-        # SECTION 4: Appearance (Colors, Design, Style)
-        appearance_parts = []
-
+        # Colors and design
         primary_color = get("primary_color", "-")
         accent_color = get("accent_color", "-")
         design_style = get("design_style", "-")
         condition = get("condition", "-")
 
-        color_desc = ""
+        color_parts = []
         if primary_color != "-":
-            color_desc = f"{primary_color.lower()}"
+            color_desc = f"painted {primary_color.lower()}"
             if accent_color != "-":
-                color_desc += f" with {accent_color.lower()} accents"
+                color_desc += f" with {accent_color.lower()} highlights"
+            color_parts.append(color_desc)
         elif accent_color != "-":
-            color_desc = f"{accent_color.lower()} accents"
+            color_parts.append(f"{accent_color.lower()} highlights")
 
-        if color_desc:
-            appearance_parts.append(color_desc)
-
-        # Design and condition - simplified
-        design_desc = ""
         if design_style != "-":
-            design_desc = f"{design_style.lower()}"
+            design_desc = design_style.lower()
             if condition != "-":
                 design_desc += f" {condition.lower()}"
-            design_desc += " design"
+            design_desc += " style"
+            color_parts.append(design_desc)
         elif condition != "-":
-            design_desc = f"{condition.lower()} condition"
+            color_parts.append(f"{condition.lower()} appearance")
 
-        if design_desc:
-            appearance_parts.append(design_desc)
+        if color_parts:
+            technical_parts.append(", ".join(color_parts))
 
-        # Visual Style Reference
-        style_reference = get("style_reference", "Generic Sci-Fi")
-        if style_reference != "-" and style_reference != "Generic Sci-Fi":
-            from ..utils import load_character_data
-
-            data = load_character_data()
-            descriptions = data.get("descriptions", {})
-            franchise_styles = descriptions.get("spaceship_franchise_styles", {})
-            style_desc = franchise_styles.get(style_reference, "")
-            if style_desc:
-                # Clean up the style description for better flow
-                style_desc = style_desc.replace("with ", "featuring ", 1)
-                appearance_parts.append(style_desc)
-
-        if appearance_parts:
-            appearance_sentence = f"It is {', '.join(appearance_parts)}"
-            sentences.append(appearance_sentence)
-
-        # SECTION 5: Operations and Features
-        feature_parts = []
-
-        # Landing gear
+        # Features - Landing gear, canopy, lights
         landing_gear = get("landing_gear", "-")
         gear_deployment = get("gear_deployment", "-")
+        canopy_type = get("canopy_type", "-")
+        running_lights = get("running_lights", "-")
+
+        feature_parts = []
         if landing_gear != "-":
             gear_desc = landing_gear.lower()
             if gear_deployment != "-":
                 gear_desc += f" ({gear_deployment.lower()})"
             feature_parts.append(gear_desc)
 
-        # Canopy
-        canopy_type = get("canopy_type", "-")
         if canopy_type != "-":
             feature_parts.append(f"{canopy_type.lower()}")
 
-        # Running lights
-        running_lights = get("running_lights", "-")
         if running_lights != "-":
-            feature_parts.append(f"{running_lights.lower()} running lights")
+            feature_parts.append(f"{running_lights.lower()} lights")
 
         if feature_parts:
-            feature_sentence = f"The ship includes {', '.join(feature_parts)}"
-            sentences.append(feature_sentence)
+            technical_parts.append(", ".join(feature_parts))
 
-        # SECTION 6: Faction and Markings
-        faction_parts = []
-
-        faction = get("faction", "-")
-        markings = get("markings", "-")
-        decal_style = get("decal_style", "-")
-
-        if faction != "-":
-            faction_parts.append(f"belongs to the {faction} faction")
-
-        marking_list = []
-        if markings != "-":
-            marking_list.append(markings.lower())
-        if decal_style != "-":
-            marking_list.append(f"{decal_style.lower()} decals")
-
-        if marking_list:
-            faction_parts.append(f"bears {' and '.join(marking_list)}")
-
-        if faction_parts:
-            faction_sentence = f"It {', and '.join(faction_parts)}"
-            sentences.append(faction_sentence)
-
-        # SECTION 7: Cockpit
-        cockpit_parts = []
+        # Cockpit
         cockpit_type = get("cockpit_type", "-")
         cockpit_lighting = get("cockpit_lighting", "-")
 
+        cockpit_parts = []
         if cockpit_type != "-":
             cockpit_parts.append(f"{cockpit_type.lower()}")
-
         if cockpit_lighting != "-":
             cockpit_parts.append(f"{cockpit_lighting.lower()} lighting")
 
         if cockpit_parts:
-            cockpit_sentence = f"The {', '.join(cockpit_parts)} cockpit"
-            sentences.append(cockpit_sentence)
+            technical_parts.append(f"{' '.join(cockpit_parts)} cockpit")
 
-        # SECTION 8: Weapons and Defenses
+        # Faction and markings
+        faction = get("faction", "-")
+        markings = get("markings", "-")
+        decal_style = get("decal_style", "-")
+
+        faction_parts = []
+        if faction != "-":
+            faction_parts.append(f"from the {faction} faction")
+
+        marking_desc = []
+        if markings != "-":
+            marking_desc.append(markings.lower())
+        if decal_style != "-":
+            marking_desc.append(f"{decal_style.lower()} markings")
+
+        if marking_desc:
+            faction_parts.append(f"with {' and '.join(marking_desc)}")
+
+        if faction_parts:
+            technical_parts.append(", ".join(faction_parts))
+
+        # Weapons and defenses
         weapons = s.get("spaceship_weapons", [])
         weapon_list = [w.lower() for w in weapons if w and w != "-"]
-
         shield_system = get("shield_system", "-")
         armor_plating = get("armor_plating", "-")
         cloaking_device = get("cloaking_device", "-")
+
+        combat_parts = []
+        if weapon_list:
+            combat_parts.append(f"carrying {', '.join(weapon_list)}")
 
         defense_parts = []
         if shield_system != "-":
@@ -694,25 +643,20 @@ class CharacterPromptBuilderScene:
         if cloaking_device != "-":
             defense_parts.append(f"{cloaking_device.lower()}")
 
-        if weapon_list or defense_parts:
-            combat_parts = []
-            if weapon_list:
-                combat_parts.append(f"armed with {', '.join(weapon_list)}")
-            if defense_parts:
-                combat_parts.append(f"protected by {' and '.join(defense_parts)}")
+        if defense_parts:
+            combat_parts.append(f"protected by {' and '.join(defense_parts)}")
 
-            combat_sentence = f"It is {', and '.join(combat_parts)}"
-            sentences.append(combat_sentence)
+        if combat_parts:
+            technical_parts.append(", ".join(combat_parts))
 
-        # SECTION 9: Utility Systems
-        utility_parts = []
-
+        # Utility systems
+        crew_capacity = get("crew_capacity", "-")
         cargo_capacity = get("cargo_capacity", "-")
         sensor_array = get("sensor_array", "-")
         communication_array = get("communication_array", "-")
         tractor_beam = get("tractor_beam", "-")
-        crew_capacity = get("crew_capacity", "-")
 
+        utility_parts = []
         if crew_capacity != "-":
             utility_parts.append(f"{crew_capacity.lower()}")
         if cargo_capacity != "-":
@@ -725,10 +669,9 @@ class CharacterPromptBuilderScene:
             utility_parts.append(f"{tractor_beam.lower()}")
 
         if utility_parts:
-            utility_sentence = f"Systems include {', '.join(utility_parts)}"
-            sentences.append(utility_sentence)
+            technical_parts.append(", ".join(utility_parts))
 
-        # SECTION 10: Special Features
+        # Special features
         special_features = s.get("spaceship_special_features", [])
         if (
             special_features
@@ -737,121 +680,131 @@ class CharacterPromptBuilderScene:
         ):
             feature_list = [f.lower() for f in special_features if f and f != "-"]
             if feature_list:
-                special_sentence = f"Special systems: {', '.join(feature_list)}"
-                sentences.append(special_sentence)
+                technical_parts.append(f"with {', '.join(feature_list)}")
 
-        # SECTION 11: Camera/Artistic Style (separate sentence)
-        camera_parts = []
-        camera_shot = get("camera_shot", "-")
-        camera_view = get("camera_view", "-")
-        artistic_style = get("artistic_style", "-")
-
-        if camera_view != "-":
-            camera_parts.append(f"{camera_view.lower()}")
-        if camera_shot != "-":
-            camera_parts.append(f"{camera_shot.lower()} shot")
-
-        if camera_parts:
-            camera_sentence = f"Shown in {', '.join(camera_parts)}"
-            if artistic_style != "-":
-                style_clean = artistic_style.strip()
-                if not style_clean.lower().endswith("style"):
-                    style_clean += " style"
-                camera_sentence += f", {style_clean}"
-            sentences.append(camera_sentence)
-        elif artistic_style != "-":
-            style_clean = artistic_style.strip()
-            if not style_clean.lower().endswith("style"):
-                style_clean += " style"
-            sentences.append(f"Rendered in {style_clean}")
-
-        # Combine all sentences with proper punctuation
-        main_desc = ". ".join(sentences)
-        if not main_desc.endswith("."):
-            main_desc += "."
-
-        # Build tail (scene context)
-        tail_phrases = []
+        # ============================================
+        # SECTION 3: ENVIRONMENT (Location, Background)
+        # ============================================
         if include_scene_tail:
-            # Location - use spaceship_environment for spaceships
             spaceship_environment = get("spaceship_environment", "-")
             if spaceship_environment != "-":
-                tail_phrases.append(f"The scene takes place in {spaceship_environment}")
+                environment_parts.append(f"floating in {spaceship_environment}")
             else:
                 location = get("location", "")
                 if location and location.strip():
-                    tail_phrases.append(f"The scene takes place {location.strip()}")
+                    environment_parts.append(f"floating {location.strip()}")
                 elif get("preset_location") != "-":
-                    tail_phrases.append(
-                        f"The scene takes place {get('preset_location')}"
-                    )
+                    environment_parts.append(f"floating {get('preset_location')}")
                 else:
-                    tail_phrases.append("The starship floats in deep space")
+                    environment_parts.append("floating in deep space")
 
-            # Background
             spaceship_background = get("spaceship_background", "-")
             if spaceship_background != "-":
-                tail_phrases.append(f"with {spaceship_background} in the background")
+                environment_parts.append(
+                    f"with {spaceship_background} in the background"
+                )
 
-            # Scene color palette
             scene_color_palette = get("scene_color_palette", "None/Natural")
             if scene_color_palette != "None/Natural":
-                tail_phrases.append(
-                    f"Scene color palette: {scene_color_palette.lower()}"
+                environment_parts.append(
+                    f"color palette: {scene_color_palette.lower()}"
                 )
 
-            # Lighting - use spaceship_lighting for spaceships
+        # ============================================
+        # SECTION 4: LIGHTING/MOOD (Lighting, Camera, Style)
+        # ============================================
+        if include_scene_tail:
+            # Lighting
             spaceship_lighting = get("spaceship_lighting", "-")
             if spaceship_lighting != "-":
-                tail_phrases.append(f"Lighting: {spaceship_lighting}")
-            else:
-                if get("light_type") != "-":
-                    light_desc = ""
-                    if get("light_quality") != "-":
-                        light_desc += get("light_quality").lower() + " "
-                    light_desc += get("light_type").lower()
-                    tail_phrases.append(f"Lighting is {light_desc}")
+                lighting_parts.append(f"lit by {spaceship_lighting}")
+            elif get("light_type") != "-":
+                light_desc = ""
+                if get("light_quality") != "-":
+                    light_desc += get("light_quality").lower() + " "
+                light_desc += get("light_type").lower()
+                lighting_parts.append(f"lit by {light_desc}")
 
-            # Engine glow intensity affects scene lighting
-            engine_glow_intensity = get("engine_glow_intensity", "moderate")
-            engine_glow_color = get("engine_glow_color", "-")
+            # Engine glow effects
             if engine_glow_intensity == "prominent" and engine_glow_color != "-":
-                tail_phrases.append(
-                    f"bathed in {engine_glow_color.lower()} engine illumination"
-                )
+                lighting_parts.append(f"with {engine_glow_color.lower()} engine glow")
             elif engine_glow_intensity == "overwhelming" and engine_glow_color != "-":
-                tail_phrases.append(
-                    f"scene dominated by intense {engine_glow_color.lower()} engine glow lighting"
+                lighting_parts.append(
+                    f"bathed in intense {engine_glow_color.lower()} engine light"
                 )
             elif engine_glow_intensity == "none" and engine_glow_color != "-":
-                tail_phrases.append("no engine glow illuminating the scene")
+                lighting_parts.append("no engine glow")
+
+            # Camera view
+            camera_view = get("camera_view", "-")
+            camera_shot = get("camera_shot", "-")
+            camera_parts = []
+            if camera_view != "-":
+                camera_parts.append(f"{camera_view.lower()}")
+            if camera_shot != "-":
+                camera_parts.append(f"{camera_shot.lower()}")
+
+            if camera_parts:
+                lighting_parts.append(f"shown from {' '.join(camera_parts)} view")
 
             # Camera equipment
             if get("camera_model") != "-":
-                tail_phrases.append(f"Camera: {get('camera_model')}")
+                lighting_parts.append(f"shot on {get('camera_model')}")
             if get("camera_lens") != "-":
-                tail_phrases.append(f"Lens: {get('camera_lens')}")
+                lighting_parts.append(f"using {get('camera_lens')}")
 
             # Camera angles
             camera_horizontal = get("camera_horizontal_angle")
             camera_vertical = get("camera_vertical_angle")
             if camera_horizontal != "-" and camera_vertical != "-":
-                tail_phrases.append(
-                    f"Angles: {camera_horizontal.lower()}, {camera_vertical.lower()}"
+                lighting_parts.append(
+                    f"angled {camera_horizontal.lower()}, {camera_vertical.lower()}"
                 )
             elif camera_horizontal != "-":
-                tail_phrases.append(f"Horizontal angle: {camera_horizontal.lower()}")
+                lighting_parts.append(f"angled {camera_horizontal.lower()}")
             elif camera_vertical != "-":
-                tail_phrases.append(f"Vertical angle: {camera_vertical.lower()}")
+                lighting_parts.append(f"angled {camera_vertical.lower()}")
 
-        # Final assembly
-        prompt = main_desc
-        if tail_phrases:
-            prompt += " " + ". ".join(tail_phrases)
+            # Artistic style
+            artistic_style = get("artistic_style", "-")
+            if artistic_style != "-":
+                style_clean = artistic_style.strip()
+                if not style_clean.lower().endswith("style"):
+                    style_clean += " style"
+                lighting_parts.append(f"in {style_clean}")
+
+        # ============================================
+        # ASSEMBLE FINAL PROMPT
+        # ============================================
+        sections = []
+
+        # Subject section
+        if subject_parts:
+            sections.append(", ".join(subject_parts))
+
+        # Technical section
+        if technical_parts:
+            sections.append(", ".join(technical_parts))
+
+        # Environment section
+        if environment_parts:
+            sections.append(", ".join(environment_parts))
+
+        # Lighting/Mood section
+        if lighting_parts:
+            sections.append(", ".join(lighting_parts))
+
+        # Join all sections with natural flow
+        prompt = ", ".join(sections)
+
+        # Clean up and capitalize
+        prompt = prompt.strip()
+        if prompt:
+            prompt = prompt[0].upper() + prompt[1:]
             if not prompt.endswith("."):
                 prompt += "."
 
-        return prompt.strip()
+        return prompt
 
     def _generate_natural_language(
         self, s, include_scene_tail=True, character_sheet_render_style="comic"
