@@ -456,7 +456,9 @@ class CharacterPromptBuilderScene:
         # ============================================
         # SECTION 1: SUBJECT (Type, Size, Basic Structure)
         # ============================================
-        subject_parts.append(f"a {spaceship_size.lower()} {spaceship_type.lower()}")
+        subject_parts.append(
+            f"a {spaceship_size.lower()} {spaceship_type.lower()} starship"
+        )
 
         # Wing configuration
         wing_count = get("wing_count", "2")

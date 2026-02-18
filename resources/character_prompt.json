@@ -4117,6 +4117,7 @@
     "Outer Planets Alliance",
     "Belters",
     "Earth Alliance",
+    "Minbari",
     "Centauri Republic",
     "Narn Regime",
     "Vorlons",
@@ -4543,6 +4544,10 @@
     "The Expanse",
     "Babylon 5 Earth Alliance",
     "Babylon 5 Minbari",
+    "Babylon 5 Centauri",
+    "Babylon 5 Narn",
+    "Babylon 5 Vorlons",
+    "Babylon 5 Shadows",
     "Battlestar Galactica",
     "Generic Sci-Fi"
   ],
@@ -4626,6 +4631,10 @@
       "The Expanse": "with realistic utilitarian design featuring functional modules and no artificial gravity rings",
       "Babylon 5 Earth Alliance": "with boxy practical design featuring rotating habitation sections and utilitarian construction",
       "Babylon 5 Minbari": "with organic white crystalline curves featuring flowing elegant surfaces and advanced technology",
+      "Babylon 5 Centauri": "with ornate decorative design featuring golden accents and elegant curved structures",
+      "Babylon 5 Narn": "with aggressive angular design featuring red and black coloring and heavy military plating",
+      "Babylon 5 Vorlons": "with organic bioluminescent appearance featuring flowing living surfaces and mysterious glowing elements",
+      "Babylon 5 Shadows": "with dark spiky organic appearance featuring living black surfaces and ominous threatening design",
       "Battlestar Galactica": "with industrial chunky military design featuring armored plating and practical functional aesthetics",
       "Generic Sci-Fi": ""
     }
