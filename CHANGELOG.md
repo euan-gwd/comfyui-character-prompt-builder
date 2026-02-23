@@ -124,7 +124,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- New node for advanced facial expressions (e.g., "ecstatic", "melancholic") in `node_defs/facial_expression.py`
 - Updated `character_prompt.json` with additional eye colors and hair styles
 - Improved settings merging logic in Scene node for better prompt flow
 
