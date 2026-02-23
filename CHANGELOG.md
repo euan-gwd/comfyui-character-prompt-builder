@@ -174,10 +174,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Time of day, weather, season
   - Prompt prefix and suffix
   - Natural language output mode
-  - Weighted prompt output mode
   - Photorealism improvement option
 - Chainable node architecture via PM_SETTINGS type
-- Auto-download of portrait_prompt.json data
+- Auto-download of character_prompt.json data
 - Fallback default data if download fails
 
 ### Credits

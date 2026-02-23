@@ -1,6 +1,6 @@
 # CharacterPromptBuilder
 
-A standalone, modular character prompt generator for ComfyUI. Generate detailed, natural language prompts for human character creation with extensive customization options.
+A standalone, modular prompt generator for ComfyUI. Generate detailed, natural language prompts for characters and spaceships with extensive customization options.
 
 ![ComfyUI](https://img.shields.io/badge/ComfyUI-Custom%20Node-blue)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-green)
@@ -30,7 +30,7 @@ A standalone, modular character prompt generator for ComfyUI. Generate detailed,
 
 ```bash
 cd ComfyUI/custom_nodes
-git clone https://github.com/yourusername/comfyui-character-prompt-builder.git
+git clone https://github.com/euan-gwd/comfyui-character-prompt-builder.git
 ```
 
 ### Method 3: Manual Download
@@ -46,7 +46,7 @@ git clone https://github.com/yourusername/comfyui-character-prompt-builder.git
 Controls physical appearance for female characters:
 
 | Category | Options |
-|----------|---------||
+|----------|---------|
 | **Subject** | Gender (Woman/Girl), age (18-90), nationality, body type |
 | **Body** | Breast size/shape, bum size (with weights) |
 | **Face** | Face shape, eye color, expression, lips, makeup |
@@ -148,7 +148,7 @@ Controls the shot setup and generates the final prompt:
 | **Location**    | Free-text location description           |
 | **Environment** | Time of day, weather, season             |
 | **Prompts**     | Prefix, suffix, enforce subjects only    |
-| **Output**      | Natural language or weighted prompt mode |
+| **Output**      | Natural language prompt mode                 |
 
 ### 📝 Character Prompt Builder - Render Prompt
 
@@ -176,6 +176,10 @@ A utility node that displays the generated prompt and allows for manual edits be
 (positive)
 ```
 
+- Choose **Female Person** or **Male Person** node based on your character
+- Match with the corresponding **Fashion** node (Female Fashion or Male Fashion)
+- The **Action** node is gender-specific (Female Actions or Male Actions)
+
 ### Spaceship Workflow
 
 ```
@@ -188,36 +192,31 @@ A utility node that displays the generated prompt and allows for manual edits be
 (positive)
 ```
 
-- Choose **Female Person** or **Male Person** node based on your character
-- Match with the corresponding **Fashion** node (Female Fashion or Male Fashion)
-- The **Action** node is shared for both genders
-- For spaceships/vehicles, use **Spaceship Character** + **Spaceship Mods** nodes
-
 ### Minimal Workflow
 
 You can skip nodes you don't need:
 
 ```
-[Person] → [Scene & Generate]
+[Female Person] or [Male Person] → [Scene & Generate]
 ```
 
 or
 
 ```
-[Person] → [Female/Male Fashion] → [Scene & Generate]
+[Female Person] or [Male Person] → [Female/Male Fashion] → [Scene & Generate]
 ```
 
 or
 
 ```
-[Person] → [Action] → [Scene & Generate]
+[Female Person] or [Male Person] → [Female/Male Actions] → [Scene & Generate]
 ```
 
 ### Connection Guide
 
 1. Add **Character Prompt Builder - Female Person** or **Male Person** node
 2. Connect `settings` output to matching **Fashion** node's `settings_in`
-3. Connect Fashion node's `settings` output to **Character Prompt Builder - Action** `settings_in`
+3. Connect Fashion node's `settings` output to matching **Female/Male Actions** node's `settings_in`
 4. Connect Action node's `settings` output to **Character Prompt Builder - Scene & Generate** `settings` input
 5. Connect `positive` output to your sampler/CLIP nodes
 
@@ -263,7 +262,7 @@ Scene: Full body, Studio lighting, Fashion editorial pose
 
 ### Missing options in dropdowns
 
-The node will auto-download `portrait_prompt.json` on first use. If this fails:
+The node will auto-download `character_prompt.json` on first use. If this fails:
 
 1. Check your internet connection
 2. The file will be created in the `resources` folder
