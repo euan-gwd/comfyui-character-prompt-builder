@@ -5,6 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2026-02-23
+
+### Added
+
+- **Spaceship Character Nodes**
+  - `Character Prompt Builder - Spaceship Character` for vehicle/ship prompts
+  - `Character Prompt Builder - Spaceship Mods` for weapons and modifications
+  - Style reference, type, size, faction options
+  - Design style, condition, primary/accent colors
+  - Propulsion type and engine glow color
+  - Wing configurations: count, type, position, vertical stabilizers, canard wings
+  - Engine options: count, placement, configuration
+  - Hull & structure: fuselage shape, hull structure, surface texture, symmetry
+  - Operations: landing gear, canopy type, crew capacity, gear deployment
+  - Cockpit: type, lighting
+  - Markings and decals
+  - Weapon systems (3 slots)
+  - Defensive systems: shields, armor plating, cloaking device
+  - Utility systems: cargo capacity, sensor array, communication array, tractor beam
+  - Special features (3 slots)
+
+- **Scene Node Improvements**
+  - Custom number of panels (2, 3, or 4) for character sheets
+  - New character sheet render styles: "3D cartoon illustration", "UE5 animated 3D render"
+  - Space environment and lighting options
+  - Scene palette options
+
+### Changed
+
+- Separated data from logic in scene.py for better maintainability
+- Removed `@lru_cache` from data loading for dynamic updates
+- Restored features that were removed during previous refactor
+
+### Removed
+
+- NSFW content from character_prompt.json
+- AGENTS.md file
+
 ## [2.3.0] - 2026-02-15
 
 ### Changed

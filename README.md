@@ -8,12 +8,13 @@ A standalone, modular character prompt generator for ComfyUI. Generate detailed,
 
 ## Features
 
-- 🎨 **Modular Design** - Four chainable nodes for maximum flexibility
+- 🎨 **Modular Design** - Chainable nodes for maximum flexibility
 - 📝 **Natural Language Output** - Generates flowing, descriptive prompts
 - 👤 **Comprehensive Person Options** - Age, gender, nationality, body type, face, hair, skin
 - 👗 **Fashion & Accessories** - Female and male outfits, shoes, jewelry, nails
 - 🏃 **Action & Pose Control** - Dedicated node for actions, poses, gestures
-- 📸 **Scene Control** - Camera shots, lighting, location, weather
+- 🚀 **Spaceship & Vehicle Builder** - Design spaceships with weapons, shields, and modifications
+- 📸 **Scene Control** - Camera shots, lighting, location, weather, character sheets
 - 🔗 **Chainable Architecture** - Use only the nodes you need
 - 📦 **Zero Dependencies** - Uses only Python standard library
 
@@ -109,6 +110,33 @@ Controls pose, action, and props for male subjects:
 | **Custom**     | Free-text action description                        |
 | **Expression** | Additional facial/body expressions                  |
 
+### 🚀 Character Prompt Builder - Spaceship Character
+
+Controls spaceship/vehicle design and appearance:
+
+| Category          | Options                                                    |
+| ----------------- | ---------------------------------------------------------- |
+| **Identity**      | Style reference, type, size, faction                       |
+| **Appearance**    | Design style, condition, primary color, accent color       |
+| **Propulsion**    | Propulsion type, engine glow color                         |
+| **Wings**         | Count, type, position, vertical stabilizers, canard wings  |
+| **Engines**       | Count, placement, configuration                            |
+| **Hull**          | Fuselage shape, hull structure, surface texture, symmetry  |
+| **Cockpit**       | Type, lighting                                             |
+| **Markings**      | Running lights, markings, decal style                      |
+| **Operations**    | Landing gear, canopy type, crew capacity, gear deployment  |
+
+### ⚔️ Character Prompt Builder - Spaceship Mods
+
+Controls weapons and modifications for spaceships:
+
+| Category           | Options                                          |
+| ------------------ | ------------------------------------------------ |
+| **Weapons**        | 3 weapon system slots                            |
+| **Defense**        | Shield system, armor plating, cloaking device    |
+| **Utility**        | Cargo capacity, sensors, communications, tractor beam |
+| **Special**        | 3 special feature slots                          |
+
 ### 📸 Character Prompt Builder - Scene & Generate
 
 Controls the shot setup and generates the final prompt:
@@ -134,7 +162,7 @@ A utility node that displays the generated prompt and allows for manual edits be
 
 ## Usage
 
-### Basic Workflow
+### Basic Workflow (Human Character)
 
 ```
 [Character Prompt Builder - Female Person] or [Character Prompt Builder - Male Person]
@@ -148,9 +176,22 @@ A utility node that displays the generated prompt and allows for manual edits be
 (positive)
 ```
 
+### Spaceship Workflow
+
+```
+[Character Prompt Builder - Spaceship Character]
+      ↓
+[Character Prompt Builder - Spaceship Mods] (optional)
+      ↓
+[Character Prompt Builder - Scene & Generate]
+      ↓
+(positive)
+```
+
 - Choose **Female Person** or **Male Person** node based on your character
 - Match with the corresponding **Fashion** node (Female Fashion or Male Fashion)
 - The **Action** node is shared for both genders
+- For spaceships/vehicles, use **Spaceship Character** + **Spaceship Mods** nodes
 
 ### Minimal Workflow
 
@@ -251,6 +292,25 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 5. Open a Pull Request
 
 ## Changelog
+
+### v2.4.0
+
+- **Spaceship Character Nodes** - Design spaceships with weapons, shields, modifications
+- **Custom Character Sheet Panels** - Choose 2, 3, or 4 panel layouts
+- **New Render Styles** - "3D cartoon illustration", "UE5 animated 3D render"
+- **Space Environment Options** - Space-specific lighting and environments
+- Restored features removed during previous refactor
+- Removed NSFW content
+
+### v2.3.0
+
+- Refactored data loading architecture with shared utilities module
+- Eliminated code duplication (~210 lines removed)
+- Improved maintainability with single source of truth
+
+### v2.2.0
+
+- Added Render Prompt Node for displaying and editing prompts
 
 ### v2.1.0
 
