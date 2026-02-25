@@ -1503,7 +1503,6 @@ class CharacterPromptBuilderScene:
                     flags=re.IGNORECASE,
                 )
                 core_clothing_phrase += f" covering {covering_features}"
-                body_features_phrase = ""
 
         # Build accessory_clothing_phrase
         if accessory_clothing:
@@ -1818,6 +1817,7 @@ class CharacterPromptBuilderScene:
             camera_vertical_angle_phrase if not camera_combined_angle_phrase else "",
             subject_sentence,
             body_type_phrase,
+            body_features_phrase,
             pose_phrase,
             custom_action_phrase,
             props_phrase,
@@ -1827,7 +1827,6 @@ class CharacterPromptBuilderScene:
             facial_hair_phrase,
             makeup_phrase,
             expression_phrase,
-            body_features_phrase,
             core_clothing_phrase,
             accessory_clothing_phrase,
             shoes_phrase,
