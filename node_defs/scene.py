@@ -104,7 +104,7 @@ class CharacterPromptBuilderScene:
                 "panel4_camera_shot": combo(
                     data,
                     "camera_shot_list",
-                    "close up",
+                    "close-up",
                     {
                         "display": "dropdown",
                         "visible": "artistic_style == 'character sheet' and num_panels == '4'",
