@@ -110,7 +110,7 @@ class CharacterPromptBuilderScene:
                         "visible": "artistic_style == 'character sheet' and num_panels == '4'",
                     },
                 ),
-                "camera_model": combo(data, "camera_model_list"),
+                # "camera_model": combo(data, "camera_model_list"),
                 "camera_lens": combo(data, "camera_lens_specs"),
                 "camera_horizontal_angle": combo(data, "camera_horizontal_angle_list"),
                 "camera_vertical_angle": combo(data, "camera_vertical_angle_list"),
