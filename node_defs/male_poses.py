@@ -16,12 +16,15 @@ class CharacterPromptBuilderMalePoses:
                 "kneeling_pose": combo(data, "mens_kneeling_pose_list"),
                 "sitting_pose": combo(data, "mens_sitting_pose_list"),
                 "laying_down_pose": combo(data, "mens_laying_down_pose_list"),
-                "interaction": combo(data, "interactions_list"),
+                # "interaction": combo(data, "interactions_list"),
                 "props": combo(data, "mens_props_list"),
                 "props_color": combo(data, "props_color_list"),
                 "settings_in": ("PM_SETTINGS",),
             },
             "optional": {
+                "hand_placement": combo(data, "hand_placement_list"),
+                "leg_placement": combo(data, "leg_placement_list"),
+                "head_placement": combo(data, "head_placement_list"),
                 "custom_pose": (
                     "STRING",
                     {
@@ -48,6 +51,9 @@ class CharacterPromptBuilderMalePoses:
         props="-",
         props_color="-",
         settings_in=None,
+        hand_placement="-",
+        leg_placement="-",
+        head_placement="-",
         custom_pose="",
     ):
         settings = settings_in.copy() if settings_in else {}
@@ -82,6 +88,9 @@ class CharacterPromptBuilderMalePoses:
                 "props": props,
                 "props_color": props_color,
                 "interaction": interaction,
+                "hand_placement": hand_placement,
+                "leg_placement": leg_placement,
+                "head_placement": head_placement,
                 "custom_pose": custom_pose.strip() if custom_pose else "",
             }
         )

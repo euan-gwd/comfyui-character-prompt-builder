@@ -968,6 +968,38 @@
     "reclining elegantly in a chaise lounge",
     "reclining with hand between thighs"
   ],
+  "hand_placement_list": [
+    "hands behind head",
+    "hands on hips",
+    "hands in lap",
+    "hands resting on thighs",
+    "hands clasped together",
+    "hands at sides",
+    "hands near face",
+    "hands touching hair",
+    "hands intertwined",
+    "hands gripping something"
+  ],
+  "leg_placement_list": [
+    "legs spread open",
+    "legs crossed at ankles",
+    "legs crossed",
+    "legs raised",
+    "legs together",
+    "legs bent",
+    "legs extended",
+    "legs dangling",
+    "legs tucked to side"
+  ],
+  "head_placement_list": [
+    "head tilted to one side",
+    "head turned to side",
+    "head looking up",
+    "head looking down",
+    "head facing forward",
+    "head slightly tilted",
+    "head resting on hand"
+  ],
   "nationality_list": [
     "Afghan",
     "Albanian",
@@ -2888,6 +2920,25 @@
   ],
   "location_list": [
     "-",
+    "in a High-end hotel lobbies with marble floors and warm, directional lighting",
+    "in a Midnight city streets with wet pavement and neon reflections",
+    "in a sun-drenched Mediterranean courtyard café",
+    "in a modern art museum atrium with skylights",
+    "on an exclusive Mediterranean yacht deck with champagne and statement jewelry",
+    "at a glamorous Monaco beach club with designer cabanas and crystal cocktail glasses",
+    "on a private Mediterranean villa infinity pool terrace with golden hour lighting",
+    "on a luxury Mediterranean rooftop bar with skyline views and designer cocktails",
+    "in an exclusive Mediterranean yacht harbor surrounded by superyachts",
+    "at a high-end Mediterranean casino terrace with champagne and dramatic lighting",
+    "on a silk-draped Mediterranean balcony at twilight with dramatic lighting",
+    "in an opulent Mediterranean villa bedroom with floor-to-ceiling windows and champagne",
+    "at a daring Mediterranean cliffside villa with vanishing edge pool and sheer curtains",
+    "at an exclusive Mediterranean cocktail party on a yacht with champagne towers",
+    "in a bold Mediterranean nightclub with dramatic lighting and designer decor",
+    "at a glamorous Mediterranean film festival event with paparazzi and designer gowns",
+    "in a private Mediterranean olive grove with luxury cabana and crystal chandelier",
+    "at an exclusive Mediterranean vineyard estate with grand terrace and vintage wines",
+    "on a dramatic Mediterranean cliffside at sunset with luxury sports car",
     "in a city park with benches and trees",
     "on a sandy beach with gentle waves",
     "inside a modern apartment living room",
@@ -2941,7 +2992,6 @@
     "at a poolside cabana at a luxury resort",
     "in a members-only private club with velvet armchairs",
     "at a jazz lounge with a live band and dim lighting",
-    "in a sun-drenched Mediterranean courtyard café",
     "at a gallery opening with contemporary art on the walls",
     "in a classic Italian trattoria with checkered tablecloths",
     "at a sushi bar with a minimalist interior",
@@ -2956,8 +3006,7 @@
     "in a candlelit wine cellar with stone walls",
     "at a rooftop garden with string lights",
     "in a designer shoe store with mirrored walls",
-    "at a riverside bistro with outdoor tables",
-    "in a modern art museum atrium with skylights"
+    "at a riverside bistro with outdoor tables"
   ],
   "tattoo_list": [
     "-",

@@ -1646,9 +1646,10 @@ class CharacterPromptBuilderScene:
         fingernail_phrase = ""
         if show_fingernails:
             fingernail_style = get("fingernail_style").lower().replace(" nails", "")
+            nail_color_val = s.get("nail_color", "-")
             nail_color = (
-                get("fingernail_color").lower()
-                if get("fingernail_color") != "-"
+                nail_color_val.lower()
+                if nail_color_val and nail_color_val != "-"
                 else ""
             )
             if nail_color:
@@ -1663,7 +1664,23 @@ class CharacterPromptBuilderScene:
         pose = get("model_pose")
         pose_phrase = ""
         if pose != "-":
-            pose_phrase = f"{subj} is {pose.lower()}"
+            pose_parts = [pose.lower()]
+            hand_placement = get("hand_placement")
+            leg_placement = get("leg_placement")
+            head_placement = get("head_placement")
+            if hand_placement and hand_placement != "-":
+                pose_parts.append(hand_placement.lower())
+            if leg_placement and leg_placement != "-":
+                pose_parts.append(leg_placement.lower())
+            if head_placement and head_placement != "-":
+                pose_parts.append(head_placement.lower())
+            if len(pose_parts) > 1:
+                if len(pose_parts) == 2:
+                    pose_phrase = f"{subj} is {pose_parts[0]} with {pose_parts[1]}"
+                else:
+                    pose_phrase = f"{subj} is {pose_parts[0]} with {', '.join(pose_parts[1:-1])}, and {pose_parts[-1]}"
+            else:
+                pose_phrase = f"{subj} is {pose_parts[0]}"
 
         skin_details_phrase = ""
         skin_details = get("skin_details")

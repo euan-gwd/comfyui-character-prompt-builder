@@ -96,6 +96,9 @@ Controls pose, action, and props for female subjects:
 | Category   | Options                                        |
 | ---------- | ---------------------------------------------- |
 | **Pose**   | Standing, kneeling, sitting, laying down poses |
+| **Hand Placement** | Optional: hands behind head, on hips, in lap, etc. |
+| **Leg Placement** | Optional: legs spread, crossed, raised, etc. |
+| **Head Placement** | Optional: tilted, looking up, looking down, etc. |
 | **Props**  | Phones, bags, flowers, cameras, etc.           |
 | **Custom** | Free-text action description                   |
 
@@ -106,6 +109,9 @@ Controls pose, action, and props for male subjects:
 | Category       | Options                                             |
 | -------------- | --------------------------------------------------- |
 | **Pose**       | Masculine standing, kneeling, sitting, laying poses |
+| **Hand Placement** | Optional: hands behind head, on hips, in lap, etc. |
+| **Leg Placement** | Optional: legs spread, crossed, raised, etc. |
+| **Head Placement** | Optional: tilted, looking up, looking down, etc. |
 | **Props**      | Swords, guns, sports equipment, tools, etc.         |
 | **Custom**     | Free-text action description                        |
 | **Expression** | Additional facial/body expressions                  |
@@ -291,6 +297,12 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 5. Open a Pull Request
 
 ## Changelog
+
+### v2.4.1
+
+- **Optional Placement Poses** - New hand, leg, and head placement options for more detailed pose control
+- Available in both Female Actions and Male Actions nodes
+- Scene node combines base pose with placement details in natural language
 
 ### v2.4.0
 
