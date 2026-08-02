@@ -52,8 +52,6 @@ git clone https://github.com/euan-gwd/comfyui-character-prompt-builder.git
 │   ├── female_poses.py
 │   ├── male_poses.py
 │   ├── scene.py
-│   ├── spaceship_character.py
-│   └── spaceship_mods.py
 └── resources/            # JSON data files (auto-downloaded if missing)
 ```
 
