@@ -19,20 +19,14 @@ A standalone, modular prompt generator for ComfyUI. Generate detailed, natural l
 
 ## Installation
 
-### Method 1: ComfyUI Manager (Recommended)
-
-1. Open ComfyUI Manager
-2. Search for "Character Prompt Builder"
-3. Click Install
-
-### Method 2: Git Clone
+### Method 1: Git Clone
 
 ```bash
 cd ComfyUI/custom_nodes
 git clone https://github.com/euan-gwd/comfyui-character-prompt-builder.git
 ```
 
-### Method 3: Manual Download
+### Method 2: Manual Download
 
 1. Download the latest release
 2. Extract to `ComfyUI/custom_nodes/comfyui-character-prompt-builder`
