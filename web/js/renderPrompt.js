@@ -8,6 +8,34 @@ import { ComfyWidgets } from "../../../scripts/widgets.js";
 
 // TODO: This should need to be so complicated. Refactor at some point.
 
+function markDirty() {
+	app?.graph?.setDirtyCanvas?.(true, false);
+}
+
+function normalizeTextPayload(text) {
+	if (text == null) {
+		return [];
+	}
+
+	// Older executions can send a plain string; newer frontend commonly sends arrays.
+	if (typeof text === "string") {
+		return [text];
+	}
+
+	if (!Array.isArray(text)) {
+		return [[String(text)]];
+	}
+
+	const normalized = [];
+	for (const entry of text) {
+		if (entry == null || entry === "") {
+			continue;
+		}
+		normalized.push(Array.isArray(entry) ? entry : [entry]);
+	}
+	return normalized;
+}
+
 app.registerExtension({
 	name: "CharacterPromptBuilder.RenderPrompt",
 	async beforeRegisterNodeDef(nodeType, nodeData, app) {
@@ -22,17 +50,12 @@ app.registerExtension({
 					this.widgets.length = isConvertedWidget;
 				}
 
-				const v = [...text];
-				if (!v[0]) {
-					v.shift();
-				}
-				for (let list of v) {
-					// Force list to be an array, not sure why sometimes it is/isn't
-					if (!(list instanceof Array)) list = [list];
-					for (const l of list) {
-						const w = ComfyWidgets["STRING"](this, "text_" + this.widgets?.length ?? 0, ["STRING", { multiline: true }], app).widget;
+				for (const list of normalizeTextPayload(text)) {
+					for (const item of list) {
+						const widgetName = "text_" + (this.widgets?.length ?? 0);
+						const w = ComfyWidgets["STRING"](this, widgetName, ["STRING", { multiline: true }], app).widget;
 						w.inputEl.style.opacity = 0.6;
-						w.value = l;
+						w.value = String(item);
 
 						// Add event listener to update node's widgets_values
 						w.inputEl.onchange = (function (node, widgetIndex) {
@@ -41,7 +64,7 @@ app.registerExtension({
 									node.widgets_values = [];
 								}
 								node.widgets_values[widgetIndex] = e.target.value;
-								app.graph.setDirtyCanvas(true, false); // Mark canvas dirty to reflect changes
+								markDirty();
 							};
 						})(this, this.widgets.length - 1); // Pass 'this' (node) and the current widget index
 					}
@@ -56,7 +79,7 @@ app.registerExtension({
 						sz[1] = this.size[1];
 					}
 					this.onResize?.(sz);
-					app.graph.setDirtyCanvas(true, false);
+					markDirty();
 				});
 			}
 
@@ -70,7 +93,8 @@ app.registerExtension({
 					}
 					this.properties.last_input = message.ui.last_input[0];
 				}
-				populate.call(this, message.ui?.text ?? message.text);
+				const executionText = message.ui?.text ?? message.text ?? [];
+				populate.call(this, executionText);
 			};
 
 			const VALUES = Symbol();

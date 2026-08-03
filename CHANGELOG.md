@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2026-08-02
+
+### Removed
+
+- **Spaceship Character Nodes**
+  - Removed `Character Prompt Builder - Spaceship Character` node
+  - Removed `Character Prompt Builder - Spaceship Mods` node
+  - Removed spaceship scene options from the Scene & Generate node
+  - Removed spaceship data from `character_prompt.json`
+
 ## [2.4.1] - 2026-03-01
 
 ### Added

@@ -103,7 +103,10 @@ class RenderPrompt:
             }
 
         return {
-            "ui": {"text": [text_to_display]},
+            "ui": {
+                "text": [text_to_display],
+                "last_input": [current_input],
+            },
             "result": (),
         }
 
